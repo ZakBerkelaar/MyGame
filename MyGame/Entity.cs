@@ -21,7 +21,8 @@ namespace MyGame
         {
             VBO = GL.GenBuffer();
 
-            Game.window.RenderFrame += FrameUpdate;
+            Game.window.RenderFrame += FrameInternal;
+            Game.window.UpdateFrame += UpdateInternal;
         }
 
         ~Entity()
@@ -29,13 +30,19 @@ namespace MyGame
             GL.DeleteBuffer(VBO);
         }
 
-        private void FrameUpdate(object sender, OpenTK.FrameEventArgs e)
+        private void FrameInternal(object sender, OpenTK.FrameEventArgs e)
+        {
+            Frame();
+        }
+
+        private void UpdateInternal(object sender, OpenTK.FrameEventArgs e)
         {
             Update();
 
             UpdatePosition();
         }
 
+        //TODO: Fix collision detection on edge of tiles
         private void UpdatePosition()
         {
             position += velocity * Game.deltaTime;
@@ -172,6 +179,7 @@ namespace MyGame
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
         }
 
+        protected virtual void Frame() { }
         protected virtual void Update() { }
     }
 }

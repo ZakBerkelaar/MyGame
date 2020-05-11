@@ -8,7 +8,6 @@ namespace MyGame
 {
     static class Game
     {
-        public const int entityLimit = 512;
         public static List<Entity> entities = new List<Entity>();
 
         public static Window window;
@@ -49,7 +48,8 @@ namespace MyGame
             entities.Add(npc);
 
             window.VSync = OpenTK.VSyncMode.Off;
-            window.Run(20.0);
+            //window.Run(20.0);
+            window.Vibe();
 
             Logger.Log("Exiting");
         }

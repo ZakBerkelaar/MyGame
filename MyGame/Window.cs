@@ -6,6 +6,10 @@ using OpenTK.Input;
 using System.Drawing;
 using System.Management.Instrumentation;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
+using System.Security;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MyGame
 {
@@ -19,19 +23,14 @@ namespace MyGame
         private Shader shader;
         private Shader entityShader;
 
-        private Texture texture;
-        private Texture texDirt;
-
         private bool resize = false;
-
-        private int triangleCount;
 
         public Window(int width, int height, string title) : base(width, height, OpenTK.Graphics.GraphicsMode.Default, title)
         {
 
         }
 
-        private void CalculateVBO(int width, int height)
+        /*private void CalculateVBO(int width, int height)
         {
             //Cursed code do not touch unless broken
 
@@ -112,13 +111,78 @@ namespace MyGame
                 }
             }
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+        }*/
+
+        //TODO: Platform specific code
+        [DllImport("kernel32.dll"), SuppressUnmanagedCodeSecurity]
+        private static extern bool QueryPerformanceCounter(out long count);
+        [DllImport("kernel32.dll"), SuppressUnmanagedCodeSecurity]
+        private static extern bool QueryPerformanceFrequency(out long frequency);
+
+        private long freq;
+
+        private double GetTime()
+        {
+            QueryPerformanceCounter(out long time);
+            return (double)time / freq;
         }
+
+        private State blendState;
 
         public void Vibe()
         {
             Visible = true; //Make sure window is visible
             OnLoad(EventArgs.Empty);
             OnResize(EventArgs.Empty);
+
+            QueryPerformanceFrequency(out freq);
+
+
+            const double td = 1d / 50d;
+            double currentTime = GetTime();
+            double acc = 0.0;
+
+            Game.deltaTime = (float)td;
+
+            State prevState = new State();
+            State currState = new State();
+
+            prevState.playerPos = Game.activePlayer.position;
+            prevState.entities = Game.entities.Select(ent => ent.position).ToArray();
+            currState.playerPos = Game.activePlayer.position;
+            currState.entities = Game.entities.Select(ent => ent.position).ToArray();
+
+            while (true)
+            {
+                //TODO: Check if window is exiting
+                ProcessEvents(); //Handle windows events
+
+                double newTime = GetTime();
+                double frameTime = newTime - currentTime;
+                currentTime = newTime;
+
+                acc += frameTime;
+                while (acc >= td)
+                {
+
+                    prevState.playerPos = currState.playerPos;
+                    currState.entities.CopyTo(prevState.entities, 0);
+
+                    OnUpdateFrame(null);
+
+                    currState.playerPos = Game.activePlayer.position;
+                    currState.entities = Game.entities.Select(ent => ent.position).ToArray();
+
+                    acc -= td;
+                }
+
+                float alpha = (float)(acc / td);
+
+                blendState.playerPos = currState.playerPos * alpha + prevState.playerPos * (1f - alpha);
+                blendState.entities = currState.entities.Select((pos, index) => pos * alpha + prevState.entities[index] * (1f - alpha)).ToArray();
+
+                OnRenderFrame(null);
+            }
         }
 
 
@@ -182,42 +246,20 @@ namespace MyGame
             base.OnLoad(e);
         }
 
-        //Vector2 pos = Vector2.zero;
-
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            Input.UpdateKeyboard(null, e);
+            //Input.UpdateKeyboard(null, e);
 
-            Game.deltaTime = (float)e.Time;
+            //Game.deltaTime = (float)e.Time;
             //Console.WriteLine(e.Time * 1000);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            GL.BindVertexArray(VAO);
-
-            /*for (int i = 0; i < triangleCount/6; i++)
-            {
-                if (i % 2 == 0)
-                    texture.Use();
-                else
-                    texDirt.Use();
-                GL.DrawArrays(PrimitiveType.Triangles, i * 6, 6);
-            }*/
-
-            //Console.WriteLine(Game.activePlayer.position);
-
-            //var input = Keyboard.GetState();
-            //if (input.IsKeyDown(Key.W))
-            //    Game.activePlayer.position += Vector2.up * (float)e.Time * 10;
-            //if (input.IsKeyDown(Key.A))
-            //    Game.activePlayer.position += Vector2.left * (float)e.Time * 10;
-            //if (input.IsKeyDown(Key.S))
-            //    Game.activePlayer.position += Vector2.down * (float)e.Time * 10;
-            //if (input.IsKeyDown(Key.D))
-            //    Game.activePlayer.position += Vector2.right * (float)e.Time * 10;
+            //GL.BindVertexArray(VAO);
 
             shader.Use();
-            Vector2 offset = RenderHelper.ScreenToNormal(new Vector2(Width - 16, Height - 32) + -Game.activePlayer.position * 16);
+            //Vector2 offset = RenderHelper.ScreenToNormal(new Vector2(Width - 16, Height - 32) + -Game.activePlayer.position * 16);
+            Vector2 offset = RenderHelper.ScreenToNormal(new Vector2(Width - 16, Height - 32) + -blendState.playerPos * 16);
             shader.SetVector2("offset", offset);
             //shader.SetVector2("offset", RenderHelper.ScreenToNormal(Game.activePlayer.position));
             //Console.WriteLine(RenderHelper.ScreenToNormal(Game.activePlayer.position));
@@ -228,20 +270,20 @@ namespace MyGame
 
 
             entityShader.Use();
+            int i = 0; //TOOD: Use a for loop
             foreach (Entity entity in Game.entities)
             {
-                Vector2 screenPos = (entity.position * 16) + (Game.activePlayer.position * 16);
 
-                /*Vector2 final = Vector2.zero;
-                final += new Vector2(entity.position.x * 16 / Width, 0);*/
-
-                //Vector2 final = RenderHelper.ScreenToNormal(new Vector2((Width / 2) + entity.position.x * 16, (Height / 2) + entity.position.y * 16));
-                Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Width / 2) + entity.position.x * 16) - entity.size.x / 2, ((Height / 2) + entity.position.y * 16) - entity.size.y / 2) + -Game.activePlayer.position * 16);
+                //Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Width / 2) + entity.position.x * 16) - entity.size.x / 2, ((Height / 2) + entity.position.y * 16) - entity.size.y / 2) + -Game.activePlayer.position * 16);
+                //Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Width / 2) + entity.position.x * 16) - entity.size.x / 2, ((Height / 2) + entity.position.y * 16) - entity.size.y / 2) + -blendState.playerPos * 16);
+                Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Width / 2) + blendState.entities[i].x * 16) - entity.size.x / 2, ((Height / 2) + blendState.entities[i].y * 16) - entity.size.y / 2) + -blendState.playerPos * 16);
                 final += new Vector2(1, 1);
 
-                Console.WriteLine(string.Format("position: {0}, trans: {1}", entity.position, final));
+                //Console.WriteLine(string.Format("position: {0}, trans: {1}", entity.position, final));
                 entityShader.SetVector2("pos", final);
                 entity.Render();
+
+                i++;
             }
             entityShader.SetVector2("pos", RenderHelper.ScreenToNormal(new Vector2(Width - (Game.activePlayer.size.x / 2), Height - (Game.activePlayer.size.y / 2))));
             Game.activePlayer.Render();
@@ -251,20 +293,17 @@ namespace MyGame
             base.OnRenderFrame(e);
         }
 
-
-        /*protected override void OnUpdateFrame(FrameEventArgs e)
+        private struct State
         {
-            var input = Keyboard.GetState();
+            public Vector2 playerPos;
+            public Vector2[] entities;
+        }
 
-            if (input.IsKeyDown(Key.Escape))
-            {
-                Exit();
-            }
-            if (input.IsKeyDown(Key.W))
-                test += (float)(e.Time * 0.5);
-
+        protected override void OnUpdateFrame(FrameEventArgs e)
+        {
+            Input.UpdateKeyboard(null, null);
             base.OnUpdateFrame(e);
-        }*/
+        }
 
         protected override void OnResize(EventArgs e)
         {

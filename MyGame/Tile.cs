@@ -20,7 +20,7 @@ namespace MyGame
         }
     }
 
-    public enum Tiles
+    public enum Tiles : uint
     {
         Dirt,
         Grass,

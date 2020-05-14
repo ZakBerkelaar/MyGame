@@ -9,6 +9,9 @@ namespace MyGame
 {
     public class Player : Entity
     {
+        public uint ID;
+
+        public bool isRemote;
 
         private float fallMultiplier = 2.5f;
         private float lowJumpMultiplier = 2f;
@@ -22,6 +25,9 @@ namespace MyGame
 
         protected override void Update()
         {
+            if (isRemote)
+                return;
+
             if (velocity.x != 0)
             {
                 //TODO: Not using Game.deltaTime

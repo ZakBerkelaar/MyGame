@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A15FA119-9B27-497F-AEB7-86812FACAD0E}</ProjectGuid>
+    <ProjectGuid>{C9E95D70-E19D-44AB-BAAA-12327BF9B588}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>MyGame</RootNamespace>
-    <AssemblyName>MyGame</AssemblyName>
+    <RootNamespace>Server</RootNamespace>
+    <AssemblyName>Server</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -22,7 +22,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,18 +31,13 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Lidgren.Network, Version=2012.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lidgren.Network.1.0.2\lib\net451\Lidgren.Network.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK, Version=3.2.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.3.2\lib\net20\OpenTK.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -52,49 +46,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Chunk.cs" />
-    <Compile Include="Dispatcher.cs" />
-    <Compile Include="Entity.cs" />
-    <Compile Include="Input.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Mathf.cs" />
-    <Compile Include="NetCommand.cs" />
-    <Compile Include="Networking\Networker.cs" />
-    <Compile Include="Networking\NetworkHelper.cs" />
-    <Compile Include="Noise.cs" />
-    <Compile Include="NPC.cs" />
-    <Compile Include="Player.cs" />
-    <Compile Include="Game.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenderHelper.cs" />
-    <Compile Include="Shader.cs" />
-    <Compile Include="TestWindow.cs" />
-    <Compile Include="Texture.cs" />
-    <Compile Include="TextureAtlas.cs" />
-    <Compile Include="Tile.cs" />
-    <Compile Include="Vector2.cs" />
-    <Compile Include="Vector2Int.cs" />
-    <Compile Include="Window.cs" />
-    <Compile Include="World.cs" />
-    <Compile Include="WorldGen.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="Shaders\entity.frag" />
-    <None Include="Shaders\entity.vert" />
-    <None Include="Shaders\tile.frag" />
-    <None Include="Shaders\tile.vert" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\Textures\Dirt.png" />
+    <ProjectReference Include="..\MyGame\MyGame.csproj">
+      <Project>{a15fa119-9b27-497f-aeb7-86812facad0e}</Project>
+      <Name>MyGame</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(SolutionDir)MyGame\Shaders" "$(TargetDir)Shaders\" /S/Y
-echo Copied shaders to output
-xcopy "$(SolutionDir)MyGame\Assets" "$(TargetDir)Assets\" /S/Y
-echo Copied assets to output</PostBuildEvent>
-  </PropertyGroup>
 </Project>

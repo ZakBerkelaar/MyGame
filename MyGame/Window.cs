@@ -3,13 +3,11 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
-using System.Drawing;
-using System.Management.Instrumentation;
-using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Collections.Generic;
 using System.Linq;
+using Lidgren.Network;
 
 namespace MyGame
 {
@@ -145,17 +143,24 @@ namespace MyGame
             Game.deltaTime = (float)td;
 
             State prevState = new State();
-            State currState = new State();
+            //State currState = new State();
 
             prevState.playerPos = Game.activePlayer.position;
-            prevState.entities = Game.entities.Select(ent => ent.position).ToArray();
-            currState.playerPos = Game.activePlayer.position;
-            currState.entities = Game.entities.Select(ent => ent.position).ToArray();
+            prevState.entities = Game.entities.Values.Select(ent => ent.position).ToArray();
+            //currState.playerPos = Game.activePlayer.position;
+            //currState.entities = Game.entities.Values.Select(ent => ent.position).ToArray();
+
+            int crap = 0;
 
             while (true)
             {
                 //TODO: Check if window is exiting
+                Dispatcher.Instance.InvokePending();
                 ProcessEvents(); //Handle windows events
+                ReadMessages();
+
+                if (Game.waitingToConnect)
+                    continue;
 
                 double newTime = GetTime();
                 double frameTime = newTime - currentTime;
@@ -164,27 +169,173 @@ namespace MyGame
                 acc += frameTime;
                 while (acc >= td)
                 {
-
-                    prevState.playerPos = currState.playerPos;
-                    currState.entities.CopyTo(prevState.entities, 0);
+                    //prevState.playerPos = currState.playerPos;
+                    //prevState.entities = currState.entities.ToArray();
+                    prevState.playerPos = Game.activePlayer.position;
+                    prevState.entities = Game.entities.Values.Select(ent => ent.position).ToArray();
 
                     OnUpdateFrame(null);
+                    foreach (Entity entity in Game.entities.Values)
+                    {
+                        entity.UpdateInternal(null, null);
+                    }
 
-                    currState.playerPos = Game.activePlayer.position;
-                    currState.entities = Game.entities.Select(ent => ent.position).ToArray();
+                    //currState.playerPos = Game.activePlayer.position;
+                    //currState.entities = Game.entities.Values.Select(ent => ent.position).ToArray();
+
+                    if(crap == 10)
+                    {
+                        NetOutgoingMessage outgoing = Game.client.CreateMessage();
+                        outgoing.Write((byte)NetCommand.UpdatePosition);
+                        outgoing.Write(Game.activePlayer.ID);
+                        outgoing.Write(Game.activePlayer.position.x);
+                        outgoing.Write(Game.activePlayer.position.y);
+                        Game.client.SendMessage(outgoing, NetDeliveryMethod.UnreliableSequenced);
+                        crap = 0;
+                    }
+                    crap++;
 
                     acc -= td;
                 }
 
+                //currState.playerPos = Game.activePlayer.position;
+                //currState.entities = Game.entities.Values.Select(ent => ent.position).ToArray();
+
                 float alpha = (float)(acc / td);
 
-                blendState.playerPos = currState.playerPos * alpha + prevState.playerPos * (1f - alpha);
-                blendState.entities = currState.entities.Select((pos, index) => pos * alpha + prevState.entities[index] * (1f - alpha)).ToArray();
+                //blendState.playerPos = currState.playerPos * alpha + prevState.playerPos * (1f - alpha);
+                blendState.playerPos = Game.activePlayer.position * alpha + prevState.playerPos * (1f - alpha);
+                //blendState.entities = currState.entities.Select((pos, index) => pos * alpha + prevState.entities[index] * (1f - alpha)).ToArray();
+                //blendState.entities = currState.entities.Select((pos, index) =>
+                //{
+                //    try
+                //    {
+                //        return pos * alpha + prevState.entities[index] * (1f - alpha);
+                //    }
+                //    catch (IndexOutOfRangeException)
+                //    {
+                //        return pos;
+                //    }
+                //}).ToArray();
+                blendState.entities = Game.entities.Values.Select((ent, index) =>
+                {
+                    try
+                    {
+                        return ent.position * alpha + prevState.entities[index] * (1f - alpha);
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        return ent.position;
+                    }
+                }).ToArray(); //TODO: Almost certainly a better way to handle this rather than catching exceptions
+
+
+
+                /*if(Input.GetKeyDown(Key.M))
+                {
+                    NetOutgoingMessage message = Game.client.CreateMessage();
+                    message.Write("Send");
+                    Game.client.SendMessage(message, NetDeliveryMethod.ReliableUnordered);
+                }*/
 
                 OnRenderFrame(null);
+                foreach (Entity entity in Game.entities.Values)
+                {
+                    entity.FrameInternal(null, null);
+                }
             }
         }
 
+        private void ReadMessages()
+        {
+            NetIncomingMessage msg;
+            while((msg = Game.client.ReadMessage()) != null)
+            {
+                switch (msg.MessageType)
+                {
+                    case NetIncomingMessageType.Error:
+                        Console.WriteLine("Corrupt message!!!");
+                        break;
+                    case NetIncomingMessageType.StatusChanged:
+                        Console.WriteLine("Status changed: " + msg.SenderConnection.Status);
+                        break;
+                    case NetIncomingMessageType.Data:
+                        ReadNetworkData(msg);
+                        break;
+                    default:
+                        Console.WriteLine("Unhandled message with type: " + msg.MessageType);
+                        break;
+                }
+            }
+        }
+
+        private void ReadNetworkData(NetIncomingMessage msg)
+        {
+            NetCommand command = (NetCommand)msg.ReadByte();
+            Console.WriteLine(command);
+            switch (command)
+            {
+                case NetCommand.PlayerConnected:
+                    //Get our players ID
+                    uint assignedID = msg.ReadUInt32();
+                    //Check if that player is us
+                    if (Game.waitingToConnect)
+                    {
+                        //TODO: It is just assumed that it is us but needs to be checked 
+                        Game.waitingToConnect = false;
+                        //Create player
+                        Console.WriteLine("Received conformation to connect with ID: " + assignedID);
+                        Game.activePlayer.ID = assignedID;
+                        Game.entities.Add(assignedID, Game.activePlayer);
+                    }
+                    else
+                    {
+                        //Add new player
+                        Player player = new Player();
+                        player.position = new Vector2(0, 20); //TODO: Get pos from player connected NetCommand
+                        player.isRemote = true;
+                        Game.entities.Add(assignedID, player);
+                    }
+                    break;
+                case NetCommand.UpdatePosition:
+                    int size = msg.ReadInt32();
+                    for (int i = 0; i < size; i++)
+                    {
+                        uint ID = msg.ReadUInt32();
+                        float x = msg.ReadFloat();
+                        float y = msg.ReadFloat();
+                        Vector2 pos = new Vector2(x, y);
+                        Console.WriteLine(string.Format("Entity: {0} is at {1}", ID, pos));
+                        if (ID != Game.activePlayer.ID && Game.entities.ContainsKey(ID))
+                            Game.entities[ID].position = pos;
+                    }
+                    break;
+                case NetCommand.EntityList:
+                    int size2 = msg.ReadInt32();
+                    for (int i = 0; i < size2; i++)
+                    {
+                        uint ID = msg.ReadUInt32();
+                        Entities type = (Entities)msg.ReadByte();
+
+                        Player player = new Player();
+                        player.isRemote = true;
+
+                        if(!Game.entities.ContainsKey(ID))
+                            Game.entities.Add(ID, player);
+                    }
+                    break;
+                /*case NetCommand.SetTile:
+                    int x = msg.ReadInt32();
+                    int y = msg.ReadInt32();
+                    Tile tile = new Tile((Tiles)msg.ReadUInt32());
+                    Game.activeWorld.SetTile(new Vector2Int(x, y), tile, true);
+                    break;*/
+                default:
+                    Console.WriteLine("Unknown NetCommand: " + command);
+                    break;
+            }
+
+        }
 
         protected override void OnLoad(EventArgs e)
         {
@@ -271,7 +422,7 @@ namespace MyGame
 
             entityShader.Use();
             int i = 0; //TOOD: Use a for loop
-            foreach (Entity entity in Game.entities)
+            foreach (Entity entity in Game.entities.Values)
             {
 
                 //Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Width / 2) + entity.position.x * 16) - entity.size.x / 2, ((Height / 2) + entity.position.y * 16) - entity.size.y / 2) + -Game.activePlayer.position * 16);
@@ -285,12 +436,12 @@ namespace MyGame
 
                 i++;
             }
-            entityShader.SetVector2("pos", RenderHelper.ScreenToNormal(new Vector2(Width - (Game.activePlayer.size.x / 2), Height - (Game.activePlayer.size.y / 2))));
-            Game.activePlayer.Render();
+            /*entityShader.SetVector2("pos", RenderHelper.ScreenToNormal(new Vector2(Width - (Game.activePlayer.size.x / 2), Height - (Game.activePlayer.size.y / 2))));
+            Game.activePlayer.Render();*/
 
             SwapBuffers();
 
-            base.OnRenderFrame(e);
+            //base.OnRenderFrame(e);
         }
 
         private struct State
@@ -302,7 +453,7 @@ namespace MyGame
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             Input.UpdateKeyboard(null, null);
-            base.OnUpdateFrame(e);
+            //base.OnUpdateFrame(e);
         }
 
         protected override void OnResize(EventArgs e)
@@ -311,7 +462,7 @@ namespace MyGame
             {
                 Game.activeWorld.UpdateVBOs();
                 Game.activePlayer.GenerateVBO();
-                foreach (Entity entity in Game.entities)
+                foreach (Entity entity in Game.entities.Values)
                 {
                     entity.GenerateVBO();
                 }

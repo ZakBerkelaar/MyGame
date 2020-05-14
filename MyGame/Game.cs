@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Lidgren.Network;
 
 namespace MyGame
 {
     static class Game
     {
-        public static List<Entity> entities = new List<Entity>();
+        //public static List<Entity> entities = new List<Entity>();
+        public static Dictionary<uint, Entity> entities = new Dictionary<uint, Entity>();
 
         public static Window window;
 
@@ -18,6 +22,9 @@ namespace MyGame
         public static List<Vector2Int> activeChunks = new List<Vector2Int>();
 
         public static float deltaTime;
+
+        public static NetClient client;
+        public static bool waitingToConnect;
 
         static void Main(string[] args)
         {
@@ -37,15 +44,16 @@ namespace MyGame
             }
             activeWorld.Generate();
 
-            //Create player
             activePlayer = new Player();
             activePlayer.position = new Vector2(0, 20);
+
             //Create test NPC
-            Entity npc = new NPC();
+            /*Entity npc = new NPC();
             npc.position = new Vector2(10, 21);
-            //npc.position = new Vector2(0, 6);
             activeWorld.SetTile(new Vector2Int(10, 20), new Tile(), true);
-            entities.Add(npc);
+            entities.Add(1, npc);*/
+
+            Connect();
 
             window.VSync = OpenTK.VSyncMode.Off;
             //window.Run(20.0);
@@ -53,5 +61,19 @@ namespace MyGame
 
             Logger.Log("Exiting");
         }
+
+        private static void Connect()
+        {
+            NetPeerConfiguration config = new NetPeerConfiguration("MyGame");
+
+            client = new NetClient(config);
+            Console.WriteLine("Staring client");
+            client.Start();
+
+            waitingToConnect = true;
+            Console.WriteLine("Connecting to server");
+            client.Connect("127.0.0.1", 6666);
+        }
+
     }
 }

@@ -21,21 +21,22 @@ namespace MyGame
         {
             VBO = GL.GenBuffer();
 
-            Game.window.RenderFrame += FrameInternal;
-            Game.window.UpdateFrame += UpdateInternal;
+            /*Game.window.RenderFrame += FrameInternal;
+            Game.window.UpdateFrame += UpdateInternal;*/
         }
 
         ~Entity()
         {
-            GL.DeleteBuffer(VBO);
+            //GL.DeleteBuffer(VBO); //TODO: Must be ran on main thread not the GC finializer thread!!!!!!
+            Dispatcher.Instance.Invoke(() => GL.DeleteBuffer(VBO));
         }
 
-        private void FrameInternal(object sender, OpenTK.FrameEventArgs e)
+        internal void FrameInternal(object sender, OpenTK.FrameEventArgs e)
         {
             Frame();
         }
 
-        private void UpdateInternal(object sender, OpenTK.FrameEventArgs e)
+        internal void UpdateInternal(object sender, OpenTK.FrameEventArgs e)
         {
             Update();
 
@@ -181,5 +182,12 @@ namespace MyGame
 
         protected virtual void Frame() { }
         protected virtual void Update() { }
+    }
+
+    public enum Entities
+    {
+        Player,
+        NPC,
+        Enemy
     }
 }

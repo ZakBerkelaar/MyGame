@@ -4,6 +4,7 @@ using System.Linq;
 using System.Diagnostics;
 using Lidgren.Network;
 using MyGame;
+using MyGame.Networking;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -15,6 +16,7 @@ namespace Server
         private static uint IDCounter;
 
         private static Dictionary<uint, Vector2> entities = new Dictionary<uint, Vector2>();
+        private static World world;
 
         [DllImport("kernel32.dll"), SuppressUnmanagedCodeSecurity]
         private static extern bool QueryPerformanceCounter(out long count);
@@ -31,6 +33,9 @@ namespace Server
 
         static void Main(string[] args)
         {
+            world = new World(10, 3);
+            world.Generate();
+
             NetPeerConfiguration config = new NetPeerConfiguration("MyGame"); //Name must be the same for server/client
             config.Port = 6666;
 
@@ -87,8 +92,7 @@ namespace Server
                         Console.WriteLine("Status update: " + msg.SenderConnection.Status);
                         if (msg.SenderConnection.Status == NetConnectionStatus.Connected)
                         {
-                            PlayerConnected();
-                            SendEntityList(msg.SenderConnection);
+                            PlayerConnected(msg);
                         }
                         break;
 
@@ -118,10 +122,32 @@ namespace Server
                     Console.WriteLine(string.Format("Player: {0} is at {1}", ID, newPos));
                     entities[ID] = newPos;
                     break;
+                case NetCommand.SetTile:
+                    SetTile(msg);
+                    break;
                 default:
                     Console.WriteLine("Received unhandled  network command: " + command.ToString());
                     break;
             }
+        }
+
+        private static void SetTile(NetIncomingMessage msg)
+        {
+            int x = msg.ReadInt32();
+            int y = msg.ReadInt32();
+            Tile tile = new Tile((Tiles)msg.ReadUInt32());
+            if((int)tile.type != 0)
+                world.SetTile(new Vector2Int(x, y), tile);
+            else
+                world.SetTile(new Vector2Int(x, y), null);
+
+            NetOutgoingMessage outgoing = server.CreateMessage();
+            outgoing.Write((byte)NetCommand.SetTile);
+            outgoing.Write(x);
+            outgoing.Write(y);
+            outgoing.Write((uint)tile.type);
+
+            server.SendToAll(outgoing, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Tile);
         }
 
         private static void BroadcastPositions()
@@ -139,15 +165,29 @@ namespace Server
             server.SendToAll(outgoing, NetDeliveryMethod.UnreliableSequenced);
         }
 
-        private static void PlayerConnected()
+        private static void PlayerConnected(NetIncomingMessage msg)
         {
-            NetOutgoingMessage outgoing = server.CreateMessage();
+            /*NetOutgoingMessage outgoing = server.CreateMessage();
             outgoing.Write((byte)NetCommand.PlayerConnected);
             outgoing.Write(IDCounter++);
 
             Console.WriteLine("Player connected sending ID: " + (IDCounter - 1));
             server.SendToAll(outgoing, NetDeliveryMethod.ReliableSequenced);
-            entities.Add(IDCounter - 1, Vector2.zero);
+            entities.Add(IDCounter - 1, Vector2.zero);*/
+
+            uint ID = IDCounter++;
+
+            SendInitialData(msg.SenderConnection, ID);
+            SendEntityList(msg.SenderConnection);
+            SendWorld(world, msg.SenderConnection);
+
+            NetOutgoingMessage outgoing = server.CreateMessage();
+            outgoing.Write((byte)NetCommand.NewEntity);
+            outgoing.Write(ID);
+            outgoing.Write(0f);
+            outgoing.Write(20f);
+
+            server.SendToAll(outgoing, msg.SenderConnection, NetDeliveryMethod.ReliableUnordered, 0);
         }
 
         private static void SendEntityList(NetConnection conn)
@@ -174,11 +214,41 @@ namespace Server
             {
                 for (int y = 0; y < 32; y++)
                 {
-                    outgoing.Write((uint)chunk.tiles[x, y].type);
+                    Tile tile = chunk.GetTile(x, y);
+                    outgoing.Write(tile != null ? (uint)tile.type : 0U);
                 }
             }
 
-            server.SendMessage(outgoing, conn, NetDeliveryMethod.ReliableUnordered);
+            server.SendMessage(outgoing, conn, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Init);
+        }
+
+        private static void SendWorld(World world, NetConnection conn)
+        {
+            foreach (Chunk chunk in world.chunks)
+            {
+                SendChunk(chunk, conn);
+            }
+
+            NetOutgoingMessage outgoing = server.CreateMessage();
+            outgoing.Write((byte)NetCommand.Finished);
+
+            server.SendMessage(outgoing, conn, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Init);
+        }
+
+        private static void SendInitialData(NetConnection conn, uint ID)
+        {
+            NetOutgoingMessage outgoing = server.CreateMessage();
+            outgoing.Write((byte)NetCommand.InitialData);
+            //Send player ID
+            outgoing.Write(ID);
+            //Send player pos (x, y)
+            outgoing.Write(0f);
+            outgoing.Write(20f);
+            //Send world size
+            outgoing.Write(world.Width);
+            outgoing.Write(world.Height);
+
+            server.SendMessage(outgoing, conn, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Init);
         }
     }
 }

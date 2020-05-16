@@ -7,20 +7,14 @@ using Lidgren.Network;
 
 namespace MyGame.Networking
 {
-    public class Networker
+    public partial class Networker
     {
         private NetClient client;
 
         private readonly string host;
         private readonly int port;
 
-        public Action<NetIncomingMessage> playerConnected;
-        public Action<NetIncomingMessage> UpdatePosition;
-        public Action<NetIncomingMessage> EntityList;
-        public Action<NetIncomingMessage> SetTile;
-        public Action<NetIncomingMessage> Chunk;
-
-        public NetConnectionStatus Status
+        public bool Connected
         {
             get;
             private set;
@@ -48,7 +42,6 @@ namespace MyGame.Networking
                         break;
                     case NetIncomingMessageType.StatusChanged:
                         Console.WriteLine("Status changed: " + msg.SenderConnection.Status);
-                        Status = msg.SenderConnection.Status;
                         break;
                     case NetIncomingMessageType.Data:
                         ReadData(msg);
@@ -65,8 +58,8 @@ namespace MyGame.Networking
             NetCommand command = (NetCommand)msg.ReadByte();
             switch (command)
             {
-                case NetCommand.PlayerConnected:
-                    playerConnected(msg);
+                case NetCommand.InitialData:
+                    InitialData(msg);
                     break;
                 case NetCommand.UpdatePosition:
                     UpdatePosition(msg);
@@ -80,12 +73,55 @@ namespace MyGame.Networking
                 case NetCommand.Chunk:
                     Chunk(msg);
                     break;
+                case NetCommand.NewEntity:
+                    NewEntity(msg);
+                    break;
+                case NetCommand.Finished:
+                    Finished(msg);
+                    break;
             }
         }
 
         public void Connect()
         {
+            client.Start();
             client.Connect(host, port);
+            while (Connected == false)
+            {
+                ReadMessages();
+            }
+        }
+
+        public World GetWorld()
+        {
+            while(downloadingWorld == true)
+            {
+                ReadMessages();
+            }
+            return downloadedWorld;
+        }
+
+        public void SendPosition()
+        {
+            NetOutgoingMessage outgoing = client.CreateMessage();
+            outgoing.Write((byte)NetCommand.UpdatePosition);
+            outgoing.Write(Game.activePlayer.ID);
+            outgoing.Write(Game.activePlayer.position.x);
+            outgoing.Write(Game.activePlayer.position.y);
+            client.SendMessage(outgoing, NetDeliveryMethod.UnreliableSequenced);
+        }
+
+        public void SendTile(Vector2Int pos, Tile tile)
+        {
+            NetOutgoingMessage outgoing = client.CreateMessage();
+            outgoing.Write((byte)NetCommand.SetTile);
+            outgoing.Write(pos.x);
+            outgoing.Write(pos.y);
+            if (tile == null)
+                outgoing.Write((uint)0);
+            else
+                outgoing.Write((uint)tile.type);
+            client.SendMessage(outgoing, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Tile);
         }
     }
 }

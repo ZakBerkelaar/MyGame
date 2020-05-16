@@ -9,6 +9,23 @@ namespace MyGame
     public class World
     {
         public Chunk[,] chunks;
+
+        public int Width
+        {
+            get
+            {
+                return chunks.GetLength(0);
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return chunks.GetLength(1);
+            }
+        }
+
         public World(int width, int height)
         {
             chunks = new Chunk[width, height];
@@ -22,28 +39,25 @@ namespace MyGame
             }
         }
 
-        public void SetTile(Vector2Int pos, Tile tile, bool updateVBO = false)
+        public void SetTile(Vector2Int pos, Tile tile)
         {
             Vector2Int chunkPos = new Vector2Int(Mathf.FloorToInt(pos.x / 32), Mathf.FloorToInt(pos.y / 32));
             Vector2Int tilePos = new Vector2Int(pos.x % 32, pos.y % 32);
-            chunks[chunkPos.x, chunkPos.y].tiles[tilePos.x, tilePos.y] = tile;
-            if (updateVBO)
-                chunks[chunkPos.x, chunkPos.y].UpdateVBO();
+            chunks[chunkPos.x, chunkPos.y].SetTile(tilePos, tile);
+        }
+
+        public void SetTile(Vector2Int pos, Tile tile, bool update)
+        {
+            Vector2Int chunkPos = new Vector2Int(Mathf.FloorToInt(pos.x / 32), Mathf.FloorToInt(pos.y / 32));
+            Vector2Int tilePos = new Vector2Int(pos.x % 32, pos.y % 32);
+            chunks[chunkPos.x, chunkPos.y].SetTile(tilePos, tile, update);
         }
 
         public Tile GetTile(Vector2Int pos)
         {
             Vector2Int chunkPos = new Vector2Int(Mathf.FloorToInt(pos.x / 32), Mathf.FloorToInt(pos.y / 32));
             Vector2Int tilePos = new Vector2Int(pos.x % 32, pos.y % 32);
-            return chunks[chunkPos.x, chunkPos.y].tiles[tilePos.x, tilePos.y];
-        }
-
-        public void UpdateVBOs()
-        {
-            foreach (Chunk chunk in chunks)
-            {
-                chunk.UpdateVBO();
-            }
+            return chunks[chunkPos.x, chunkPos.y].GetTile(tilePos);
         }
 
         public void Generate()

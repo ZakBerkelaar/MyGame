@@ -8,6 +8,7 @@ using System.Security;
 using System.Collections.Generic;
 using System.Linq;
 using Lidgren.Network;
+using MyGame.Networking;
 
 namespace MyGame
 {
@@ -157,10 +158,8 @@ namespace MyGame
                 //TODO: Check if window is exiting
                 Dispatcher.Instance.InvokePending();
                 ProcessEvents(); //Handle windows events
-                ReadMessages();
-
-                if (Game.waitingToConnect)
-                    continue;
+                //ReadMessages();
+                Game.networker.ReadMessages();
 
                 double newTime = GetTime();
                 double frameTime = newTime - currentTime;
@@ -185,12 +184,7 @@ namespace MyGame
 
                     if(crap == 10)
                     {
-                        NetOutgoingMessage outgoing = Game.client.CreateMessage();
-                        outgoing.Write((byte)NetCommand.UpdatePosition);
-                        outgoing.Write(Game.activePlayer.ID);
-                        outgoing.Write(Game.activePlayer.position.x);
-                        outgoing.Write(Game.activePlayer.position.y);
-                        Game.client.SendMessage(outgoing, NetDeliveryMethod.UnreliableSequenced);
+                        Game.networker.SendPosition();
                         crap = 0;
                     }
                     crap++;
@@ -246,97 +240,6 @@ namespace MyGame
             }
         }
 
-        private void ReadMessages()
-        {
-            NetIncomingMessage msg;
-            while((msg = Game.client.ReadMessage()) != null)
-            {
-                switch (msg.MessageType)
-                {
-                    case NetIncomingMessageType.Error:
-                        Console.WriteLine("Corrupt message!!!");
-                        break;
-                    case NetIncomingMessageType.StatusChanged:
-                        Console.WriteLine("Status changed: " + msg.SenderConnection.Status);
-                        break;
-                    case NetIncomingMessageType.Data:
-                        ReadNetworkData(msg);
-                        break;
-                    default:
-                        Console.WriteLine("Unhandled message with type: " + msg.MessageType);
-                        break;
-                }
-            }
-        }
-
-        private void ReadNetworkData(NetIncomingMessage msg)
-        {
-            NetCommand command = (NetCommand)msg.ReadByte();
-            Console.WriteLine(command);
-            switch (command)
-            {
-                case NetCommand.PlayerConnected:
-                    //Get our players ID
-                    uint assignedID = msg.ReadUInt32();
-                    //Check if that player is us
-                    if (Game.waitingToConnect)
-                    {
-                        //TODO: It is just assumed that it is us but needs to be checked 
-                        Game.waitingToConnect = false;
-                        //Create player
-                        Console.WriteLine("Received conformation to connect with ID: " + assignedID);
-                        Game.activePlayer.ID = assignedID;
-                        Game.entities.Add(assignedID, Game.activePlayer);
-                    }
-                    else
-                    {
-                        //Add new player
-                        Player player = new Player();
-                        player.position = new Vector2(0, 20); //TODO: Get pos from player connected NetCommand
-                        player.isRemote = true;
-                        Game.entities.Add(assignedID, player);
-                    }
-                    break;
-                case NetCommand.UpdatePosition:
-                    int size = msg.ReadInt32();
-                    for (int i = 0; i < size; i++)
-                    {
-                        uint ID = msg.ReadUInt32();
-                        float x = msg.ReadFloat();
-                        float y = msg.ReadFloat();
-                        Vector2 pos = new Vector2(x, y);
-                        Console.WriteLine(string.Format("Entity: {0} is at {1}", ID, pos));
-                        if (ID != Game.activePlayer.ID && Game.entities.ContainsKey(ID))
-                            Game.entities[ID].position = pos;
-                    }
-                    break;
-                case NetCommand.EntityList:
-                    int size2 = msg.ReadInt32();
-                    for (int i = 0; i < size2; i++)
-                    {
-                        uint ID = msg.ReadUInt32();
-                        Entities type = (Entities)msg.ReadByte();
-
-                        Player player = new Player();
-                        player.isRemote = true;
-
-                        if(!Game.entities.ContainsKey(ID))
-                            Game.entities.Add(ID, player);
-                    }
-                    break;
-                /*case NetCommand.SetTile:
-                    int x = msg.ReadInt32();
-                    int y = msg.ReadInt32();
-                    Tile tile = new Tile((Tiles)msg.ReadUInt32());
-                    Game.activeWorld.SetTile(new Vector2Int(x, y), tile, true);
-                    break;*/
-                default:
-                    Console.WriteLine("Unknown NetCommand: " + command);
-                    break;
-            }
-
-        }
-
         protected override void OnLoad(EventArgs e)
         {
             //Set the gl clear color to a dark green
@@ -351,9 +254,9 @@ namespace MyGame
             //Upload vertices to buffer
             ////GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.DynamicDraw);
             ////CalculateVBO(Width, Height);
-            foreach (Chunk chunk in Game.activeWorld.chunks)
+            foreach (ChunkRenderer renderer in Game.activeChunks)
             {
-                chunk.UpdateVBO();
+                renderer.UpdateVBO();
             }
 
             //Create shader
@@ -414,9 +317,9 @@ namespace MyGame
             shader.SetVector2("offset", offset);
             //shader.SetVector2("offset", RenderHelper.ScreenToNormal(Game.activePlayer.position));
             //Console.WriteLine(RenderHelper.ScreenToNormal(Game.activePlayer.position));
-            foreach (Vector2Int active in Game.activeChunks)
+            foreach (ChunkRenderer active in Game.activeChunks)
             {
-                Game.activeWorld.chunks[active.x, active.y].Render();
+                active.Render();
             }
 
 
@@ -460,7 +363,10 @@ namespace MyGame
         {
             if(resize)
             {
-                Game.activeWorld.UpdateVBOs();
+                foreach (ChunkRenderer renderer in Game.activeChunks)
+                {
+                    renderer.UpdateVBO();
+                }
                 Game.activePlayer.GenerateVBO();
                 foreach (Entity entity in Game.entities.Values)
                 {
@@ -487,7 +393,8 @@ namespace MyGame
             Vector2Int tilePos = new Vector2Int(Mathf.CeilToInt(((e.X - (Width / 2f)) / 16f) + offset.x), Mathf.CeilToInt((((Height - e.Y) - (Height / 2f)) / 16f) + 1 + offset.y));
             //tilePos += floored;
             Console.WriteLine(tilePos);
-            Game.activeWorld.SetTile(tilePos, null, true);
+            Game.activeWorld.SetTile(tilePos, null);
+            Game.networker.SendTile(tilePos, null);
 
             base.OnMouseDown(e);
         }

@@ -4,20 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame
+namespace MyGame.Networking
 {
     public enum NetCommand : byte
     {
-        PlayerConnected,
+        //PlayerConnected,
         UpdatePosition,
         EntityList,
         SetTile,
-        Chunk
+        Chunk,
+        InitialData,
+        NewEntity,
+        Finished
     }
 
     public enum NetChannel : uint
     {
         Position,
-        Tile
+        Tile,
+        Init
     }
 }

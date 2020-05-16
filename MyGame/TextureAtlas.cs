@@ -75,7 +75,7 @@ namespace MyGame
 
         public static TextureUV GetTexturePos(Tiles tile)
         {
-            return UVs[(int)tile];
+            return UVs[(int)tile - 1];
         }
 
         public static void BindAtlas()

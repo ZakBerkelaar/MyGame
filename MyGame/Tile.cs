@@ -22,8 +22,8 @@ namespace MyGame
 
     public enum Tiles : uint
     {
-        Dirt,
-        Grass,
-        Stone
+        Dirt = 1U,
+        Grass = 2U,
+        Stone = 3U
     }
 }

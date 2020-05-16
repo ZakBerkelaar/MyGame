@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Lidgren.Network;
+using MyGame.Networking;
 
 namespace MyGame
 {
@@ -19,12 +20,12 @@ namespace MyGame
         public static World activeWorld;
         public static Player activePlayer;
 
-        public static List<Vector2Int> activeChunks = new List<Vector2Int>();
+        public static List<ChunkRenderer> activeChunks = new List<ChunkRenderer>();
+        public static List<EntityRenderer> activeEntities = new List<EntityRenderer>();
 
         public static float deltaTime;
 
-        public static NetClient client;
-        public static bool waitingToConnect;
+        public static Networker networker;
 
         static void Main(string[] args)
         {
@@ -36,44 +37,20 @@ namespace MyGame
             window = new Window(800, 800, "My Game");
 
 
-            //Create world
-            activeWorld = new World(10, 3);
+            networker = new Networker("127.0.0.1", 6666);
+            networker.Connect();
+            activeWorld = networker.GetWorld();
             foreach (Chunk chunk in activeWorld.chunks)
             {
-                activeChunks.Add(chunk.position);
+                ChunkRenderer renderer = new ChunkRenderer(chunk);
+                activeChunks.Add(renderer);
+                renderer.UpdateVBO();
             }
-            activeWorld.Generate();
-
-            activePlayer = new Player();
-            activePlayer.position = new Vector2(0, 20);
-
-            //Create test NPC
-            /*Entity npc = new NPC();
-            npc.position = new Vector2(10, 21);
-            activeWorld.SetTile(new Vector2Int(10, 20), new Tile(), true);
-            entities.Add(1, npc);*/
-
-            Connect();
 
             window.VSync = OpenTK.VSyncMode.Off;
-            //window.Run(20.0);
             window.Vibe();
 
             Logger.Log("Exiting");
         }
-
-        private static void Connect()
-        {
-            NetPeerConfiguration config = new NetPeerConfiguration("MyGame");
-
-            client = new NetClient(config);
-            Console.WriteLine("Staring client");
-            client.Start();
-
-            waitingToConnect = true;
-            Console.WriteLine("Connecting to server");
-            client.Connect("127.0.0.1", 6666);
-        }
-
     }
 }

@@ -21,22 +21,21 @@ namespace MyGame
                 height += 15;
                 Vector2Int topPos = new Vector2Int(i, Mathf.FloorToInt(height));
 
-                world.SetTile(topPos, new Tile(Tiles.Grass));
+                world.SetTile(topPos, new Tile(Tiles.Grass), false);
 
                 for (int y = topPos.y - 1; y >= 0; y--)
                 {
                     Vector2Int dirtPos = new Vector2Int(i, y);
                     if (y < topPos.y - 5)
                     {
-                        world.SetTile(dirtPos, new Tile(Tiles.Stone));
+                        world.SetTile(dirtPos, new Tile(Tiles.Stone), false);
                     }
                     else
                     {
-                        world.SetTile(dirtPos, new Tile(Tiles.Dirt));
+                        world.SetTile(dirtPos, new Tile(Tiles.Dirt), false);
                     }
                 }
             }
-            world.UpdateVBOs();
         }
     }
 }

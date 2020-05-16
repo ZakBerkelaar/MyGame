@@ -27,7 +27,6 @@ namespace MyGame
 
         ~Entity()
         {
-            //GL.DeleteBuffer(VBO); //TODO: Must be ran on main thread not the GC finializer thread!!!!!!
             Dispatcher.Instance.Invoke(() => GL.DeleteBuffer(VBO));
         }
 

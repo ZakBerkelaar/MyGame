@@ -53,19 +53,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chunk.cs" />
+    <Compile Include="ChunkRenderer.cs" />
     <Compile Include="Dispatcher.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="EntityRenderer.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Mathf.cs" />
-    <Compile Include="NetCommand.cs" />
+    <Compile Include="Networking\NetCommand.cs" />
     <Compile Include="Networking\Networker.cs" />
-    <Compile Include="Networking\NetworkHelper.cs" />
     <Compile Include="Noise.cs" />
     <Compile Include="NPC.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenderDictionary.cs" />
     <Compile Include="RenderHelper.cs" />
     <Compile Include="Shader.cs" />
     <Compile Include="TestWindow.cs" />
@@ -80,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Compile Include="Networking\Networker.Actions.cs" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Shaders\entity.frag" />

@@ -166,7 +166,7 @@ namespace MyGame
                     }
 
                     OnUpdateFrame(null);
-                    foreach (Entity entity in Game.entities.Values)
+                    foreach (Entity entity in Game.activeWorld.entities)
                     {
                         entity.UpdateInternal(null, null);
                     }
@@ -189,7 +189,7 @@ namespace MyGame
                 }
 
                 OnRenderFrame();
-                foreach (Entity entity in Game.entities.Values)
+                foreach (Entity entity in Game.activeWorld.entities)
                 {
                     entity.FrameInternal(null, null);
                 }

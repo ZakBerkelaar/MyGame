@@ -10,7 +10,7 @@ namespace MyGame
     {
         public Chunk[,] chunks;
 
-        public Dictionary<uint, Entity> entities = new Dictionary<uint, Entity>();
+        public EntityHolder entities;
 
         public int Width
         {
@@ -31,6 +31,7 @@ namespace MyGame
         public World(int width, int height)
         {
             chunks = new Chunk[width, height];
+            entities = new EntityHolder();
 
             for (int x = 0; x < chunks.GetLength(0); x++)
             {
@@ -60,12 +61,6 @@ namespace MyGame
             Vector2Int chunkPos = new Vector2Int(Mathf.FloorToInt(pos.x / 32), Mathf.FloorToInt(pos.y / 32));
             Vector2Int tilePos = new Vector2Int(pos.x % 32, pos.y % 32);
             return chunks[chunkPos.x, chunkPos.y].GetTile(tilePos);
-        }
-
-        public void AddEntity(Entity entity, uint ID)
-        {
-            entities.Add(ID, entity);
-            Game.activeEntities.Add(new EntityRenderer(entity));
         }
 
         public void Generate()

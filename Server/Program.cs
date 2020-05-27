@@ -178,8 +178,8 @@ namespace Server
             uint ID = IDCounter++;
 
             SendInitialData(msg.SenderConnection, ID);
-            SendEntityList(msg.SenderConnection);
             SendWorld(world, msg.SenderConnection);
+            SendEntityList(msg.SenderConnection);
 
             NetOutgoingMessage outgoing = server.CreateMessage();
             outgoing.Write((byte)NetCommand.NewEntity);
@@ -188,6 +188,7 @@ namespace Server
             outgoing.Write(20f);
 
             server.SendToAll(outgoing, msg.SenderConnection, NetDeliveryMethod.ReliableUnordered, 0);
+            Console.WriteLine("Sending ID over" + ID);
         }
 
         private static void SendEntityList(NetConnection conn)
@@ -201,7 +202,7 @@ namespace Server
                 outgoing.Write((byte)Entities.Player);
             }
 
-            server.SendMessage(outgoing, conn, NetDeliveryMethod.ReliableUnordered);
+            server.SendMessage(outgoing, conn, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Init);
         }
 
         private static void SendChunk(Chunk chunk, NetConnection conn)

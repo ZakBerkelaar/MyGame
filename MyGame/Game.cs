@@ -13,7 +13,7 @@ namespace MyGame
     static class Game
     {
         //public static List<Entity> entities = new List<Entity>();
-        public static Dictionary<uint, Entity> entities = new Dictionary<uint, Entity>();
+        //public static Dictionary<uint, Entity> entities = new Dictionary<uint, Entity>();
 
         public static Window window;
 
@@ -38,10 +38,15 @@ namespace MyGame
 
             window = new Window(800, 800, "My Game");
 
-
             networker = new Networker("127.0.0.1", 6666);
             networker.Connect();
             activeWorld = networker.GetWorld();
+
+            Game.activeWorld.entities.Add(Game.activePlayer);
+            EntityRenderer playerRenderer = new EntityRenderer(Game.activePlayer);
+            Game.playerRenderer = playerRenderer;
+            Game.activeEntities.Add(playerRenderer);
+
             foreach (Chunk chunk in activeWorld.chunks)
             {
                 ChunkRenderer renderer = new ChunkRenderer(chunk);

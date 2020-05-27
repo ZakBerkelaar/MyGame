@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,12 +24,7 @@ namespace MyGame.Networking
             Console.WriteLine("Received conformation to connect with ID: " + ID);
             Game.activePlayer = new Player();
             Game.activePlayer.position = new Vector2(0, 20); //TODO: Set player to position that server provides
-            Game.activePlayer.ID = ID; 
-            Game.entities.Add(ID, Game.activePlayer);
-
-            EntityRenderer renderer = new EntityRenderer(Game.activePlayer);
-            Game.playerRenderer = renderer;
-            Game.activeEntities.Add(renderer);
+            Game.activePlayer.ID = ID;
 
             Connected = true;
             downloadedWorld = new World(worldWidth, worldHeight);
@@ -45,8 +39,12 @@ namespace MyGame.Networking
                 uint ID = msg.ReadUInt32();
                 float x = msg.ReadFloat();
                 float y = msg.ReadFloat();
-                if (ID != Game.activePlayer.ID && Game.entities.ContainsKey(ID))
-                    Game.entities[ID].position = new Vector2(x, y);
+
+                if (Game.activeWorld == null)
+                    return;
+
+                if (ID != Game.activePlayer.ID && Game.activeWorld.entities.ContainsID(ID))
+                    Game.activeWorld.entities[ID].position = new Vector2(x, y);
             }
         }
 
@@ -58,14 +56,18 @@ namespace MyGame.Networking
                 uint ID = msg.ReadUInt32();
                 Entities type = (Entities)msg.ReadByte();
 
-                Player player = new Player();
-                player.isRemote = true;
-
-                if (!Game.entities.ContainsKey(ID))
+                //Entity list packet is received before world is initialized so by invoking this on the dispatcher it ensures that is will not be called until the game is in the main loop and everything is initialized
+                Dispatcher.Instance.Invoke(() =>
                 {
-                    Game.entities.Add(ID, player);
-                    Game.activeEntities.Add(new EntityRenderer(player));
-                }
+                    if (!Game.activeWorld.entities.ContainsID(ID))
+                    {
+                        Player player = new Player();
+                        player.ID = ID;
+                        player.isRemote = true;
+                        Game.activeWorld.entities.Add(player);
+                        Game.activeEntities.Add(new EntityRenderer(player));
+                    }
+                });
                     
             }
         }
@@ -109,12 +111,12 @@ namespace MyGame.Networking
             uint ID = msg.ReadUInt32();
             Entities type = (Entities)msg.ReadByte();
 
-            Player player = new Player();
-            player.isRemote = true;
-
-            if (!Game.entities.ContainsKey(ID))
+            if (!Game.activeWorld.entities.ContainsID(ID))
             {
-                Game.entities.Add(ID, player);
+                Player player = new Player();
+                player.isRemote = true;
+                player.ID = ID;
+                Game.activeWorld.entities.Add(player);
                 Game.activeEntities.Add(new EntityRenderer(player));
             }
                 

@@ -19,8 +19,8 @@ namespace MyGame
         //private int VBO;
         private int VAO;
 
-        private Shader shader;
-        private Shader entityShader;
+        public Shader shader;
+        public Shader entityShader;
 
         private bool resize = false;
 
@@ -126,7 +126,7 @@ namespace MyGame
             return (double)time / freq;
         }
 
-        private State blendState;
+        public Vector2 playerBlend;
 
         public void Vibe()
         {
@@ -142,14 +142,6 @@ namespace MyGame
             double acc = 0.0;
 
             Game.deltaTime = (float)td;
-
-            State prevState = new State();
-            //State currState = new State();
-
-            prevState.playerPos = Game.activePlayer.position;
-            prevState.entities = Game.entities.Values.Select(ent => ent.position).ToArray();
-            //currState.playerPos = Game.activePlayer.position;
-            //currState.entities = Game.entities.Values.Select(ent => ent.position).ToArray();
 
             int crap = 0;
 
@@ -168,19 +160,16 @@ namespace MyGame
                 acc += frameTime;
                 while (acc >= td)
                 {
-                    //prevState.playerPos = currState.playerPos;
-                    //prevState.entities = currState.entities.ToArray();
-                    prevState.playerPos = Game.activePlayer.position;
-                    prevState.entities = Game.entities.Values.Select(ent => ent.position).ToArray();
+                    foreach (EntityRenderer renderer in Game.activeEntities)
+                    {
+                        renderer.PosUpdated();
+                    }
 
                     OnUpdateFrame(null);
                     foreach (Entity entity in Game.entities.Values)
                     {
                         entity.UpdateInternal(null, null);
                     }
-
-                    //currState.playerPos = Game.activePlayer.position;
-                    //currState.entities = Game.entities.Values.Select(ent => ent.position).ToArray();
 
                     if(crap == 10)
                     {
@@ -192,47 +181,14 @@ namespace MyGame
                     acc -= td;
                 }
 
-                //currState.playerPos = Game.activePlayer.position;
-                //currState.entities = Game.entities.Values.Select(ent => ent.position).ToArray();
-
                 float alpha = (float)(acc / td);
 
-                //blendState.playerPos = currState.playerPos * alpha + prevState.playerPos * (1f - alpha);
-                blendState.playerPos = Game.activePlayer.position * alpha + prevState.playerPos * (1f - alpha);
-                //blendState.entities = currState.entities.Select((pos, index) => pos * alpha + prevState.entities[index] * (1f - alpha)).ToArray();
-                //blendState.entities = currState.entities.Select((pos, index) =>
-                //{
-                //    try
-                //    {
-                //        return pos * alpha + prevState.entities[index] * (1f - alpha);
-                //    }
-                //    catch (IndexOutOfRangeException)
-                //    {
-                //        return pos;
-                //    }
-                //}).ToArray();
-                blendState.entities = Game.entities.Values.Select((ent, index) =>
+                foreach (EntityRenderer renderer in Game.activeEntities)
                 {
-                    try
-                    {
-                        return ent.position * alpha + prevState.entities[index] * (1f - alpha);
-                    }
-                    catch (IndexOutOfRangeException)
-                    {
-                        return ent.position;
-                    }
-                }).ToArray(); //TODO: Almost certainly a better way to handle this rather than catching exceptions
+                    renderer.CalculateRenderPos(alpha);
+                }
 
-
-
-                /*if(Input.GetKeyDown(Key.M))
-                {
-                    NetOutgoingMessage message = Game.client.CreateMessage();
-                    message.Write("Send");
-                    Game.client.SendMessage(message, NetDeliveryMethod.ReliableUnordered);
-                }*/
-
-                OnRenderFrame(null);
+                OnRenderFrame();
                 foreach (Entity entity in Game.entities.Values)
                 {
                     entity.FrameInternal(null, null);
@@ -247,13 +203,6 @@ namespace MyGame
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            //Create VBO
-            ////VBO = GL.GenBuffer();
-            //Bind VBO
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            //Upload vertices to buffer
-            ////GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.DynamicDraw);
-            ////CalculateVBO(Width, Height);
             foreach (ChunkRenderer renderer in Game.activeChunks)
             {
                 renderer.UpdateVBO();
@@ -264,43 +213,16 @@ namespace MyGame
             //Player shader
             entityShader = new Shader("Shaders/entity.vert", "Shaders/entity.frag");
 
-            //Create texture
-            /*texture = new Texture("Assets/Textures/Arrow.png");
-            texDirt = new Texture("Assets/Textures/Dirt.png");*/
 
             //Load texture atlas
             TextureAtlas.BindAtlas();
-
-            /*VAO = GL.GenVertexArray();
-            GL.BindVertexArray(VAO);
-
-            foreach (Chunk chunk in Program.chunk)
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, chunk.VBO);
-                //Pass vertex array to buffer
-                GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-                GL.EnableVertexAttribArray(0);
-                //Pass texture coords array to buffer
-                GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-                GL.EnableVertexAttribArray(1);
-            }*/
-
-            //Pass vertex array to buffer
-            /*GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-            //Pass texture coords array to buffer
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);*/
-
-            //Bind VBO again to bindto VAO aswell
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
             base.OnLoad(e);
         }
 
-        protected override void OnRenderFrame(FrameEventArgs e)
+        private void OnRenderFrame()
         {
             //Input.UpdateKeyboard(null, e);
 
@@ -313,10 +235,8 @@ namespace MyGame
 
             shader.Use();
             //Vector2 offset = RenderHelper.ScreenToNormal(new Vector2(Width - 16, Height - 32) + -Game.activePlayer.position * 16);
-            Vector2 offset = RenderHelper.ScreenToNormal(new Vector2(Width - 16, Height - 32) + -blendState.playerPos * 16);
+            Vector2 offset = RenderHelper.ScreenToNormal(new Vector2(Width - 16, Height - 32) + -Game.playerRenderer.renderPos * 16);
             shader.SetVector2("offset", offset);
-            //shader.SetVector2("offset", RenderHelper.ScreenToNormal(Game.activePlayer.position));
-            //Console.WriteLine(RenderHelper.ScreenToNormal(Game.activePlayer.position));
             foreach (ChunkRenderer active in Game.activeChunks)
             {
                 active.Render();
@@ -324,33 +244,15 @@ namespace MyGame
 
 
             entityShader.Use();
-            int i = 0; //TOOD: Use a for loop
-            foreach (Entity entity in Game.entities.Values)
+
+            foreach (EntityRenderer renderer in Game.activeEntities)
             {
-
-                //Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Width / 2) + entity.position.x * 16) - entity.size.x / 2, ((Height / 2) + entity.position.y * 16) - entity.size.y / 2) + -Game.activePlayer.position * 16);
-                //Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Width / 2) + entity.position.x * 16) - entity.size.x / 2, ((Height / 2) + entity.position.y * 16) - entity.size.y / 2) + -blendState.playerPos * 16);
-                Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Width / 2) + blendState.entities[i].x * 16) - entity.size.x / 2, ((Height / 2) + blendState.entities[i].y * 16) - entity.size.y / 2) + -blendState.playerPos * 16);
-                final += new Vector2(1, 1);
-
-                //Console.WriteLine(string.Format("position: {0}, trans: {1}", entity.position, final));
-                entityShader.SetVector2("pos", final);
-                entity.Render();
-
-                i++;
+                renderer.Render();
             }
-            /*entityShader.SetVector2("pos", RenderHelper.ScreenToNormal(new Vector2(Width - (Game.activePlayer.size.x / 2), Height - (Game.activePlayer.size.y / 2))));
-            Game.activePlayer.Render();*/
 
             SwapBuffers();
 
             //base.OnRenderFrame(e);
-        }
-
-        private struct State
-        {
-            public Vector2 playerPos;
-            public Vector2[] entities;
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -367,10 +269,9 @@ namespace MyGame
                 {
                     renderer.UpdateVBO();
                 }
-                Game.activePlayer.GenerateVBO();
-                foreach (Entity entity in Game.entities.Values)
+                foreach (EntityRenderer renderer in Game.activeEntities)
                 {
-                    entity.GenerateVBO();
+                    renderer.UpdateVBO();
                 }
                 GL.Viewport(0, 0, Width, Height);
                 Logger.Log("Size");

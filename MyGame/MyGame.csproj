@@ -56,6 +56,7 @@
     <Compile Include="ChunkRenderer.cs" />
     <Compile Include="Dispatcher.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="EntityHolder.cs" />
     <Compile Include="EntityRenderer.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Logger.cs" />
@@ -67,7 +68,6 @@
     <Compile Include="Player.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenderDictionary.cs" />
     <Compile Include="RenderHelper.cs" />
     <Compile Include="Shader.cs" />
     <Compile Include="TestWindow.cs" />

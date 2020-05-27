@@ -12,8 +12,6 @@ namespace MyGame
         public NPC()
         {
             size = new Vector2(32, 64);
-
-            GenerateVBO();
         }
 
         protected override void Update()

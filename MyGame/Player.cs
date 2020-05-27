@@ -9,8 +9,6 @@ namespace MyGame
 {
     public class Player : Entity
     {
-        public uint ID;
-
         public bool isRemote;
 
         private float fallMultiplier = 2.5f;
@@ -19,8 +17,6 @@ namespace MyGame
         public Player()
         {
             size = new Vector2(32, 64);
-
-            GenerateVBO();
         }
 
         protected override void Update()

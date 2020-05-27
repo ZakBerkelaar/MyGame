@@ -18,7 +18,9 @@ namespace MyGame
         public static Window window;
 
         public static World activeWorld;
+
         public static Player activePlayer;
+        public static EntityRenderer playerRenderer;
 
         public static List<ChunkRenderer> activeChunks = new List<ChunkRenderer>();
         public static List<EntityRenderer> activeEntities = new List<EntityRenderer>();

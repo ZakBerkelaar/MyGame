@@ -28,6 +28,10 @@ namespace MyGame.Networking
             Game.activePlayer.ID = ID; 
             Game.entities.Add(ID, Game.activePlayer);
 
+            EntityRenderer renderer = new EntityRenderer(Game.activePlayer);
+            Game.playerRenderer = renderer;
+            Game.activeEntities.Add(renderer);
+
             Connected = true;
             downloadedWorld = new World(worldWidth, worldHeight);
             downloadingWorld = true;
@@ -58,7 +62,11 @@ namespace MyGame.Networking
                 player.isRemote = true;
 
                 if (!Game.entities.ContainsKey(ID))
+                {
                     Game.entities.Add(ID, player);
+                    Game.activeEntities.Add(new EntityRenderer(player));
+                }
+                    
             }
         }
 
@@ -105,7 +113,11 @@ namespace MyGame.Networking
             player.isRemote = true;
 
             if (!Game.entities.ContainsKey(ID))
+            {
                 Game.entities.Add(ID, player);
+                Game.activeEntities.Add(new EntityRenderer(player));
+            }
+                
         }
 
         public void Finished(NetIncomingMessage msg)

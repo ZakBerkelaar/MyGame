@@ -10,12 +10,20 @@ namespace MyGame
     class EntityRenderer
     {
         private Entity entity;
+
+        private Vector2 prevPos;
+
+        public Vector2 renderPos;
+
         private int VBO;
 
         public EntityRenderer(Entity entity)
         {
             this.entity = entity;
+            prevPos = entity.position;
+
             VBO = GL.GenBuffer();
+            UpdateVBO();
         }
 
         ~EntityRenderer()
@@ -85,8 +93,22 @@ namespace MyGame
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
         }
 
+        public void PosUpdated()
+        {
+            prevPos = entity.position;
+        }
+
+        public void CalculateRenderPos(float alpha)
+        {
+            renderPos = entity.position * alpha + prevPos * (1f - alpha);
+        }
+
         public void Render()
         {
+            Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Game.window.Width / 2) + renderPos.x * 16) - entity.size.x / 2, ((Game.window.Height / 2) + renderPos.y * 16) - entity.size.y / 2) + -Game.playerRenderer.renderPos * 16);
+            final += Vector2.one;
+            Game.window.entityShader.SetVector2("pos", final);
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
 
             //Pass vertex array to buffer

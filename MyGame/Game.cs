@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lidgren.Network;
 using MyGame.Networking;
+using MyGame.Rendering;
 
 namespace MyGame
 {
@@ -23,9 +24,8 @@ namespace MyGame
         public static EntityRenderer playerRenderer;
 
         public static List<ChunkRenderer> activeChunks = new List<ChunkRenderer>();
-        public static List<EntityRenderer> activeEntities = new List<EntityRenderer>();
-
-        public static float deltaTime;
+        //public static List<EntityRenderer> activeEntities = new List<EntityRenderer>();
+        public static IDHolder<EntityRenderer> renderedEntities = new IDHolder<EntityRenderer>();
 
         public static Networker networker;
 
@@ -42,10 +42,11 @@ namespace MyGame
             networker.Connect();
             activeWorld = networker.GetWorld();
 
-            Game.activeWorld.entities.Add(Game.activePlayer);
-            EntityRenderer playerRenderer = new EntityRenderer(Game.activePlayer);
-            Game.playerRenderer = playerRenderer;
-            Game.activeEntities.Add(playerRenderer);
+            activePlayer.world = activeWorld;
+            activeWorld.entities.Add(activePlayer);
+            playerRenderer = new EntityRenderer(activePlayer);
+            renderedEntities.Add(playerRenderer);
+            //Game.activeEntities.Add(playerRenderer);
 
             foreach (Chunk chunk in activeWorld.chunks)
             {

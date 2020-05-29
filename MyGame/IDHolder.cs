@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace MyGame
 {
-    public class EntityHolder : IEnumerable<Entity>
+    public class IDHolder<T> : IEnumerable<T> where T : class, IIDable
     {
-        private List<Entity> entities;
+        private List<T> entities;
 
-        public EntityHolder()
+        public IDHolder()
         {
-            entities = new List<Entity>();
+            entities = new List<T>();
         }
 
-        public Entity this[uint ID]
+        public T this[uint ID]
         {
             get
             {
-                foreach (Entity entity in entities)
+                foreach (T entity in entities)
                 {
                     if (entity.ID == ID)
                         return entity;
@@ -29,14 +29,28 @@ namespace MyGame
             }
         }
 
-        public void Add(Entity entity)
+        public int Count => entities.Count;
+
+        public void Add(T entity)
         {
             entities.Add(entity);
         }
 
+        public bool Remove(uint ID)
+        {
+            foreach (T entity in entities)
+            {
+                if (entity.ID == ID)
+                {
+                    return entities.Remove(entity);
+                }
+            }
+            return false;
+        }
+
         public bool ContainsID(uint ID)
         {
-            foreach (Entity entity in entities)
+            foreach (T entity in entities)
             {
                 if (entity.ID == ID)
                     return true;
@@ -44,7 +58,7 @@ namespace MyGame
             return false;
         }
 
-        public IEnumerator<Entity> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             return entities.GetEnumerator();
         }

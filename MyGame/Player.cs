@@ -9,8 +9,6 @@ namespace MyGame
 {
     public class Player : Entity
     {
-        public bool isRemote;
-
         private float fallMultiplier = 2.5f;
         private float lowJumpMultiplier = 2f;
 
@@ -32,11 +30,11 @@ namespace MyGame
 
             if(velocity.y < 0)
             {
-                velocity += Vector2.up * (-20f) * (fallMultiplier - 1) * Game.deltaTime;
+                velocity += Vector2.up * (-20f) * (fallMultiplier - 1) * world.deltaTime;
             }
             else if (velocity.y > 0 && !Input.GetKey(Key.W))
             {
-                velocity += Vector2.up * (-20f) * (lowJumpMultiplier - 1) * Game.deltaTime;
+                velocity += Vector2.up * (-20f) * (lowJumpMultiplier - 1) * world.deltaTime;
             }
 
             if (Input.GetKeyDown(Key.W))
@@ -49,7 +47,7 @@ namespace MyGame
             if (Input.GetKey(Key.D))
                 velocity.x = 10;
 
-            velocity.y -= 20 * Game.deltaTime;
+            velocity.y -= 20 * world.deltaTime;
         }
     }
 }

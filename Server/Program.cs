@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics;
 using Lidgren.Network;
 using MyGame;
 using MyGame.Networking;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Server
 {
@@ -15,8 +16,8 @@ namespace Server
         private static NetServer server;
         private static uint IDCounter;
 
-        private static Dictionary<uint, Vector2> entities = new Dictionary<uint, Vector2>();
         private static World world;
+        private static Dictionary<NetConnection, Player> connectedPlayers = new Dictionary<NetConnection, Player>();
 
         [DllImport("kernel32.dll"), SuppressUnmanagedCodeSecurity]
         private static extern bool QueryPerformanceCounter(out long count);
@@ -49,6 +50,17 @@ namespace Server
             double currentTime = GetTime();
             double acc = 0.0;
 
+            world.deltaTime = (float)td;
+
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    string input = Console.ReadLine();
+                    HandleCommand(input);
+                }
+            });
+
             Console.WriteLine("Entering loop");
             int crap = 0;
             while (true)
@@ -61,6 +73,11 @@ namespace Server
                 while(acc >= td)
                 {
                     //Update
+                    foreach (Entity entity in world.entities)
+                    {
+                        entity.UpdateInternal();
+                    }
+
 
                     if(crap == 10)
                     {
@@ -93,6 +110,9 @@ namespace Server
                         if (msg.SenderConnection.Status == NetConnectionStatus.Connected)
                         {
                             PlayerConnected(msg);
+                        } else if(msg.SenderConnection.Status == NetConnectionStatus.Disconnected)
+                        {
+                            PlayerDisconnected(msg.SenderConnection);
                         }
                         break;
 
@@ -120,7 +140,7 @@ namespace Server
                     float y = msg.ReadFloat();
                     Vector2 newPos = new Vector2(x, y);
                     Console.WriteLine(string.Format("Player: {0} is at {1}", ID, newPos));
-                    entities[ID] = newPos;
+                    world.entities[ID].position = newPos;
                     break;
                 case NetCommand.SetTile:
                     SetTile(msg);
@@ -154,12 +174,12 @@ namespace Server
         {
             NetOutgoingMessage outgoing = server.CreateMessage();
             outgoing.Write((byte)NetCommand.UpdatePosition);
-            outgoing.Write(entities.Count);
-            foreach (KeyValuePair<uint, Vector2> entity in entities)
+            outgoing.Write(world.entities.Count);
+            foreach (Entity entity in world.entities)
             {
-                outgoing.Write(entity.Key);
-                outgoing.Write(entity.Value.x);
-                outgoing.Write(entity.Value.y);
+                outgoing.Write(entity.ID);
+                outgoing.Write(entity.position.x);
+                outgoing.Write(entity.position.y);
             }
 
             server.SendToAll(outgoing, NetDeliveryMethod.UnreliableSequenced);
@@ -167,14 +187,6 @@ namespace Server
 
         private static void PlayerConnected(NetIncomingMessage msg)
         {
-            /*NetOutgoingMessage outgoing = server.CreateMessage();
-            outgoing.Write((byte)NetCommand.PlayerConnected);
-            outgoing.Write(IDCounter++);
-
-            Console.WriteLine("Player connected sending ID: " + (IDCounter - 1));
-            server.SendToAll(outgoing, NetDeliveryMethod.ReliableSequenced);
-            entities.Add(IDCounter - 1, Vector2.zero);*/
-
             uint ID = IDCounter++;
 
             SendInitialData(msg.SenderConnection, ID);
@@ -184,22 +196,43 @@ namespace Server
             NetOutgoingMessage outgoing = server.CreateMessage();
             outgoing.Write((byte)NetCommand.NewEntity);
             outgoing.Write(ID);
+            outgoing.Write((ushort)Entities.Player);
             outgoing.Write(0f);
             outgoing.Write(20f);
 
-            server.SendToAll(outgoing, msg.SenderConnection, NetDeliveryMethod.ReliableUnordered, 0);
+            Player player = new Player();
+            player.isRemote = true;
+            player.ID = ID;
+            player.world = world;
+            world.entities.Add(player);
+            connectedPlayers.Add(msg.SenderConnection, player);
+
+            server.SendToAll(outgoing, msg.SenderConnection, NetDeliveryMethod.ReliableUnordered, (int)NetChannel.Init);
             Console.WriteLine("Sending ID over" + ID);
+        }
+
+        private static void PlayerDisconnected(NetConnection conn)
+        {
+            uint ID = connectedPlayers[conn].ID;
+            world.entities.Remove(ID);
+            connectedPlayers.Remove(conn);
+
+            NetOutgoingMessage outgoing = server.CreateMessage();
+            outgoing.Write((byte)NetCommand.DeleteEntity);
+            outgoing.Write(ID);
+
+            server.SendToAll(outgoing, conn, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Init);
         }
 
         private static void SendEntityList(NetConnection conn)
         {
             NetOutgoingMessage outgoing = server.CreateMessage();
             outgoing.Write((byte)NetCommand.EntityList);
-            outgoing.Write(entities.Count);
-            foreach (KeyValuePair<uint, Vector2> entity in entities)
+            outgoing.Write(world.entities.Count);
+            foreach (Entity entity in world.entities)
             {
-                outgoing.Write(entity.Key);
-                outgoing.Write((byte)Entities.Player);
+                outgoing.Write(entity.ID);
+                outgoing.Write((ushort)Entities.Player);
             }
 
             server.SendMessage(outgoing, conn, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Init);
@@ -250,6 +283,36 @@ namespace Server
             outgoing.Write(world.Height);
 
             server.SendMessage(outgoing, conn, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Init);
+        }
+
+        private static void HandleCommand(string command)
+        {
+            string[] args = command.ToLower().Split(' ');
+
+            switch (args[0])
+            {
+                case "test":
+                    uint ID = IDCounter++;
+
+                    NetOutgoingMessage outgoing = server.CreateMessage();
+                    outgoing.Write((byte)NetCommand.NewEntity);
+                    outgoing.Write(ID);
+                    outgoing.Write((ushort)Entities.Test);
+                    outgoing.Write(0f);
+                    outgoing.Write(20f);
+
+                    NPC npc = new NPC();
+                    npc.position = new Vector2(0, 20);
+                    npc.isRemote = false;
+                    npc.ID = ID;
+                    npc.world = world;
+                    world.entities.Add(npc);
+
+                    server.SendToAll(outgoing, NetDeliveryMethod.ReliableOrdered);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

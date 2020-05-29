@@ -8,31 +8,35 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace MyGame
 {
-    public abstract class Entity
+    public abstract class Entity : IIDable
     {
-        public uint ID;
+        public bool isRemote;
+        public uint ID { get; set; }
+
+        public World world;
 
         public Vector2 position;
         public Vector2 velocity;
 
         public Vector2 size;
 
-        internal void FrameInternal(object sender, OpenTK.FrameEventArgs e)
+        public void FrameInternal()
         {
             Frame();
         }
 
-        internal void UpdateInternal(object sender, OpenTK.FrameEventArgs e)
+        public void UpdateInternal()
         {
-            Update();
+            if(!isRemote)
+                Update();
 
-            UpdatePosition();
+            HandleCollision();
         }
 
         //TODO: Fix collision detection on edge of tiles
-        private void UpdatePosition()
+        private void HandleCollision()
         {
-            position += velocity * Game.deltaTime;
+            position += velocity * world.deltaTime;
 
             //Collision
             //https://github.com/CodyHenrichsen-CTEC/Platformer_4_0/blob/master/Platformer/Platformer/Model/Player.cs
@@ -49,7 +53,7 @@ namespace MyGame
             {
                 for (int y = bottomTile; y <= topTile; y++)
                 {
-                    if (Game.activeWorld.GetTile(new Vector2Int(x, y)) != null)
+                    if (world.GetTile(new Vector2Int(x, y)) != null)
                     {
                         Vector2 tile = new Vector2(x, y);
                         if (position.x < tile.x + 1 &&
@@ -93,10 +97,9 @@ namespace MyGame
         protected virtual void Update() { }
     }
 
-    public enum Entities
+    public enum Entities : ushort
     {
         Player,
-        NPC,
-        Enemy
+        Test
     }
 }

@@ -7,8 +7,10 @@ using OpenTK.Input;
 
 namespace MyGame
 {
-    class NPC : Entity
+    public class NPC : Entity
     {
+        private int test;
+
         public NPC()
         {
             size = new Vector2(32, 64);
@@ -16,10 +18,15 @@ namespace MyGame
 
         protected override void Update()
         {
-            if (Input.GetKeyDown(Key.P))
-                velocity.y = 25;  
+            if(test == 100)
+            {
+                test = 0;
+                velocity.y = 20;
+                Console.WriteLine("JUMP!!!!!!");
+            }
+            test++;
 
-            velocity.y -= 20 * Game.deltaTime;
+            velocity.y -= 20 * world.deltaTime;
         }
     }
 }

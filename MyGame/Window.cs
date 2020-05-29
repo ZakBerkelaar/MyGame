@@ -8,7 +8,7 @@ using System.Security;
 using System.Collections.Generic;
 using System.Linq;
 using Lidgren.Network;
-using MyGame.Networking;
+using MyGame.Rendering;
 
 namespace MyGame
 {
@@ -141,7 +141,7 @@ namespace MyGame
             double currentTime = GetTime();
             double acc = 0.0;
 
-            Game.deltaTime = (float)td;
+            Game.activeWorld.deltaTime = (float)td;
 
             int crap = 0;
 
@@ -160,7 +160,7 @@ namespace MyGame
                 acc += frameTime;
                 while (acc >= td)
                 {
-                    foreach (EntityRenderer renderer in Game.activeEntities)
+                    foreach (EntityRenderer renderer in Game.renderedEntities)
                     {
                         renderer.PosUpdated();
                     }
@@ -168,7 +168,7 @@ namespace MyGame
                     OnUpdateFrame(null);
                     foreach (Entity entity in Game.activeWorld.entities)
                     {
-                        entity.UpdateInternal(null, null);
+                        entity.UpdateInternal();
                     }
 
                     if(crap == 10)
@@ -183,7 +183,7 @@ namespace MyGame
 
                 float alpha = (float)(acc / td);
 
-                foreach (EntityRenderer renderer in Game.activeEntities)
+                foreach (EntityRenderer renderer in Game.renderedEntities)
                 {
                     renderer.CalculateRenderPos(alpha);
                 }
@@ -191,7 +191,7 @@ namespace MyGame
                 OnRenderFrame();
                 foreach (Entity entity in Game.activeWorld.entities)
                 {
-                    entity.FrameInternal(null, null);
+                    entity.FrameInternal();
                 }
             }
         }
@@ -245,7 +245,7 @@ namespace MyGame
 
             entityShader.Use();
 
-            foreach (EntityRenderer renderer in Game.activeEntities)
+            foreach (EntityRenderer renderer in Game.renderedEntities)
             {
                 renderer.Render();
             }
@@ -269,7 +269,7 @@ namespace MyGame
                 {
                     renderer.UpdateVBO();
                 }
-                foreach (EntityRenderer renderer in Game.activeEntities)
+                foreach (EntityRenderer renderer in Game.renderedEntities)
                 {
                     renderer.UpdateVBO();
                 }

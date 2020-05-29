@@ -15,7 +15,8 @@ namespace MyGame.Networking
         Chunk,
         InitialData,
         NewEntity,
-        Finished
+        Finished,
+        DeleteEntity
     }
 
     public enum NetChannel : uint

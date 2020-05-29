@@ -79,6 +79,9 @@ namespace MyGame.Networking
                 case NetCommand.Finished:
                     Finished(msg);
                     break;
+                case NetCommand.DeleteEntity:
+                    DeleteEntity(msg);
+                    break;
             }
         }
 
@@ -118,7 +121,7 @@ namespace MyGame.Networking
             outgoing.Write(pos.x);
             outgoing.Write(pos.y);
             if (tile == null)
-                outgoing.Write((uint)0);
+                outgoing.Write(0U);
             else
                 outgoing.Write((uint)tile.type);
             client.SendMessage(outgoing, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Tile);

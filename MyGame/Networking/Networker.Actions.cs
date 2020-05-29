@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Text;
 using System.Threading.Tasks;
+using MyGame.Rendering;
 
 namespace MyGame.Networking
 {
@@ -54,18 +55,31 @@ namespace MyGame.Networking
             for (int i = 0; i < size; i++)
             {
                 uint ID = msg.ReadUInt32();
-                Entities type = (Entities)msg.ReadByte();
+                Entities type = (Entities)msg.ReadUInt16();
 
                 //Entity list packet is received before world is initialized so by invoking this on the dispatcher it ensures that is will not be called until the game is in the main loop and everything is initialized
                 Dispatcher.Instance.Invoke(() =>
                 {
                     if (!Game.activeWorld.entities.ContainsID(ID))
                     {
-                        Player player = new Player();
-                        player.ID = ID;
-                        player.isRemote = true;
-                        Game.activeWorld.entities.Add(player);
-                        Game.activeEntities.Add(new EntityRenderer(player));
+                        if (type == Entities.Player)
+                        {
+                            Player player = new Player();
+                            player.world = Game.activeWorld;
+                            player.isRemote = true;
+                            player.ID = ID;
+                            Game.activeWorld.entities.Add(player);
+                            Game.renderedEntities.Add(new EntityRenderer(player));
+                        }
+                        else
+                        {
+                            NPC npc = new NPC();
+                            npc.world = Game.activeWorld;
+                            npc.isRemote = true;
+                            npc.ID = ID;
+                            Game.activeWorld.entities.Add(npc);
+                            Game.renderedEntities.Add(new EntityRenderer(npc));
+                        }
                     }
                 });
                     
@@ -109,22 +123,46 @@ namespace MyGame.Networking
         private void NewEntity(NetIncomingMessage msg)
         {
             uint ID = msg.ReadUInt32();
-            Entities type = (Entities)msg.ReadByte();
+            Entities type = (Entities)msg.ReadUInt16();
+            float x = msg.ReadFloat();
+            float y = msg.ReadFloat();
+            Vector2 pos = new Vector2(x, y);
 
             if (!Game.activeWorld.entities.ContainsID(ID))
             {
-                Player player = new Player();
-                player.isRemote = true;
-                player.ID = ID;
-                Game.activeWorld.entities.Add(player);
-                Game.activeEntities.Add(new EntityRenderer(player));
+                if(type == Entities.Player)
+                {
+                    Player player = new Player();
+                    player.position = pos;
+                    player.world = Game.activeWorld;
+                    player.isRemote = true;
+                    player.ID = ID;
+                    Game.activeWorld.entities.Add(player);
+                    Game.renderedEntities.Add(new EntityRenderer(player));
+                } else
+                {
+                    NPC npc = new NPC();
+                    npc.position = pos;
+                    npc.world = Game.activeWorld;
+                    npc.isRemote = true;
+                    npc.ID = ID;
+                    Game.activeWorld.entities.Add(npc);
+                    Game.renderedEntities.Add(new EntityRenderer(npc));
+                }
             }
                 
         }
 
-        public void Finished(NetIncomingMessage msg)
+        private void Finished(NetIncomingMessage msg)
         {
             downloadingWorld = false;
+        }
+
+        private void DeleteEntity(NetIncomingMessage msg)
+        {
+            uint ID = msg.ReadUInt32();
+            Game.activeWorld.entities.Remove(ID);
+            Game.renderedEntities.Remove(ID);
         }
     }
 }

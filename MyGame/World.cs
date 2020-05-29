@@ -10,7 +10,9 @@ namespace MyGame
     {
         public Chunk[,] chunks;
 
-        public EntityHolder entities;
+        public IDHolder<Entity> entities;
+
+        public float deltaTime;
 
         public int Width
         {
@@ -31,7 +33,7 @@ namespace MyGame
         public World(int width, int height)
         {
             chunks = new Chunk[width, height];
-            entities = new EntityHolder();
+            entities = new IDHolder<Entity>();
 
             for (int x = 0; x < chunks.GetLength(0); x++)
             {

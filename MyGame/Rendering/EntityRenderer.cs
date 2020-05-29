@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL4;
 
-namespace MyGame
+namespace MyGame.Rendering
 {
-    class EntityRenderer
+    class EntityRenderer : IIDable
     {
+        public uint ID { get; private set; }
+
         private Entity entity;
 
         private Vector2 prevPos;
@@ -20,6 +22,8 @@ namespace MyGame
         public EntityRenderer(Entity entity)
         {
             this.entity = entity;
+            this.ID = entity.ID;
+
             prevPos = entity.position;
 
             VBO = GL.GenBuffer();

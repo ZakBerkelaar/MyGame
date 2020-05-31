@@ -15,6 +15,7 @@ namespace MyGame
         public Player()
         {
             size = new Vector2(32, 64);
+            type = Entities.Player;
         }
 
         protected override void Update()

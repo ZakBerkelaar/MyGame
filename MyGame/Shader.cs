@@ -98,5 +98,12 @@ namespace MyGame
             GL.UseProgram(Handle);
             GL.Uniform2(uniformLocations[name], data.x, data.y);
         }
+
+        public void SetInt(string name, int data)
+        {
+            GL.UseProgram(Handle);
+
+            GL.Uniform1(uniformLocations[name], data);
+        }
     }
 }

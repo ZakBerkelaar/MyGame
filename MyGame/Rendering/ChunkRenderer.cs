@@ -113,14 +113,17 @@ namespace MyGame.Rendering
 
         public void Render()
         {
+            if (triangles == 0)
+                return;
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
 
             //Pass vertex array to buffer
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
+            //GL.EnableVertexAttribArray(0);
             //Pass texture coords array to buffer
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
+            //GL.EnableVertexAttribArray(1);
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, triangles);
         }

@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using Lidgren.Network;
 using MyGame.Networking;
 using MyGame.Rendering;
+using System.IO;
 
 namespace MyGame
 {
@@ -34,7 +29,8 @@ namespace MyGame
             Logger.Init("log.txt");
             Logger.Log("Staring game");
 
-            TextureAtlas.GenerateAtlas();
+            //TextureAtlas.GenerateAtlas();
+            TextureAtlas.GenerateAtlai();
 
             window = new Window(800, 800, "My Game");
 

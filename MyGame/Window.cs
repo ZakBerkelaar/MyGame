@@ -203,6 +203,9 @@ namespace MyGame
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
+            GL.EnableVertexAttribArray(0);
+            GL.EnableVertexAttribArray(1);
+            
             foreach (ChunkRenderer renderer in Game.activeChunks)
             {
                 renderer.UpdateVBO();
@@ -210,12 +213,15 @@ namespace MyGame
 
             //Create shader
             shader = new Shader("Shaders/tile.vert", "Shaders/tile.frag");
+            shader.SetInt("texture0", 0);
             //Player shader
             entityShader = new Shader("Shaders/entity.vert", "Shaders/entity.frag");
+            entityShader.SetInt("texture0", 1);
 
 
             //Load texture atlas
-            TextureAtlas.BindAtlas();
+            //TextureAtlas.BindAtlas();
+            TextureAtlas.BindAtlai();
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 

@@ -22,5 +22,10 @@ namespace MyGame
         {
             return (int)Math.Ceiling(f);
         }
+
+        public static float Sqrt(float f)
+        {
+            return (float)Math.Sqrt(f);
+        }
     }
 }

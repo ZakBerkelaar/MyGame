@@ -38,6 +38,7 @@ namespace MyGame.Rendering
         public void UpdateVBO()
         {
             float[] vertices = new float[6 * 5];
+            TextureUV uv = TextureAtlas.GetTexturePos(entity.type);
 
             //Bottom left
             Vector2 v1 = RenderHelper.ScreenToNormal(new Vector2(0, 0));
@@ -45,8 +46,8 @@ namespace MyGame.Rendering
             vertices[1] = v1.y;
             vertices[2] = 0;
             //Texture coords
-            vertices[3] = 0;
-            vertices[4] = 1;
+            vertices[3] = uv.BL.x;
+            vertices[4] = uv.BL.y;
 
             //Top left
             Vector2 v2 = RenderHelper.ScreenToNormal(new Vector2(0, entity.size.y));
@@ -54,8 +55,8 @@ namespace MyGame.Rendering
             vertices[6] = v2.y;
             vertices[7] = 0;
             //Texture coords
-            vertices[8] = 0;
-            vertices[9] = 0;
+            vertices[8] = uv.TL.x;
+            vertices[9] = uv.TL.y;
 
             //Bottom right
             Vector2 v3 = RenderHelper.ScreenToNormal(new Vector2(entity.size.x, 0));
@@ -63,8 +64,8 @@ namespace MyGame.Rendering
             vertices[11] = v3.y;
             vertices[12] = 0;
             //Texture coords
-            vertices[13] = 1;
-            vertices[14] = 1;
+            vertices[13] = uv.BR.x;
+            vertices[14] = uv.BR.y;
 
             //Top right
             Vector2 v4 = RenderHelper.ScreenToNormal(new Vector2(entity.size.x, entity.size.y));
@@ -72,8 +73,8 @@ namespace MyGame.Rendering
             vertices[16] = v4.y;
             vertices[17] = 0;
             //Texture coords
-            vertices[18] = 1;
-            vertices[19] = 0;
+            vertices[18] = uv.TR.x;
+            vertices[19] = uv.TR.y;
 
             //Top left
             Vector2 v5 = RenderHelper.ScreenToNormal(new Vector2(0, entity.size.y));
@@ -81,8 +82,8 @@ namespace MyGame.Rendering
             vertices[21] = v5.y;
             vertices[22] = 0;
             //Texture coords
-            vertices[23] = 0;
-            vertices[24] = 0;
+            vertices[23] = uv.TL.x;
+            vertices[24] = uv.TL.y;
 
             //Bottom right
             Vector2 v6 = RenderHelper.ScreenToNormal(new Vector2(entity.size.x, 0));
@@ -90,8 +91,8 @@ namespace MyGame.Rendering
             vertices[26] = v6.y;
             vertices[27] = 0;
             //Texture coords
-            vertices[28] = 1;
-            vertices[29] = 1;
+            vertices[28] = uv.BR.x;
+            vertices[29] = uv.BR.y;
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
@@ -117,10 +118,10 @@ namespace MyGame.Rendering
 
             //Pass vertex array to buffer
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
+            //GL.EnableVertexAttribArray(0);
             //Pass texture coords array to buffer
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
+            //GL.EnableVertexAttribArray(1);
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
         }

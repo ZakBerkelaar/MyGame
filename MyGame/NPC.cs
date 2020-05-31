@@ -14,6 +14,7 @@ namespace MyGame
         public NPC()
         {
             size = new Vector2(32, 64);
+            type = Entities.Test;
         }
 
         protected override void Update()

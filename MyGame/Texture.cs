@@ -11,26 +11,24 @@ namespace MyGame
     {
         public int Handle;
 
-        public Texture(string path)
+        public Texture(Bitmap image)
         {
             Handle = GL.GenTexture();
-            Use();
+            Bind();
 
             //Load image
-            using(Bitmap image = new Bitmap(path))
-            {
-                BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-                GL.TexImage2D(TextureTarget.Texture2D,
-                    0,
-                    PixelInternalFormat.Rgba,
-                    image.Width,
-                    image.Height,
-                    0,
-                    OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
-                    PixelType.UnsignedByte,
-                    data.Scan0);
-            }
+            GL.TexImage2D(TextureTarget.Texture2D,
+                0,
+                PixelInternalFormat.Rgba,
+                image.Width,
+                image.Height,
+                0,
+                OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
+                PixelType.UnsignedByte,
+                data.Scan0);
+
             //Set the min and mag filter for scaling
             GL.TexParameter(TextureTarget.Texture2D,  TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
@@ -39,7 +37,7 @@ namespace MyGame
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
         }
 
-        public void Use()
+        public void Bind()
         {
             GL.BindTexture(TextureTarget.Texture2D, Handle);
         }

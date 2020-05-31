@@ -12,6 +12,7 @@ namespace MyGame
     {
         public bool isRemote;
         public uint ID { get; set; }
+        public Entities type;
 
         public World world;
 

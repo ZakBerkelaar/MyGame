@@ -269,21 +269,17 @@ namespace MyGame
 
         protected override void OnResize(EventArgs e)
         {
-            if(resize)
+            foreach (ChunkRenderer renderer in Game.activeChunks)
             {
-                foreach (ChunkRenderer renderer in Game.activeChunks)
-                {
-                    renderer.UpdateVBO();
-                }
-                foreach (EntityRenderer renderer in Game.renderedEntities)
-                {
-                    renderer.UpdateVBO();
-                }
-                GL.Viewport(0, 0, Width, Height);
-                Logger.Log("Size");
-                base.OnResize(e);
+                renderer.UpdateVBO();
             }
-            resize = !resize;
+            foreach (EntityRenderer renderer in Game.renderedEntities)
+            {
+                renderer.UpdateVBO();
+            }
+            GL.Viewport(0, 0, Width, Height);
+            Logger.Log("Size");
+            base.OnResize(e);
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)

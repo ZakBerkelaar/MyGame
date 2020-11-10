@@ -52,7 +52,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AI\AIBase.cs" />
+    <Compile Include="AI\AIBasic.cs" />
+    <Compile Include="AI\AIJump.cs" />
+    <Compile Include="AI\AIExtensions.cs" />
+    <Compile Include="AI\AINone.cs" />
     <Compile Include="Chunk.cs" />
+    <Compile Include="EntityHolder.cs" />
+    <Compile Include="EntityInfoAttribute.cs" />
     <Compile Include="IIDable.cs" />
     <Compile Include="Rendering\ChunkRenderer.cs" />
     <Compile Include="Dispatcher.cs" />

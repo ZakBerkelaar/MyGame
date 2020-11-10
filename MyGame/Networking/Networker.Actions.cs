@@ -73,7 +73,7 @@ namespace MyGame.Networking
                         }
                         else
                         {
-                            NPC npc = new NPC();
+                            NPC npc = new NPC(type);
                             npc.world = Game.activeWorld;
                             npc.isRemote = true;
                             npc.ID = ID;
@@ -141,7 +141,7 @@ namespace MyGame.Networking
                     Game.renderedEntities.Add(new EntityRenderer(player));
                 } else
                 {
-                    NPC npc = new NPC();
+                    NPC npc = new NPC(type);
                     npc.position = pos;
                     npc.world = Game.activeWorld;
                     npc.isRemote = true;

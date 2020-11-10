@@ -292,6 +292,8 @@ namespace Server
             switch (args[0])
             {
                 case "test":
+                    Console.WriteLine("OK");
+
                     uint ID = IDCounter++;
 
                     NetOutgoingMessage outgoing = server.CreateMessage();
@@ -301,7 +303,7 @@ namespace Server
                     outgoing.Write(0f);
                     outgoing.Write(20f);
 
-                    NPC npc = new NPC();
+                    NPC npc = new NPC(Entities.Test);
                     npc.position = new Vector2(0, 20);
                     npc.isRemote = false;
                     npc.ID = ID;

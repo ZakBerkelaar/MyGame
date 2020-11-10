@@ -31,6 +31,16 @@ namespace MyGame
             return string.Format("({0}, {1})", x, y);
         }
 
+        public static float Distance(Vector2 a, Vector2 b)
+        {
+            return Mathf.Sqrt(((a.x - b.x) * (a.x - b.x)) + ((a.y - b.y) * (a.y - b.y)));
+        }
+
+        public static float SquareDistance(Vector2 a, Vector2 b)
+        {
+            return ((a.x - b.x) * (a.x - b.x)) + ((a.y - b.y) * (a.y - b.y));
+        }
+
         public static Vector2 operator +(Vector2 a, Vector2 b)
         {
             return new Vector2(a.x + b.x, a.y + b.y);
@@ -44,6 +54,11 @@ namespace MyGame
         public static Vector2 operator -(Vector2 a)
         {
             return new Vector2(-a.x, -a.y);
+        }
+
+        public static Vector2 operator -(Vector2 a, Vector2 b)
+        {
+            return new Vector2(a.x - b.x, a.y - b.y);
         }
     }
 }

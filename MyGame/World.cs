@@ -10,7 +10,7 @@ namespace MyGame
     {
         public Chunk[,] chunks;
 
-        public IDHolder<Entity> entities;
+        public EntityHolder entities;
 
         public float deltaTime;
 
@@ -33,7 +33,7 @@ namespace MyGame
         public World(int width, int height)
         {
             chunks = new Chunk[width, height];
-            entities = new IDHolder<Entity>();
+            entities = new EntityHolder();
 
             for (int x = 0; x < chunks.GetLength(0); x++)
             {

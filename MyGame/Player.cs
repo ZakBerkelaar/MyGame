@@ -12,10 +12,9 @@ namespace MyGame
         private float fallMultiplier = 2.5f;
         private float lowJumpMultiplier = 2f;
 
-        public Player()
+        public Player(): base(Entities.Player)
         {
-            size = new Vector2(32, 64);
-            type = Entities.Player;
+
         }
 
         protected override void Update()

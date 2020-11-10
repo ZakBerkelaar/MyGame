@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using MyGame.AI;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
@@ -13,6 +15,7 @@ namespace MyGame
         public bool isRemote;
         public uint ID { get; set; }
         public Entities type;
+        private AIBase ai;
 
         public World world;
 
@@ -20,6 +23,15 @@ namespace MyGame
         public Vector2 velocity;
 
         public Vector2 size;
+
+        public Entity(Entities type)
+        {
+            this.type = type;
+
+            EntityInfoAttribute info = GetEntityInfo(type);
+            this.size = new Vector2(info.sizeX, info.sizeY);
+            this.ai = AIBase.CreateAI(info.aiType, this, info.aiParams);
+        }
 
         public void FrameInternal()
         {
@@ -29,9 +41,11 @@ namespace MyGame
         public void UpdateInternal()
         {
             if(!isRemote)
+            {
+                ai.Update();
                 Update();
-
-            HandleCollision();
+                HandleCollision();
+            }
         }
 
         //TODO: Fix collision detection on edge of tiles
@@ -96,11 +110,28 @@ namespace MyGame
 
         protected virtual void Frame() { }
         protected virtual void Update() { }
+
+        private static Dictionary<Entities, EntityInfoAttribute> entityInfos = new Dictionary<Entities, EntityInfoAttribute>();
+
+        private static EntityInfoAttribute GetEntityInfo(Entities type)
+        {
+            //TODO: cache this in advance rather than when the method is called
+            if(!entityInfos.ContainsKey(type))
+            {
+                EntityInfoAttribute attrib = typeof(Entities).GetMember(type.ToString())
+                                                             .Single()
+                                                             .GetCustomAttribute<EntityInfoAttribute>();
+                entityInfos.Add(type, attrib);
+            }
+            return entityInfos[type];
+        }
     }
 
     public enum Entities : ushort
     {
+        [EntityInfo("Player", 100, 32, 64, typeof(AINone))]
         Player,
+        [EntityInfo("Test", 100, 32, 64, typeof(AIBasic))]
         Test
     }
 }

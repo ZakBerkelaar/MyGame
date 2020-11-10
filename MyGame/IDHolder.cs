@@ -16,7 +16,7 @@ namespace MyGame
             entities = new List<T>();
         }
 
-        public T this[uint ID]
+        public virtual T this[uint ID]
         {
             get
             {
@@ -31,12 +31,12 @@ namespace MyGame
 
         public int Count => entities.Count;
 
-        public void Add(T entity)
+        public virtual void Add(T entity)
         {
             entities.Add(entity);
         }
 
-        public bool Remove(uint ID)
+        public virtual bool Remove(uint ID)
         {
             foreach (T entity in entities)
             {

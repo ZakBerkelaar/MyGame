@@ -46,6 +46,8 @@ namespace MyGame
 
         public Tile GetTile(Vector2Int pos)
         {
+            if (pos.x < 0 || pos.x >= 32 || pos.y < 0 || pos.y >= 32)
+                return null;
             return tiles[pos.x, pos.y];
         }
 

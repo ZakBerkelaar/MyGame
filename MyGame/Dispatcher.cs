@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace MyGame
 {
     //https://www.what-could-possibly-go-wrong.com/the-dispatcher-pattern/
+    //TODO: Why singleton?
     class Dispatcher
     {
         private static Dispatcher instance;

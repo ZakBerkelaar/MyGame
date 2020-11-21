@@ -120,10 +120,7 @@ namespace MyGame.Networking
             outgoing.Write((byte)NetCommand.SetTile);
             outgoing.Write(pos.x);
             outgoing.Write(pos.y);
-            if (tile == null)
-                outgoing.Write(0U);
-            else
-                outgoing.Write((uint)tile.type);
+            outgoing.Write(tile?.RegistryString ?? "");
             client.SendMessage(outgoing, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Tile);
         }
     }

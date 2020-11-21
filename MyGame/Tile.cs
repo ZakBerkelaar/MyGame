@@ -6,24 +6,22 @@ using System.Threading.Tasks;
 
 namespace MyGame
 {
-    public class Tile
+    public abstract class Tile : ITextureable
     {
-        public Tiles type;
+        public IDString RegistryString { get; set; }
+
+        public string Texture => RegistryString.Name;
 
         public Tile()
         {
-            this.type = Tiles.Dirt;
-        }
-        public Tile(Tiles type)
-        {
-            this.type = type;
+            
         }
     }
 
-    public enum Tiles : uint
-    {
-        Dirt = 1U,
-        Grass = 2U,
-        Stone = 3U
-    }
+    //public enum Tiles : uint
+    //{
+    //    Dirt = 1U,
+    //    Grass = 2U,
+    //    Stone = 3U
+    //}
 }

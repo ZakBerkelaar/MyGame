@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using MyGame.Registration;
 
 namespace Server
 {
@@ -34,6 +35,8 @@ namespace Server
 
         static void Main(string[] args)
         {
+            TileRegister.RegisterTiles();
+
             world = new World(10, 3);
             world.Generate();
 
@@ -155,17 +158,14 @@ namespace Server
         {
             int x = msg.ReadInt32();
             int y = msg.ReadInt32();
-            Tile tile = new Tile((Tiles)msg.ReadUInt32());
-            if((int)tile.type != 0)
-                world.SetTile(new Vector2Int(x, y), tile);
-            else
-                world.SetTile(new Vector2Int(x, y), null);
+            Tile tile = Registry.GetRegistryTile(new IDString(msg.ReadString()));
+            world.SetTile(new Vector2Int(x, y), tile);
 
             NetOutgoingMessage outgoing = server.CreateMessage();
             outgoing.Write((byte)NetCommand.SetTile);
             outgoing.Write(x);
             outgoing.Write(y);
-            outgoing.Write((uint)tile.type);
+            outgoing.Write(tile?.RegistryString ?? "");
 
             server.SendToAll(outgoing, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Tile);
         }
@@ -249,7 +249,7 @@ namespace Server
                 for (int y = 0; y < 32; y++)
                 {
                     Tile tile = chunk.GetTile(x, y);
-                    outgoing.Write(tile != null ? (uint)tile.type : 0U);
+                    outgoing.Write(tile?.RegistryString ?? "");
                 }
             }
 

@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.Text;
 using System.Threading.Tasks;
 using MyGame.Rendering;
+using MyGame.Registration;
 
 namespace MyGame.Networking
 {
@@ -90,11 +91,8 @@ namespace MyGame.Networking
         {
             int x = msg.ReadInt32();
             int y = msg.ReadInt32();
-            Tile tile = new Tile((Tiles)msg.ReadUInt32());
-            if ((int)tile.type != 0)
-                Game.activeWorld.SetTile(new Vector2Int(x, y), tile);
-            else
-                Game.activeWorld.SetTile(new Vector2Int(x, y), null);
+            Tile tile = Registry.GetRegistryTile(new IDString(msg.ReadString()));
+            Game.activeWorld.SetTile(new Vector2Int(x, y), tile);
         }
 
         private void Chunk(NetIncomingMessage msg)
@@ -109,11 +107,8 @@ namespace MyGame.Networking
             {
                 for (int y = 0; y < 32; y++)
                 {
-                    Tile tile = new Tile((Tiles)msg.ReadUInt32());
-                    if ((int)tile.type != 0)
-                        chunk.SetTile(x, y, tile);
-                    else
-                        chunk.SetTile(x, y, null);
+                    Tile tile = Registry.GetRegistryTile(new IDString(msg.ReadString()));
+                    chunk.SetTile(x, y, tile);
                 }
             }
 

@@ -47,7 +47,7 @@ namespace MyGame.Rendering
                 {
                     if (chunk.GetTile(x, y) != null)
                     {
-                        TextureUV uv = TextureAtlas.GetTexturePos(chunk.GetTile(x, y).type);
+                        TextureUV uv = TextureAtlas.GetTexturePos(chunk.GetTile(x, y));
                         //Bottom left
                         Vector2 v1 = RenderHelper.ScreenToNormal(new Vector2(x * TileSize, y * TileSize) + offset);
                         vertices[i + 0] = v1.x;

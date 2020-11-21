@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MyGame.Networking;
 using MyGame.Rendering;
 using System.IO;
+using MyGame.Registration;
 
 namespace MyGame
 {
@@ -28,6 +29,8 @@ namespace MyGame
         {
             Logger.Init("log.txt");
             Logger.Log("Staring game");
+
+            TileRegister.RegisterTiles();
 
             //TextureAtlas.GenerateAtlas();
             TextureAtlas.GenerateAtlai();

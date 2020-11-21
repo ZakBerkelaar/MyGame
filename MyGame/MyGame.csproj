@@ -60,7 +60,12 @@
     <Compile Include="Chunk.cs" />
     <Compile Include="EntityHolder.cs" />
     <Compile Include="EntityInfoAttribute.cs" />
+    <Compile Include="IDString.cs" />
     <Compile Include="IIDable.cs" />
+    <Compile Include="ITextureable.cs" />
+    <Compile Include="Registration\Registry.cs" />
+    <Compile Include="Registration\TileRegister.cs" />
+    <Compile Include="Registration\Tiles.cs" />
     <Compile Include="Rendering\ChunkRenderer.cs" />
     <Compile Include="Dispatcher.cs" />
     <Compile Include="Entity.cs" />
@@ -82,6 +87,9 @@
     <Compile Include="Texture.cs" />
     <Compile Include="TextureAtlas.cs" />
     <Compile Include="Tile.cs" />
+    <Compile Include="Content\Tiles\TileDirt.cs" />
+    <Compile Include="Content\Tiles\TileGrass.cs" />
+    <Compile Include="Content\Tiles\TileStone.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="Vector2Int.cs" />
     <Compile Include="Window.cs" />
@@ -100,6 +108,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Textures\Dirt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\Entities\" />
+    <Folder Include="Content\Items\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

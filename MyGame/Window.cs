@@ -217,6 +217,9 @@ namespace MyGame
             //Player shader
             entityShader = new Shader("Shaders/entity.vert", "Shaders/entity.frag");
             entityShader.SetInt("texture0", 1);
+            //New texture shader
+            Texture.textureShader = new Shader("Shaders/texture.vert", "Shaders/texture.frag");
+            Texture.textureShader.SetInt("texture0", 2);
 
 
             //Load texture atlas

@@ -19,6 +19,8 @@ namespace MyGame.Rendering
 
         private int VBO;
 
+        private Texture entityTexture;
+
         public EntityRenderer(Entity entity)
         {
             this.entity = entity;
@@ -26,8 +28,7 @@ namespace MyGame.Rendering
 
             prevPos = entity.position;
 
-            VBO = GL.GenBuffer();
-            UpdateVBO();
+            entityTexture = new Texture(@"Entities\" + entity.type.ToString());
         }
 
         ~EntityRenderer()
@@ -110,20 +111,21 @@ namespace MyGame.Rendering
 
         public void Render()
         {
-            Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Game.window.Width / 2) + renderPos.x * 16) - entity.size.x / 2, ((Game.window.Height / 2) + renderPos.y * 16) - entity.size.y / 2) + -Game.playerRenderer.renderPos * 16);
-            final += Vector2.one;
-            Game.window.entityShader.SetVector2("pos", final);
+            //Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Game.window.Width / 2) + renderPos.x * 16) - entity.size.x / 2, ((Game.window.Height / 2) + renderPos.y * 16) - entity.size.y / 2) + -Game.playerRenderer.renderPos * 16);
+            //final += Vector2.one;
+            //Game.window.entityShader.SetVector2("pos", final);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
 
-            //Pass vertex array to buffer
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-            //GL.EnableVertexAttribArray(0);
-            //Pass texture coords array to buffer
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-            //GL.EnableVertexAttribArray(1);
+            ////Pass vertex array to buffer
+            //GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+            ////GL.EnableVertexAttribArray(0);
+            ////Pass texture coords array to buffer
+            //GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+            ////GL.EnableVertexAttribArray(1);
 
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            //GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            entityTexture.Draw(renderPos.x, renderPos.y, 1, 1, 0);
         }
     }
 }

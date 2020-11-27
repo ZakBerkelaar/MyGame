@@ -105,5 +105,19 @@ namespace MyGame
 
             GL.Uniform1(uniformLocations[name], data);
         }
+
+        public void SetFloat(string name, float data)
+        {
+            GL.UseProgram(Handle);
+
+            GL.Uniform1(uniformLocations[name], data);
+        }
+
+        public void SetMat4(string name, ref Matrix4 mat)
+        {
+            GL.UseProgram(Handle);
+
+            GL.UniformMatrix4(uniformLocations[name], true, ref mat);
+        }
     }
 }

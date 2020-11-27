@@ -8,6 +8,10 @@ namespace MyGame
 {
     public static class Mathf
     {
+        public const float Pi = (float)Math.PI;
+        public const float PiOver2 = Pi / 2;
+        public const float PiOver4 = Pi / 4;
+
         public static int FloorToInt(float f)
         {
             return (int)Math.Floor(f);
@@ -26,6 +30,11 @@ namespace MyGame
         public static float Sqrt(float f)
         {
             return (float)Math.Sqrt(f);
+        }
+
+        public static float Pow(float @base, float exp)
+        {
+            return (float)Math.Pow(@base, exp);
         }
     }
 }

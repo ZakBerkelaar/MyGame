@@ -44,6 +44,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -66,6 +69,7 @@
     <Compile Include="Registration\Registry.cs" />
     <Compile Include="Registration\TileRegister.cs" />
     <Compile Include="Registration\Tiles.cs" />
+    <Compile Include="Rendering\AtlasLocation.cs" />
     <Compile Include="Rendering\ChunkRenderer.cs" />
     <Compile Include="Dispatcher.cs" />
     <Compile Include="Entity.cs" />
@@ -84,6 +88,7 @@
     <Compile Include="RenderHelper.cs" />
     <Compile Include="Shader.cs" />
     <Compile Include="TestWindow.cs" />
+    <Compile Include="GLTexture.cs" />
     <Compile Include="Texture.cs" />
     <Compile Include="TextureAtlas.cs" />
     <Compile Include="Tile.cs" />
@@ -103,6 +108,8 @@
     <None Include="packages.config" />
     <None Include="Shaders\entity.frag" />
     <None Include="Shaders\entity.vert" />
+    <None Include="Shaders\texture.frag" />
+    <None Include="Shaders\texture.vert" />
     <None Include="Shaders\tile.frag" />
     <None Include="Shaders\tile.vert" />
   </ItemGroup>

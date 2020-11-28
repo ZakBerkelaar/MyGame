@@ -21,5 +21,12 @@ namespace MyGame
             float newY = (Game.window.Height * (point.y + 1)) / 2;
             return new Vector2(newX, newY);
         }
+
+        public static Vector2 ScreenToNormalNew(Vector2 point)
+        {
+            float newX = (point.x / (Game.window.Width / 2)) - 1;
+            float newY = -(point.y / (Game.window.Height / 2)) + 1;
+            return new Vector2(newX, newY);
+        }
     }
 }

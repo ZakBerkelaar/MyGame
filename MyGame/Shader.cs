@@ -45,7 +45,7 @@ namespace MyGame
             GL.DeleteShader(fragShader);
             GL.DeleteShader(vertShader);
 
-            GL.GetProgram(Handle, GetProgramParameterName.ActiveAttributes, out int uniformNum);
+            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int uniformNum);
 
             uniformLocations = new Dictionary<string, int>();
 

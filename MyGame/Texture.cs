@@ -29,8 +29,10 @@ namespace MyGame
             width = image.Width;
             height = image.Height;
 
+            Game.window.Resize += UpdateVBO;
+
             VBO = GL.GenBuffer();
-            UpdateVBO();
+            UpdateVBO(null, null);
         }
 
         ~Texture()
@@ -38,63 +40,63 @@ namespace MyGame
             Dispatcher.Instance.Invoke(() => GL.DeleteBuffer(VBO));
         }
 
-        public void UpdateVBO()
+        public void UpdateVBO(object sender, EventArgs e)
         {
             float[] vertices = new float[6 * 5];
 
-            //Bottom left
-            Vector2 v1 = RenderHelper.ScreenToNormal(new Vector2(0, 0));
+            //Top left
+            Vector2 v1 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) - (width / 2), (Game.window.Height /2) - (height / 2)));
             vertices[0] = v1.x;
             vertices[1] = v1.y;
             vertices[2] = 0;
             //Texture coords
-            vertices[3] = location.uv.BL.x;
-            vertices[4] = location.uv.BL.y;
+            vertices[3] = location.uv.TL.x;
+            vertices[4] = location.uv.TL.y;
 
-            //Top left
-            Vector2 v2 = RenderHelper.ScreenToNormal(new Vector2(0, height));
+            //Bottom left
+            Vector2 v2 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) - (width / 2), (Game.window.Height / 2) + (height / 2)));
             vertices[5] = v2.x;
             vertices[6] = v2.y;
             vertices[7] = 0;
             //Texture coords
-            vertices[8] = location.uv.TL.x;
-            vertices[9] = location.uv.TL.y;
+            vertices[8] = location.uv.BL.x;
+            vertices[9] = location.uv.BL.y;
 
-            //Bottom right
-            Vector2 v3 = RenderHelper.ScreenToNormal(new Vector2(width, 0));
+            //Top right
+            Vector2 v3 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) + (width / 2), (Game.window.Height / 2) - (height / 2)));
             vertices[10] = v3.x;
             vertices[11] = v3.y;
             vertices[12] = 0;
             //Texture coords
-            vertices[13] = location.uv.BR.x;
-            vertices[14] = location.uv.BR.y;
+            vertices[13] = location.uv.TR.x;
+            vertices[14] = location.uv.TR.y;
 
-            //Top right
-            Vector2 v4 = RenderHelper.ScreenToNormal(new Vector2(width, height));
+            //Bottom right
+            Vector2 v4 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) + (width / 2), (Game.window.Height / 2) + (height / 2)));
             vertices[15] = v4.x;
             vertices[16] = v4.y;
             vertices[17] = 0;
             //Texture coords
-            vertices[18] = location.uv.TR.x;
-            vertices[19] = location.uv.TR.y;
+            vertices[18] = location.uv.BR.x;
+            vertices[19] = location.uv.BR.y;
 
-            //Top left
-            Vector2 v5 = RenderHelper.ScreenToNormal(new Vector2(0, height));
+            //Bottom left
+            Vector2 v5 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) - (width / 2), (Game.window.Height / 2) + (height / 2)));
             vertices[20] = v5.x;
             vertices[21] = v5.y;
             vertices[22] = 0;
             //Texture coords
-            vertices[23] = location.uv.TL.x;
-            vertices[24] = location.uv.TL.y;
+            vertices[23] = location.uv.BL.x;
+            vertices[24] = location.uv.BL.y;
 
             //Bottom right
-            Vector2 v6 = RenderHelper.ScreenToNormal(new Vector2(width, 0));
+            Vector2 v6 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) + (width / 2), (Game.window.Height / 2) - (height / 2)));
             vertices[25] = v6.x;
             vertices[26] = v6.y;
             vertices[27] = 0;
             //Texture coords
-            vertices[28] = location.uv.BR.x;
-            vertices[29] = location.uv.BR.y;
+            vertices[28] = location.uv.TR.x;
+            vertices[29] = location.uv.TR.y;
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
@@ -124,10 +126,14 @@ namespace MyGame
         {
             textureShader.Use();
 
-            Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Game.window.Width / 2) + xPos * 16) - width / 2, ((Game.window.Height / 2) + yPos * 16) - height / 2) + -Game.playerRenderer.renderPos * 16);
-            final += Vector2.one;
+            //Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Game.window.Width / 2) + xPos * 16) - width / 2, ((Game.window.Height / 2) + yPos * 16) - height / 2) + -Game.playerRenderer.renderPos * 16);
+            //final += Vector2.one;
+            //var final = RenderHelper.ScreenToNormal(new Vector2(xPos, yPos));
 
-            textureShader.SetVector2("trans", final);
+            //textureShader.SetVector2("trans", new Vector2(xPos / (Game.window.Width / 2), yPos / -(Game.window.Height / 2)));
+            textureShader.SetVector2("trans", RenderHelper.ScreenToNormalNew(new Vector2(xPos + (width / 2), yPos + (height / 2))));
+            textureShader.SetVector2("scale", new Vector2(xScale, yScale));
+            textureShader.SetFloat("rotation", rot);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
 

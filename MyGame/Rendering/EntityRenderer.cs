@@ -125,7 +125,14 @@ namespace MyGame.Rendering
             ////GL.EnableVertexAttribArray(1);
 
             //GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
-            entityTexture.Draw(renderPos.x, renderPos.y, 1, 1, 0);
+            //Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Game.window.Width / 2) + renderPos.x * 16) - entity.size.x / 2, ((Game.window.Height / 2) + renderPos.y * 16) - entity.size.y / 2) + -Game.playerRenderer.renderPos * 16);
+
+            //(Game.window.Width / 2) Centers the entity x wise
+            //(renderPos.x * 16) Adds the entities position
+            //(entity.size.x / 2) Removes half the entity
+            Vector2 test2 = new Vector2((Game.window.Width / 2) + (renderPos.x * 16) - (entity.size.x / 2), (Game.window.Height / 2) - (renderPos.y * 16) - (entity.size.y / 2)) - (new Vector2(Game.playerRenderer.renderPos.x, -Game.playerRenderer.renderPos.y) * 16);
+
+            entityTexture.Draw(test2.x, test2.y, 1, 1, 0);
         }
     }
 }

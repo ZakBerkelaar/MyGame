@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lidgren.Network;
 using MyGame.Rendering;
+using MyGame.UI;
 
 namespace MyGame
 {
@@ -24,9 +25,14 @@ namespace MyGame
 
         private bool resize = false;
 
+        private UICanvas canvas;
+
+        public new event Action RenderFrame;
+        public new event Action UpdateFrame;
+
         public Window(int width, int height, string title) : base(width, height, OpenTK.Graphics.GraphicsMode.Default, title)
         {
-
+            
         }
 
         /*private void CalculateVBO(int width, int height)
@@ -221,6 +227,8 @@ namespace MyGame
             Texture.textureShader = new Shader("Shaders/texture.vert", "Shaders/texture.frag");
             Texture.textureShader.SetInt("texture0", 2);
 
+            canvas = new UICanvas();
+            canvas.AddChild(new UIImage("Check"));
 
             //Load texture atlas
             //TextureAtlas.BindAtlas();
@@ -259,15 +267,18 @@ namespace MyGame
                 renderer.Render();
             }
 
+
+            canvas.Draw();
+
             SwapBuffers();
 
-            //base.OnRenderFrame(e);
+            RenderFrame?.Invoke();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             Input.UpdateKeyboard(null, null);
-            //base.OnUpdateFrame(e);
+            UpdateFrame?.Invoke();
         }
 
         protected override void OnResize(EventArgs e)
@@ -294,6 +305,29 @@ namespace MyGame
             pos2 += new Vector2(-offInPx.x, offInPx.y);
             Game.activeWorld.SetTile(new Vector2Int(Mathf.FloorToInt(pos2.x / 16), Mathf.FloorToInt((Height - pos2.y) / 16)), null, true);*/
 
+            List<UIElement> clickedElements = new List<UIElement>();
+            List<UIElement> elements = new List<UIElement>();
+            GetAllChildren(canvas, elements);
+            foreach (UIElement element in elements)
+            {
+                //Check if clicked
+                if (e.X >= element.left &&
+                    (element.left + element.width) >= e.X &&
+                    e.Y >= element.top &&
+                    (element.top + element.height) >= e.Y)
+                {
+                    clickedElements.Add(element);
+                }
+            }
+            if(clickedElements.Count > 0)
+            {
+                foreach (UIElement element in clickedElements)
+                {
+                    element.MouseDown();
+                }
+                return;
+            }
+
             Vector2 offset = Game.activePlayer.position;
             //Vector2Int tilePos = new Vector2Int(Mathf.CeilToInt((e.X - (Width / 2f)) / 16f), Mathf.CeilToInt(((Height - e.Y) - (Height / 2f)) / 16f) + 1);
             Vector2Int tilePos = new Vector2Int(Mathf.CeilToInt(((e.X - (Width / 2f)) / 16f) + offset.x), Mathf.CeilToInt((((Height - e.Y) - (Height / 2f)) / 16f) + 1 + offset.y));
@@ -301,7 +335,6 @@ namespace MyGame
             Console.WriteLine(tilePos);
             Game.activeWorld.SetTile(tilePos, null);
             Game.networker.SendTile(tilePos, null);
-
             base.OnMouseDown(e);
         }
 
@@ -312,6 +345,16 @@ namespace MyGame
             GL.UseProgram(0);
 
             base.OnUnload(e);
+        }
+
+        private void GetAllChildren(UIElement element, List<UIElement> output)
+        {
+            //Console.WriteLine(element.ToString());
+            foreach (UIElement child in element.childern)
+            {
+                GetAllChildren(child, output);
+                output.Add(child);
+            }
         }
     }
 }

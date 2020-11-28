@@ -95,6 +95,9 @@
     <Compile Include="Content\Tiles\TileDirt.cs" />
     <Compile Include="Content\Tiles\TileGrass.cs" />
     <Compile Include="Content\Tiles\TileStone.cs" />
+    <Compile Include="UI\UICanvas.cs" />
+    <Compile Include="UI\UIElement.cs" />
+    <Compile Include="UI\UIImage.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="Vector2Int.cs" />
     <Compile Include="Window.cs" />

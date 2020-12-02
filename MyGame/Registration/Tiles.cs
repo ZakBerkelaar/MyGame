@@ -14,9 +14,9 @@ namespace MyGame.Registration
 
         static Tiles()
         {
-            Dirt = Registry.GetRegistryTile(new IDString("Dirt"));
-            Grass = Registry.GetRegistryTile(new IDString("Grass"));
-            Stone = Registry.GetRegistryTile(new IDString("Stone"));
+            Dirt = Registry.GetRegistryTile(new IDString("TileDirt"));
+            Grass = Registry.GetRegistryTile(new IDString("TileGrass"));
+            Stone = Registry.GetRegistryTile(new IDString("TileStone"));
         }
     }
 }

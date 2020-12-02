@@ -72,7 +72,7 @@ namespace MyGame
             if(code != (int)All.True)
             {
                 string error = GL.GetProgramInfoLog(program);
-                Logger.Log("Error occurred while linking program: " + error);
+                Logger.LogError("Error occurred while linking program: " + error);
             }
         }
 
@@ -84,7 +84,7 @@ namespace MyGame
             if(code != (int)All.True)
             {
                 string error = GL.GetShaderInfoLog(shader);
-                Logger.Log("Error occurred while compiling shader: " + error);
+                Logger.LogError("Error occurred while compiling shader: " + error);
             }
         }
 

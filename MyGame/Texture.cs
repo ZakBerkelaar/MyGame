@@ -24,10 +24,25 @@ namespace MyGame
 
         public Texture(string name)
         {
-            Image image = Image.FromFile(@"Assets\Textures\" + name + ".png");
-            location = TextureAtlas.GetAtlasLocation(name + ".png");
-            width = image.Width;
-            height = image.Height;
+            if(System.IO.File.Exists(@"Assets\Textures\" + name + ".png"))
+            {
+                using (Image image =  Image.FromFile(@"Assets\Textures\" + name + ".png"))
+                {
+                    width = image.Width;
+                    height = image.Height;
+                    location = TextureAtlas.GetAtlasLocation(name + ".png");
+                }
+            }
+            else
+            {
+                using (Image image = Image.FromFile(@"Assets\Textures\Error.png"))
+                {
+                    width = image.Width;
+                    height = image.Height;
+                    location = TextureAtlas.GetAtlasLocation("Error.png");
+                }
+                Logger.LogError("Error loading texture " + name);
+            }
 
             Game.window.Resize += UpdateVBO;
 

@@ -28,6 +28,11 @@ namespace MyGame
             //tileAtlas = GenerateAtlas(typeof(Tiles), "Assets/Textures", 8, 8, 32, out TileUVs);
             tileAtlas = GenerateAtlas(Registry.GetRegisteredTiles(), "Assets/Textures", 8, 8, 32, out TileUVs);
             entityAtlas = GenerateAtlas(typeof(Entities), "Assets/Textures/Entities", 32, 64, 16, out EntityUVs);
+            
+        }
+
+        public static void GenerateAtlai2()
+        {
             multiAtlas = GenerateMultisizeAtlas(System.IO.Directory.GetFiles(@"C:\Users\zakbe\source\repos\MyGame\MyGame\bin\Debug\Assets\Textures", "*.png", System.IO.SearchOption.AllDirectories), out multiAtlasPos);
         }
 

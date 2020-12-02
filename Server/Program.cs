@@ -36,6 +36,7 @@ namespace Server
         static void Main(string[] args)
         {
             TileRegister.RegisterTiles();
+            ItemRegister.RegisterItems();
 
             world = new World(10, 3);
             world.Generate();

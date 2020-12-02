@@ -9,6 +9,8 @@ namespace MyGame
 {
     public class Player : Entity
     {
+        public ItemStack[] items = new ItemStack[10];
+
         private float fallMultiplier = 2.5f;
         private float lowJumpMultiplier = 2f;
 
@@ -19,9 +21,6 @@ namespace MyGame
 
         protected override void Update()
         {
-            if (isRemote)
-                return;
-
             if (velocity.x != 0)
             {
                 //TODO: Not using Game.deltaTime
@@ -48,6 +47,18 @@ namespace MyGame
                 velocity.x = 10;
 
             velocity.y -= 20 * world.deltaTime;
+        }
+
+        /// <summary>
+        /// Gives the player an item
+        /// </summary>
+        /// <param name="item">The ItemStack to put in the player's inventory</param>
+        /// <returns>Weather or not the ItemStack was successfully added</returns>
+        public bool GiveItem(ItemStack item)
+        {
+            ItemStack loc = items.First(i => i == null);
+            loc = item;
+            return true; //TODO: Check if it actually worked
         }
     }
 }

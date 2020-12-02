@@ -5,6 +5,7 @@ using MyGame.Rendering;
 using System.IO;
 using MyGame.Registration;
 using System.Linq;
+using MyGame.UI;
 
 namespace MyGame
 {
@@ -26,17 +27,22 @@ namespace MyGame
 
         public static Networker networker;
 
+        public static UICanvas canvas;
+
         static void Main(string[] args)
         {
             Logger.Init("log.txt");
-            Logger.Log("Staring game");
+            Logger.LogInfo("Staring game");
+
+            window = new Window(800, 800, "My Game");
+
+            TextureAtlas.GenerateAtlai2();
 
             TileRegister.RegisterTiles();
+            ItemRegister.RegisterItems();
 
             //TextureAtlas.GenerateAtlas();
             TextureAtlas.GenerateAtlai();
-
-            window = new Window(800, 800, "My Game");
 
             networker = new Networker("127.0.0.1", 6666);
             networker.Connect();
@@ -48,6 +54,11 @@ namespace MyGame
             renderedEntities.Add(playerRenderer);
             //Game.activeEntities.Add(playerRenderer);
 
+            activePlayer.items[0] = new ItemStack(Registry.GetRegistryItem(new IDString("ItemTileDirt")), 1);
+
+            canvas = new UICanvas();
+            canvas.AddChild(new UIItemBar(activePlayer.items));
+
             foreach (Chunk chunk in activeWorld.chunks)
             {
                 ChunkRenderer renderer = new ChunkRenderer(chunk);
@@ -58,7 +69,7 @@ namespace MyGame
             window.VSync = OpenTK.VSyncMode.Off;
             window.Vibe();
 
-            Logger.Log("Exiting");
+            Logger.LogInfo("Exiting");
         }
     }
 }

@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Content.Tiles
+namespace MyGame.Registration
 {
-    public class TileDirt : Tile
+    public static class ItemRegister
     {
-        public TileDirt()
+        public static void RegisterItems()
         {
-            RegistryString = new IDString("TileDirt");
+
         }
     }
 }

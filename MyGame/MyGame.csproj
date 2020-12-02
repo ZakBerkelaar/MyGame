@@ -65,7 +65,10 @@
     <Compile Include="EntityInfoAttribute.cs" />
     <Compile Include="IDString.cs" />
     <Compile Include="IIDable.cs" />
+    <Compile Include="Item.cs" />
+    <Compile Include="ItemStack.cs" />
     <Compile Include="ITextureable.cs" />
+    <Compile Include="Registration\ItemRegister.cs" />
     <Compile Include="Registration\Registry.cs" />
     <Compile Include="Registration\TileRegister.cs" />
     <Compile Include="Registration\Tiles.cs" />
@@ -86,6 +89,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderHelper.cs" />
+    <Compile Include="Rendering\ItemStackRenderer.cs" />
     <Compile Include="Shader.cs" />
     <Compile Include="TestWindow.cs" />
     <Compile Include="GLTexture.cs" />
@@ -95,9 +99,11 @@
     <Compile Include="Content\Tiles\TileDirt.cs" />
     <Compile Include="Content\Tiles\TileGrass.cs" />
     <Compile Include="Content\Tiles\TileStone.cs" />
+    <Compile Include="ItemTile.cs" />
     <Compile Include="UI\UICanvas.cs" />
     <Compile Include="UI\UIElement.cs" />
     <Compile Include="UI\UIImage.cs" />
+    <Compile Include="UI\UIItemBar.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="Vector2Int.cs" />
     <Compile Include="Window.cs" />
@@ -115,9 +121,6 @@
     <None Include="Shaders\texture.vert" />
     <None Include="Shaders\tile.frag" />
     <None Include="Shaders\tile.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\Textures\Dirt.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Entities\" />

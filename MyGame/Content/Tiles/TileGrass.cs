@@ -10,7 +10,7 @@ namespace MyGame.Content.Tiles
     {
         public TileGrass()
         {
-            RegistryString = new IDString("Grass");
+            RegistryString = new IDString("TileGrass");
         }
     }
 }

@@ -27,7 +27,7 @@ namespace MyGame
 			}
 			catch (Exception e)
 			{
-				Logger.Log(e.ToString());
+				Logger.LogError(e.ToString());
 				base.Dispose();
 				throw;
 			}

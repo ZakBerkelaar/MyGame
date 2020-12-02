@@ -25,8 +25,6 @@ namespace MyGame
 
         private bool resize = false;
 
-        private UICanvas canvas;
-
         public new event Action RenderFrame;
         public new event Action UpdateFrame;
 
@@ -227,8 +225,7 @@ namespace MyGame
             Texture.textureShader = new Shader("Shaders/texture.vert", "Shaders/texture.frag");
             Texture.textureShader.SetInt("texture0", 2);
 
-            canvas = new UICanvas();
-            canvas.AddChild(new UIImage("Check"));
+            Game.canvas.AddChild(new UIImage("Check"));
 
             //Load texture atlas
             //TextureAtlas.BindAtlas();
@@ -268,7 +265,7 @@ namespace MyGame
             }
 
 
-            canvas.Draw();
+            Game.canvas.Draw();
 
             SwapBuffers();
 
@@ -292,7 +289,7 @@ namespace MyGame
                 renderer.UpdateVBO();
             }
             GL.Viewport(0, 0, Width, Height);
-            Logger.Log("Size");
+            Logger.LogInfo("Size");
             base.OnResize(e);
         }
 
@@ -307,7 +304,7 @@ namespace MyGame
 
             List<UIElement> clickedElements = new List<UIElement>();
             List<UIElement> elements = new List<UIElement>();
-            GetAllChildren(canvas, elements);
+            GetAllChildren(Game.canvas, elements);
             foreach (UIElement element in elements)
             {
                 //Check if clicked

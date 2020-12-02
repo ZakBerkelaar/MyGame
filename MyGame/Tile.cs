@@ -12,6 +12,7 @@ namespace MyGame
 
         public string Texture => RegistryString.Name;
 
+        //TODO: Require registry string in ctor
         public Tile()
         {
             

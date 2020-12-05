@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame
 {
-    public class IDString
+    public struct IDString
     {
         public string Namespace { get; set; }
         public string Name { get; set; }
@@ -20,9 +20,9 @@ namespace MyGame
         public IDString(string name)
         {
             if (name == null)
-                throw new ArgumentException("Name must not be equal to null");
-            else if (name == "")
-                return;
+            {
+                throw new ArgumentException("Name must not be null");
+            }
             else if (name.Contains(':'))
             {
                 var chars = name.Split(':');

@@ -61,8 +61,10 @@
     <Compile Include="AI\AIExtensions.cs" />
     <Compile Include="AI\AINone.cs" />
     <Compile Include="Chunk.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="EntityHolder.cs" />
     <Compile Include="EntityInfoAttribute.cs" />
+    <Compile Include="IControl.cs" />
     <Compile Include="IDString.cs" />
     <Compile Include="IIDable.cs" />
     <Compile Include="Item.cs" />

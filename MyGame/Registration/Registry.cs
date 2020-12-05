@@ -27,19 +27,20 @@ namespace MyGame.Registration
 
         public static Tile GetRegistryTile(IDString @string)
         {
-            if (string.IsNullOrEmpty(@string?.Name))
+            if (string.IsNullOrEmpty(@string.Name))
                 return null;
             return tiles[@string];
         }
 
         public static Item GetRegistryItem(IDString @string)
         {
-            if (string.IsNullOrEmpty(@string?.Name))
+            if (string.IsNullOrEmpty(@string.Name))
                 return null;
             return items[@string];
         }
 
         public static Tile[] GetRegisteredTiles() => tiles.Values.ToArray();
+        public static Item[] GetRegisteredItems() => items.Values.ToArray();
 
     }
 }

@@ -28,5 +28,12 @@ namespace MyGame
             float newY = -(point.y / (Game.window.Height / 2)) + 1;
             return new Vector2(newX, newY);
         }
+
+        public static Vector2 ScreenToWorld(Vector2 point)
+        {
+            float newX = Mathf.CeilToInt(((point.x - (Game.window.Width / 2f)) / 16f) + Game.activePlayer.position.x);
+            float newY = Mathf.CeilToInt((((Game.window.Height - point.y) - (Game.window.Height / 2f)) / 16f) + 1 + Game.activePlayer.position.y);
+            return new Vector2(newX, newY);
+        }
     }
 }

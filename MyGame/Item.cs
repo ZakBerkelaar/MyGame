@@ -15,6 +15,6 @@ namespace MyGame
             RegistryString = regStr;
         }
 
-        public virtual void UseItem(Entity user, Vector2 position) { }
+        public virtual void UseItem(Entity user, Vector2 position, ItemStack stack) { }
     }
 }

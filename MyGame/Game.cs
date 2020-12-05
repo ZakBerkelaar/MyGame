@@ -54,10 +54,14 @@ namespace MyGame
             renderedEntities.Add(playerRenderer);
             //Game.activeEntities.Add(playerRenderer);
 
-            activePlayer.items[0] = new ItemStack(Registry.GetRegistryItem(new IDString("ItemTileDirt")), 1);
+            var items = Registry.GetRegisteredItems();
+            for (int i = 0; i < items.Length; i++)
+            {
+                activePlayer.items[i] = new ItemStack(items[i], 1);
+            }
 
             canvas = new UICanvas();
-            canvas.AddChild(new UIItemBar(activePlayer.items));
+            canvas.AddChild(new UIItemBar(activePlayer));
 
             foreach (Chunk chunk in activeWorld.chunks)
             {

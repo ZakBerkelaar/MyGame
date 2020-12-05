@@ -15,9 +15,10 @@ namespace MyGame
             this.tile = tile;
         }
 
-        public override void UseItem(Entity user, Vector2 position)
+        public override void UseItem(Entity user, Vector2 position, ItemStack stack)
         {
-            base.UseItem(user, position);
+            user.world.SetTile(new Vector2Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.y)), tile);
+            base.UseItem(user, position, stack);
         }
     }
 }

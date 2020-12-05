@@ -149,7 +149,7 @@ namespace MyGame
 
             int crap = 0;
 
-            while (true)
+            while (!IsExiting)
             {
                 //TODO: Check if window is exiting
                 Dispatcher.Instance.InvokePending();
@@ -198,6 +198,7 @@ namespace MyGame
                     entity.FrameInternal();
                 }
             }
+            Config.WriteOpenConfigs();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -324,14 +325,7 @@ namespace MyGame
                 }
                 return;
             }
-
-            Vector2 offset = Game.activePlayer.position;
-            //Vector2Int tilePos = new Vector2Int(Mathf.CeilToInt((e.X - (Width / 2f)) / 16f), Mathf.CeilToInt(((Height - e.Y) - (Height / 2f)) / 16f) + 1);
-            Vector2Int tilePos = new Vector2Int(Mathf.CeilToInt(((e.X - (Width / 2f)) / 16f) + offset.x), Mathf.CeilToInt((((Height - e.Y) - (Height / 2f)) / 16f) + 1 + offset.y));
-            //tilePos += floored;
-            Console.WriteLine(tilePos);
-            Game.activeWorld.SetTile(tilePos, null);
-            Game.networker.SendTile(tilePos, null);
+            Game.activePlayer.MouseClick(e);
             base.OnMouseDown(e);
         }
 

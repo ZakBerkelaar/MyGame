@@ -151,11 +151,10 @@ namespace MyGame
 
             while (!IsExiting)
             {
-                //TODO: Check if window is exiting
                 Dispatcher.Instance.InvokePending();
                 ProcessEvents(); //Handle windows events
                 //ReadMessages();
-                Game.networker.ReadMessages();
+                Game.networkerClient.ReadMessages();
 
                 double newTime = GetTime();
                 double frameTime = newTime - currentTime;
@@ -177,7 +176,8 @@ namespace MyGame
 
                     if(crap == 10)
                     {
-                        Game.networker.SendPosition();
+                        var packet = new Networking.Packets.UpdatePositionPacket(new Networking.Packets.EntityPositionData() { id = Game.activePlayer.ID, position = Game.activePlayer.position });
+                        Game.networkerClient.SendMessage(packet);
                         crap = 0;
                     }
                     crap++;

@@ -121,7 +121,7 @@ namespace MyGame
                 //tilePos += floored;
                 Console.WriteLine(tilePos);
                 Game.activeWorld.SetTile(tilePos, null);
-                Game.networker.SendTile(tilePos, null);
+                Game.networkerClient.SendMessage(new Networking.Packets.SetTilePacket(tilePos, null));
             }
             else if (e.Button == MouseButton.Right)
             {

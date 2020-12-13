@@ -40,7 +40,6 @@ namespace MyGame.Rendering
             Vector2 offset = new Vector2(chunk.position.x * ChunkSize * TileSize, chunk.position.y * ChunkSize * TileSize);
 
             int i = 0;
-            //TODO: Would be faster to have constant value rather than calling GetLength
             for (int x = 0; x < 32; x++)
             {
                 for (int y = 0; y < 32; y++)

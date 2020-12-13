@@ -14,6 +14,8 @@ namespace MyGame
 
         public float deltaTime;
 
+        public Vector2 spawn;
+
         public int Width
         {
             get

@@ -35,6 +35,16 @@ namespace Server
 
         static void Main(string[] args)
         {
+            try
+            {
+                Server.Start();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e.ToString());
+                throw;
+            }
+            return;
             TileRegister.RegisterTiles();
             ItemRegister.RegisterItems();
 

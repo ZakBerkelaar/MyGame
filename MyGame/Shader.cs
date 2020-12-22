@@ -99,24 +99,27 @@ namespace MyGame
             GL.Uniform2(uniformLocations[name], data.x, data.y);
         }
 
+        public void SetVector4(string name, Vector4 data)
+        {
+            GL.UseProgram(Handle);
+            GL.Uniform4(uniformLocations[name], data);
+        }
+
         public void SetInt(string name, int data)
         {
             GL.UseProgram(Handle);
-
             GL.Uniform1(uniformLocations[name], data);
         }
 
         public void SetFloat(string name, float data)
         {
             GL.UseProgram(Handle);
-
             GL.Uniform1(uniformLocations[name], data);
         }
 
         public void SetMat4(string name, ref Matrix4 mat)
         {
             GL.UseProgram(Handle);
-
             GL.UniformMatrix4(uniformLocations[name], true, ref mat);
         }
     }

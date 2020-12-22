@@ -22,15 +22,31 @@ namespace MyGame
 
         public Shader shader;
         public Shader entityShader;
+        public Shader screenShader;
+        public Shader circleShader;
+
+        public Framebuffer renderBuffer;
+        public Framebuffer lightingBuffer;
 
         private bool resize = false;
 
         public new event Action RenderFrame;
         public new event Action UpdateFrame;
 
+        private float[] quadVertices =
+        {
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, //Top left
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, //Bottom left
+             1.0f, 1.0f, 0.0f, 1.0f, 1.0f, //Top Right
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f, //Bottom right
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, //Bottom left
+             1.0f, 1.0f, 0.0f, 1.0f, 1.0f, //Top Right
+        };
+        private int quadVBO;
+
         public Window(int width, int height, string title) : base(width, height, OpenTK.Graphics.GraphicsMode.Default, title)
         {
-            
+
         }
 
         /*private void CalculateVBO(int width, int height)
@@ -174,7 +190,7 @@ namespace MyGame
                         entity.UpdateInternal();
                     }
 
-                    if(crap == 10)
+                    if (crap == 10)
                     {
                         var packet = new Networking.Packets.UpdatePositionPacket(new Networking.Packets.EntityPositionData() { id = Game.activePlayer.ID, position = Game.activePlayer.position });
                         Game.networkerClient.SendMessage(packet);
@@ -210,7 +226,7 @@ namespace MyGame
 
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);
-            
+
             foreach (ChunkRenderer renderer in Game.activeChunks)
             {
                 renderer.UpdateVBO();
@@ -218,19 +234,46 @@ namespace MyGame
 
             //Create shader
             shader = new Shader("Shaders/tile.vert", "Shaders/tile.frag");
-            shader.SetInt("texture0", 0);
+            shader.SetInt("texture0", 4);
             //Player shader
             entityShader = new Shader("Shaders/entity.vert", "Shaders/entity.frag");
-            entityShader.SetInt("texture0", 1);
+            entityShader.SetInt("texture0", 2);
             //New texture shader
             Texture.textureShader = new Shader("Shaders/texture.vert", "Shaders/texture.frag");
-            Texture.textureShader.SetInt("texture0", 2);
+            Texture.textureShader.SetInt("texture0", 3);
+            //Create screen shader
+            screenShader = new Shader("Shaders/screen.vert", "Shaders/screen.frag");
+            screenShader.SetInt("screenTexture", 0);
+            screenShader.SetInt("lightTexture", 1);
+            //Create circle shader
+            circleShader = new Shader("Shaders/circle.vert", "Shaders/circle.frag");
+            circleShader.SetVector4("color", new Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+            circleShader.SetFloat("radius", 0.25f);
+            circleShader.SetVector2("position", new Vector2(0.5f, 0.5f));
+
+            quadVBO = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, quadVBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, quadVertices.Length * sizeof(float), quadVertices, BufferUsageHint.StaticDraw);
+            GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+            GL.EnableVertexAttribArray(1);
+            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            renderBuffer = new Framebuffer();
+            GL.ActiveTexture(TextureUnit.Texture1);
+            lightingBuffer = new Framebuffer();
+            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
             Game.canvas.AddChild(new UIImage("Check"));
 
             //Load texture atlas
             //TextureAtlas.BindAtlas();
             TextureAtlas.BindAtlai();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            renderBuffer.BindTexture();
+            GL.ActiveTexture(TextureUnit.Texture1);
+            lightingBuffer.BindTexture();
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
@@ -239,17 +282,20 @@ namespace MyGame
 
         private void OnRenderFrame()
         {
-            //Input.UpdateKeyboard(null, e);
-
-            //Game.deltaTime = (float)e.Time;
-            //Console.WriteLine(e.Time * 1000);
-
+            lightingBuffer.Bind();
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, quadVBO);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+            circleShader.Use();
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            renderBuffer.Bind();
+            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            //GL.BindVertexArray(VAO);
-
+            //Draw chunks
             shader.Use();
-            //Vector2 offset = RenderHelper.ScreenToNormal(new Vector2(Width - 16, Height - 32) + -Game.activePlayer.position * 16);
             Vector2 offset = RenderHelper.ScreenToNormal(new Vector2(Width - 16, Height - 32) + -Game.playerRenderer.renderPos * 16);
             shader.SetVector2("offset", offset);
             foreach (ChunkRenderer active in Game.activeChunks)
@@ -257,19 +303,25 @@ namespace MyGame
                 active.Render();
             }
 
-
+            //Draw entities
             entityShader.Use();
-
             foreach (EntityRenderer renderer in Game.renderedEntities)
             {
                 renderer.Render();
             }
 
 
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            screenShader.Use();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, quadVBO);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            //Draw UI
             Game.canvas.Draw();
 
             SwapBuffers();
-
             RenderFrame?.Invoke();
         }
 
@@ -317,7 +369,7 @@ namespace MyGame
                     clickedElements.Add(element);
                 }
             }
-            if(clickedElements.Count > 0)
+            if (clickedElements.Count > 0)
             {
                 foreach (UIElement element in clickedElements)
                 {

@@ -25,14 +25,14 @@ namespace MyGame
 
         public static void LogInfo(string message)
         {
-            File.AppendAllText(path, "INFO -> " + message + Environment.NewLine);
-            Console.WriteLine("INFO -> " + message);
+            File.AppendAllText(path, "INF -> " + message + Environment.NewLine);
+            Console.WriteLine("INF -> " + message);
         }
 
         public static void LogWarning(string message)
         {
-            File.AppendAllText(path, "WARN -> " + message + Environment.NewLine);
-            Console.WriteLine("WARN -> " + message);
+            File.AppendAllText(path, "WRN -> " + message + Environment.NewLine);
+            Console.WriteLine("WRN -> " + message);
         }
 
         public static void LogError(string message)

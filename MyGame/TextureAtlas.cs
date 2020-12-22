@@ -38,11 +38,11 @@ namespace MyGame
 
         public static void BindAtlai()
         {
-            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.ActiveTexture(TextureUnit.Texture4);
             tileTexture = new GLTexture(tileAtlas);
-            GL.ActiveTexture(TextureUnit.Texture1);
-            entityTexture = new GLTexture(entityAtlas);
             GL.ActiveTexture(TextureUnit.Texture2);
+            entityTexture = new GLTexture(entityAtlas);
+            GL.ActiveTexture(TextureUnit.Texture3);
             multiTexture = new GLTexture(multiAtlas);
         }
 

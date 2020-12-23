@@ -10,7 +10,7 @@ uniform sampler2D lightTexture;
 
 void main()
 {
-	outputColor = texture(screenTexture, texCoord) * texture(lightTexture, texCoord);
+	outputColor = texture(lightTexture, texCoord) * texture(screenTexture, texCoord);
 	//outputColor = texture(screenTexture, texCoord) + (texture(lightTexture, texCoord) * 0.001);
 	//outputColor = texture(lightTexture, texCoord) + (texture(screenTexture, texCoord) * 0.001);
 }

@@ -214,6 +214,7 @@ namespace MyGame
                     entity.FrameInternal();
                 }
             }
+            Dispatcher.Instance.InvokePending();
             Config.WriteOpenConfigs();
         }
 
@@ -258,11 +259,9 @@ namespace MyGame
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            renderBuffer = new Framebuffer();
-            GL.ActiveTexture(TextureUnit.Texture1);
-            lightingBuffer = new Framebuffer();
+;
+            renderBuffer = new Framebuffer(TextureUnit.Texture0);
+            lightingBuffer = new Framebuffer(TextureUnit.Texture1);
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
             Game.canvas.AddChild(new UIImage("Check"));
@@ -270,9 +269,7 @@ namespace MyGame
             //Load texture atlas
             //TextureAtlas.BindAtlas();
             TextureAtlas.BindAtlai();
-            GL.ActiveTexture(TextureUnit.Texture0);
             renderBuffer.BindTexture();
-            GL.ActiveTexture(TextureUnit.Texture1);
             lightingBuffer.BindTexture();
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
@@ -331,19 +328,24 @@ namespace MyGame
             UpdateFrame?.Invoke();
         }
 
+        private bool test = false;
         protected override void OnResize(EventArgs e)
         {
-            foreach (ChunkRenderer renderer in Game.activeChunks)
+            if(test)
             {
-                renderer.UpdateVBO();
+                foreach (ChunkRenderer renderer in Game.activeChunks)
+                {
+                    renderer.UpdateVBO();
+                }
+                foreach (EntityRenderer renderer in Game.renderedEntities)
+                {
+                    renderer.UpdateVBO();
+                }
+                GL.Viewport(0, 0, Width, Height);
+                Logger.LogInfo("Size");
+                base.OnResize(e);
             }
-            foreach (EntityRenderer renderer in Game.renderedEntities)
-            {
-                renderer.UpdateVBO();
-            }
-            GL.Viewport(0, 0, Width, Height);
-            Logger.LogInfo("Size");
-            base.OnResize(e);
+            test = !test;
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)

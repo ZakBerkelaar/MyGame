@@ -15,20 +15,20 @@ namespace MyGame
         private float fallMultiplier = 2.5f;
         private float lowJumpMultiplier = 2f;
 
-        private IControl jumpControl;
-        private IControl leftControl;
-        private IControl rightControl;
+        private readonly IControl jumpControl;
+        private readonly IControl leftControl;
+        private readonly IControl rightControl;
 
-        private IControl slot0;
-        private IControl slot1;
-        private IControl slot2;
-        private IControl slot3;
-        private IControl slot4;
-        private IControl slot5;
-        private IControl slot6;
-        private IControl slot7;
-        private IControl slot8;
-        private IControl slot9;
+        private readonly IControl slot0;
+        private readonly IControl slot1;
+        private readonly IControl slot2;
+        private readonly IControl slot3;
+        private readonly IControl slot4;
+        private readonly IControl slot5;
+        private readonly IControl slot6;
+        private readonly IControl slot7;
+        private readonly IControl slot8;
+        private readonly IControl slot9;
 
         public Player(): base(Entities.Player)
         {

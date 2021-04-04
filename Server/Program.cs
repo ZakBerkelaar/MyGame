@@ -35,14 +35,21 @@ namespace Server
 
         static void Main(string[] args)
         {
-            try
+            if (Debugger.IsAttached)
             {
                 Server.Start();
             }
-            catch (Exception e)
+            else
             {
-                Logger.LogError(e.ToString());
-                throw;
+                try
+                {
+                    Server.Start();
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e.ToString());
+                    throw;
+                }
             }
             return;
             TileRegister.RegisterTiles();
@@ -169,14 +176,14 @@ namespace Server
         {
             int x = msg.ReadInt32();
             int y = msg.ReadInt32();
-            Tile tile = Registry.GetRegistryTile(new IDString(msg.ReadString()));
-            world.SetTile(new Vector2Int(x, y), tile);
+            //Tile tile = Registry.GetRegistryTile(new IDString(msg.ReadString()));
+            //world.SetTile(new Vector2Int(x, y), tile);
 
             NetOutgoingMessage outgoing = server.CreateMessage();
             outgoing.Write((byte)NetCommand.SetTile);
             outgoing.Write(x);
             outgoing.Write(y);
-            outgoing.Write(tile?.RegistryString ?? "");
+            //outgoing.Write(tile?.RegistryString ?? "");
 
             server.SendToAll(outgoing, msg.SenderConnection, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Tile);
         }
@@ -207,7 +214,7 @@ namespace Server
             NetOutgoingMessage outgoing = server.CreateMessage();
             outgoing.Write((byte)NetCommand.NewEntity);
             outgoing.Write(ID);
-            outgoing.Write((ushort)Entities.Player);
+            //outgoing.Write((ushort)Entities.Player);
             outgoing.Write(0f);
             outgoing.Write(20f);
 
@@ -243,7 +250,7 @@ namespace Server
             foreach (Entity entity in world.entities)
             {
                 outgoing.Write(entity.ID);
-                outgoing.Write((ushort)Entities.Player);
+                //outgoing.Write((ushort)Entities.Player);
             }
 
             server.SendMessage(outgoing, conn, NetDeliveryMethod.ReliableOrdered, (int)NetChannel.Init);
@@ -260,7 +267,7 @@ namespace Server
                 for (int y = 0; y < 32; y++)
                 {
                     Tile tile = chunk.GetTile(x, y);
-                    outgoing.Write(tile?.RegistryString ?? "");
+                    outgoing.Write(tile?.RegistryID ?? "");
                 }
             }
 
@@ -310,11 +317,12 @@ namespace Server
                     NetOutgoingMessage outgoing = server.CreateMessage();
                     outgoing.Write((byte)NetCommand.NewEntity);
                     outgoing.Write(ID);
-                    outgoing.Write((ushort)Entities.Test);
+                    //outgoing.Write((ushort)Entities.Test);
                     outgoing.Write(0f);
                     outgoing.Write(20f);
 
-                    NPC npc = new NPC(Entities.Test);
+                    NPC npc = new NPC();
+                    //NPC npc = new NPC(Entities.Test);
                     npc.position = new Vector2(0, 20);
                     npc.isRemote = false;
                     npc.ID = ID;

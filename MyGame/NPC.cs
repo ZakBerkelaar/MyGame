@@ -12,7 +12,7 @@ namespace MyGame
     {
         private int test;
 
-        public NPC(Entities type) : base(type)
+        public NPC() : base()
         {
 
         }

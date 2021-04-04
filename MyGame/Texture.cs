@@ -15,34 +15,40 @@ namespace MyGame
     {
         private AtlasLocation location;
 
-        public int width;
-        public int height;
+        public int Width => location.Width;
+        public int Height => location.Height;
 
         public static Shader textureShader;
 
         private int VBO;
 
-        public Texture(string name)
+        public Texture(IDString id)
         {
-            if(System.IO.File.Exists(@"Assets\Textures\" + name + ".png"))
+            if(!TextureAtlas.TryGetAtlasLocationNew(id, out location))
             {
-                using (Image image =  Image.FromFile(@"Assets\Textures\" + name + ".png"))
-                {
-                    width = image.Width;
-                    height = image.Height;
-                    location = TextureAtlas.GetAtlasLocation(name + ".png");
-                }
+                location = TextureAtlas.GetAtlasLocationNew(new IDString("Common", "Error"));
+                Logger.LogError("Error loading texture " + id);
             }
-            else
-            {
-                using (Image image = Image.FromFile(@"Assets\Textures\Error.png"))
-                {
-                    width = image.Width;
-                    height = image.Height;
-                    location = TextureAtlas.GetAtlasLocation("Error.png");
-                }
-                Logger.LogError("Error loading texture " + name);
-            }
+            
+            //if(System.IO.File.Exists(@"Assets\Textures\" + name + ".png"))
+            //{
+            //    using (Image image =  Image.FromFile(@"Assets\Textures\" + name + ".png"))
+            //    {
+            //        Width = image.Width;
+            //        Height = image.Height;
+            //        location = TextureAtlas.GetAtlasLocation(name + ".png");
+            //    }
+            //}
+            //else
+            //{
+            //    using (Image image = Image.FromFile(@"Assets\Textures\Error.png"))
+            //    {
+            //        Width = image.Width;
+            //        Height = image.Height;
+            //        location = TextureAtlas.GetAtlasLocation("Error.png");
+            //    }
+            //    Logger.LogError("Error loading texture " + name);
+            //}
 
             Game.window.Resize += UpdateVBO;
 
@@ -60,7 +66,7 @@ namespace MyGame
             float[] vertices = new float[6 * 5];
 
             //Top left
-            Vector2 v1 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) - (width / 2), (Game.window.Height /2) - (height / 2)));
+            Vector2 v1 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) - (Width / 2), (Game.window.Height /2) - (Height / 2)));
             vertices[0] = v1.x;
             vertices[1] = v1.y;
             vertices[2] = 0;
@@ -69,7 +75,7 @@ namespace MyGame
             vertices[4] = location.uv.TL.y;
 
             //Bottom left
-            Vector2 v2 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) - (width / 2), (Game.window.Height / 2) + (height / 2)));
+            Vector2 v2 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) - (Width / 2), (Game.window.Height / 2) + (Height / 2)));
             vertices[5] = v2.x;
             vertices[6] = v2.y;
             vertices[7] = 0;
@@ -78,7 +84,7 @@ namespace MyGame
             vertices[9] = location.uv.BL.y;
 
             //Top right
-            Vector2 v3 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) + (width / 2), (Game.window.Height / 2) - (height / 2)));
+            Vector2 v3 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) + (Width / 2), (Game.window.Height / 2) - (Height / 2)));
             vertices[10] = v3.x;
             vertices[11] = v3.y;
             vertices[12] = 0;
@@ -87,7 +93,7 @@ namespace MyGame
             vertices[14] = location.uv.TR.y;
 
             //Bottom right
-            Vector2 v4 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) + (width / 2), (Game.window.Height / 2) + (height / 2)));
+            Vector2 v4 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) + (Width / 2), (Game.window.Height / 2) + (Height / 2)));
             vertices[15] = v4.x;
             vertices[16] = v4.y;
             vertices[17] = 0;
@@ -96,7 +102,7 @@ namespace MyGame
             vertices[19] = location.uv.BR.y;
 
             //Bottom left
-            Vector2 v5 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) - (width / 2), (Game.window.Height / 2) + (height / 2)));
+            Vector2 v5 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) - (Width / 2), (Game.window.Height / 2) + (Height / 2)));
             vertices[20] = v5.x;
             vertices[21] = v5.y;
             vertices[22] = 0;
@@ -105,7 +111,7 @@ namespace MyGame
             vertices[24] = location.uv.BL.y;
 
             //Bottom right
-            Vector2 v6 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) + (width / 2), (Game.window.Height / 2) - (height / 2)));
+            Vector2 v6 = RenderHelper.ScreenToNormalNew(new Vector2((Game.window.Width / 2) + (Width / 2), (Game.window.Height / 2) - (Height / 2)));
             vertices[25] = v6.x;
             vertices[26] = v6.y;
             vertices[27] = 0;
@@ -141,12 +147,12 @@ namespace MyGame
         {
             textureShader.Use();
 
-            //Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Game.window.Width / 2) + xPos * 16) - width / 2, ((Game.window.Height / 2) + yPos * 16) - height / 2) + -Game.playerRenderer.renderPos * 16);
+            //Vector2 final = RenderHelper.ScreenToNormal(new Vector2(((Game.window.Width / 2) + xPos * 16) - Width / 2, ((Game.window.Height / 2) + yPos * 16) - Height / 2) + -Game.playerRenderer.renderPos * 16);
             //final += Vector2.one;
             //var final = RenderHelper.ScreenToNormal(new Vector2(xPos, yPos));
 
             //textureShader.SetVector2("trans", new Vector2(xPos / (Game.window.Width / 2), yPos / -(Game.window.Height / 2)));
-            textureShader.SetVector2("trans", RenderHelper.ScreenToNormalNew(new Vector2(xPos + (width / 2), yPos + (height / 2))));
+            textureShader.SetVector2("trans", RenderHelper.ScreenToNormalNew(new Vector2(xPos + (Width / 2), yPos + (Height / 2))));
             textureShader.SetVector2("scale", new Vector2(xScale, yScale));
             textureShader.SetFloat("rotation", rot);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MyGame.Registration;
 
 namespace MyGame
 {
@@ -11,14 +12,14 @@ namespace MyGame
 
         internal event Action TileSet = delegate { };
 
-        public int NonNullTiles
+        public int NonAirTiles
         {
             get
             {
                 int nonNullTiles = 0;
                 foreach (Tile tile in tiles)
                 {
-                    if (tile != null)
+                    if (tile != Tiles.Air)
                         nonNullTiles++;
                 }
                 return nonNullTiles;
@@ -59,6 +60,13 @@ namespace MyGame
         public Chunk(Vector2Int position)
         {
             this.position = position;
+            for (int x = 0; x < 32; x++)
+            {
+                for (int y = 0; y < 32; y++)
+                {
+                    tiles[x, y] = Tiles.Air;
+                }
+            }
         }
     }
 }

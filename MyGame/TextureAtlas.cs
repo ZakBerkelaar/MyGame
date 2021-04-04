@@ -16,7 +16,7 @@ namespace MyGame
         private static Bitmap multiAtlas;
 
         private static GLTexture tileTexture;
-        private static GLTexture entityTexture;
+        //private static GLTexture entityTexture;
         private static GLTexture multiTexture;
 
         private static Dictionary<Tile, TextureUV> TileUVs;
@@ -26,22 +26,22 @@ namespace MyGame
         public static void GenerateAtlai()
         {
             //tileAtlas = GenerateAtlas(typeof(Tiles), "Assets/Textures", 8, 8, 32, out TileUVs);
-            tileAtlas = GenerateAtlas(Registry.GetRegisteredTiles(), "Assets/Textures", 8, 8, 32, out TileUVs);
-            entityAtlas = GenerateAtlas(typeof(Entities), "Assets/Textures/Entities", 32, 64, 16, out EntityUVs);
+            //tileAtlas = GenerateAtlas(Registry.GetRegisteredTiles(), "Assets/Textures", 8, 8, 32, out TileUVs);
+            //entityAtlas = GenerateAtlas(typeof(Entities), "Assets/Textures/Entities", 32, 64, 16, out EntityUVs);
             
         }
 
         public static void GenerateAtlai2()
         {
-            multiAtlas = GenerateMultisizeAtlas(System.IO.Directory.GetFiles(@"C:\Users\zakbe\source\repos\MyGame\MyGame\bin\Debug\Assets\Textures", "*.png", System.IO.SearchOption.AllDirectories), out multiAtlasPos);
+            multiAtlas = GenerateMultisizeAtlas(System.IO.Directory.GetFiles(@"Assets\", "*.png", System.IO.SearchOption.AllDirectories), out multiAtlasPos);
         }
 
         public static void BindAtlai()
         {
-            GL.ActiveTexture(TextureUnit.Texture4);
-            tileTexture = new GLTexture(tileAtlas);
-            GL.ActiveTexture(TextureUnit.Texture2);
-            entityTexture = new GLTexture(entityAtlas);
+            //GL.ActiveTexture(TextureUnit.Texture4);
+            //tileTexture = new GLTexture(tileAtlas);
+            //GL.ActiveTexture(TextureUnit.Texture2);
+            //entityTexture = new GLTexture(entityAtlas);
             GL.ActiveTexture(TextureUnit.Texture3);
             multiTexture = new GLTexture(multiAtlas);
         }
@@ -82,7 +82,7 @@ namespace MyGame
             List<(Rectangle, Image, string)> placedImages = new List<(Rectangle, Image, string)>();
             List<Point> possiblePoints = new List<Point>();
             possiblePoints.Add(new Point(0, 0));
-            foreach (var image in images.Select(s => (System.IO.Path.GetFileName(s), Image.FromFile(s))))
+            foreach (var image in images.Select(s => (s, Image.FromFile(s))))
             {
                 int imgWidth = image.Item2.Width;
                 int imgHeight = image.Item2.Height;
@@ -124,7 +124,7 @@ namespace MyGame
                     Vector2 BR = new Vector2((image.Item1.Right / (float)width), (image.Item1.Bottom / (float)height));
                     Vector2 BL = new Vector2((image.Item1.Left / (float)width), (image.Item1.Bottom / (float)height));
                     Vector2 TL = new Vector2((image.Item1.Left / (float)width), (image.Item1.Top / (float)height));
-                    textures.Add(image.Item3, new AtlasLocation() { uv = new TextureUV(TR, BR, BL, TL) });
+                    textures.Add(image.Item3, new AtlasLocation() { uv = new TextureUV(TR, BR, BL, TL), Height = image.Item2.Height, Width = image.Item2.Width });
 
                     g.DrawImage(image.Item2, image.Item1);
                 }
@@ -219,22 +219,23 @@ namespace MyGame
             return atlas;
         }
 
-        private static TextureUV GenerateTexturePos(Entities entity)
-        {
-            int entityNum = (int)entity;
-            int atlasWidth = entityAtlas.Width / 32;
-            Vector2Int atlasPos = new Vector2Int(entityNum % atlasWidth, Mathf.FloorToInt((float)entityNum / (float)atlasWidth));
+        #region crap
+        //private static TextureUV GenerateTexturePos(Entities entity)
+        //{
+        //    int entityNum = (int)entity;
+        //    int atlasWidth = entityAtlas.Width / 32;
+        //    Vector2Int atlasPos = new Vector2Int(entityNum % atlasWidth, Mathf.FloorToInt((float)entityNum / (float)atlasWidth));
 
-            float normWidth = 32f / entityAtlas.Width;
-            float normHeight = 64f / entityAtlas.Height;
+        //    float normWidth = 32f / entityAtlas.Width;
+        //    float normHeight = 64f / entityAtlas.Height;
 
-            Vector2 TR = new Vector2(atlasPos.x * normWidth + normWidth, atlasPos.y * normHeight);
-            Vector2 BR = new Vector2(atlasPos.x * normWidth + normWidth, atlasPos.y * normHeight + normHeight);
-            Vector2 BL = new Vector2(atlasPos.x * normWidth, atlasPos.y * normHeight + normHeight);
-            Vector2 TL = new Vector2(atlasPos.x * normWidth, atlasPos.y * normHeight);
+        //    Vector2 TR = new Vector2(atlasPos.x * normWidth + normWidth, atlasPos.y * normHeight);
+        //    Vector2 BR = new Vector2(atlasPos.x * normWidth + normWidth, atlasPos.y * normHeight + normHeight);
+        //    Vector2 BL = new Vector2(atlasPos.x * normWidth, atlasPos.y * normHeight + normHeight);
+        //    Vector2 TL = new Vector2(atlasPos.x * normWidth, atlasPos.y * normHeight);
 
-            return new TextureUV(TR, BR, BL, TL);
-        }
+        //    return new TextureUV(TR, BR, BL, TL);
+        //}
 
         //private static TextureUV GenerateTexturePos(Tile tile)
         //{
@@ -262,10 +263,22 @@ namespace MyGame
         //    Console.WriteLine(tile);
         //    return new TextureUV(TR, BR, BL, TL);
         //}
+        #endregion
 
+        [Obsolete("Use GetAtlasLocationNew")]
         public static AtlasLocation GetAtlasLocation(string fileName)
         {
             return multiAtlasPos[System.IO.Path.GetFileName(fileName)];
+        }
+
+        public static AtlasLocation GetAtlasLocationNew(IDString id)
+        {
+            return multiAtlasPos[$@"Assets\{id.Namespace}\Textures\{id.Type}\{id.Name}.png"];
+        }
+
+        public static bool TryGetAtlasLocationNew(IDString id, out AtlasLocation location)
+        {
+            return multiAtlasPos.TryGetValue($@"Assets\{id.Namespace}\Textures\{id.Type}\{id.Name}.png", out location);
         }
 
         public static TextureUV GetTexturePos(Tile tile)
@@ -273,10 +286,10 @@ namespace MyGame
             return TileUVs[tile];
         }
 
-        public static TextureUV GetTexturePos(Entities entity)
-        {
-            return EntityUVs[(int)entity];
-        }
+        //public static TextureUV GetTexturePos(Entities entity)
+        //{
+        //    return EntityUVs[(int)entity];
+        //}
 
         /*public static void BindAtlas()
         {

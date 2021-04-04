@@ -37,13 +37,9 @@ namespace MyGame.Networking.Packets
             for (int i = 0; i < entityCount; i++)
             {
                 uint id = msg.ReadUInt32();
-                Entities type = (Entities)msg.ReadUInt16();
+                Type type = Registration.Registry.GetRegistyEntity(msg.ReadUInt32());
 
-                Entity entity;
-                if (type == Entities.Player)
-                    entity = new Player();
-                else
-                    entity = new NPC(type);
+                Entity entity = (Entity)Activator.CreateInstance(type);
                 entity.isRemote = true;
                 entity.ID = id;
                 world.entities.Add(entity);
@@ -57,7 +53,7 @@ namespace MyGame.Networking.Packets
                 {
                     for (int y = 0; y < 32; y++)
                     {
-                        Tile tile = Registration.Registry.GetRegistryTile(new IDString(msg.ReadString()));
+                        Tile tile = Registration.Registry.GetRegistryTile(msg.ReadUInt32());
                         chunk.SetTile(x, y, tile);
                     }
                 }
@@ -76,7 +72,7 @@ namespace MyGame.Networking.Packets
             foreach (Entity entity in world.entities)
             {
                 msg.Write(entity.ID);
-                msg.Write((ushort)entity.type);
+                msg.Write(Registration.Registry.GetNetID(entity));
             }
             //Chunks
             foreach(Chunk chunk in world.chunks)
@@ -87,7 +83,7 @@ namespace MyGame.Networking.Packets
                     for (int y = 0; y < 32; y++)
                     {
                         Tile tile = chunk.GetTile(x, y);
-                        msg.Write(tile?.RegistryString ?? "");
+                        msg.Write(Registration.Registry.GetNetID(tile));
                     }
                 }
             }

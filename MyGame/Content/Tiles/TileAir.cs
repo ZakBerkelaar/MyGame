@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Content.Tiles
 {
-    public class TileGrass : Tile
+    public class TileAir : Tile
     {
     }
 }

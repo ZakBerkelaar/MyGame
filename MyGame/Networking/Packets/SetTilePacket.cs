@@ -30,13 +30,15 @@ namespace MyGame.Networking.Packets
         protected override void Deserialize(NetIncomingMessage msg)
         {
             tilePos = msg.ReadVector2Int();
-            tile = Registration.Registry.GetRegistryTile(new IDString(msg.ReadString()));
+            //tile = Registration.Registry.GetRegistryTile(new IDString("Tile", msg.ReadString()));
+            tile = Registration.Registry.GetRegistryTile(msg.ReadUInt32());
         }
 
         protected override void Serialize(NetOutgoingMessage msg)
         {
             msg.Write(tilePos);
-            msg.Write(tile?.RegistryString ?? "");
+            //msg.Write(tile?.RegistryID ?? "");
+            msg.Write(Registration.Registry.GetNetID(tile));
         }
     }
 }

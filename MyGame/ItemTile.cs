@@ -10,7 +10,7 @@ namespace MyGame
     {
         private Tile tile;
 
-        public ItemTile(Tile tile) : base(new IDString("Item" + tile.RegistryString.Name)) 
+        public ItemTile(Tile tile) : base(new IDString("Item", "Item" + tile.RegistryID.Name)) 
         {
             this.tile = tile;
         }

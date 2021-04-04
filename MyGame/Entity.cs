@@ -10,12 +10,11 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace MyGame
 {
-    public abstract class Entity : IIDable
+    public abstract class Entity : IIDable, IRegistrable
     {
         public bool isRemote;
         public uint ID { get; set; }
-        public Entities type;
-        private AIBase ai;
+        public IDString RegistryID { get; private set; }
 
         public World world;
 
@@ -24,13 +23,13 @@ namespace MyGame
 
         public Vector2 size;
 
-        public Entity(Entities type)
-        {
-            this.type = type;
+        //int count = 0;
 
-            EntityInfoAttribute info = GetEntityInfo(type);
-            this.size = new Vector2(info.sizeX, info.sizeY);
-            this.ai = AIBase.CreateAI(info.aiType, this, info.aiParams);
+        public Entity()
+        {
+            RegistryID = new IDString("Entity", GetType().Name);
+            //this.size = new Vector2(info.sizeX, info.sizeY);
+            //this.ai = AIBase.CreateAI(info.aiType, this, info.aiParams);
         }
 
         public void FrameInternal()
@@ -42,7 +41,6 @@ namespace MyGame
         {
             if(!isRemote)
             {
-                ai.Update();
                 Update();
                 HandleCollision();
             }
@@ -68,7 +66,7 @@ namespace MyGame
             {
                 for (int y = bottomTile; y <= topTile; y++)
                 {
-                    if (world.GetTile(new Vector2Int(x, y)) != null)
+                    if (world.GetTile(new Vector2Int(x, y)) != Registration.Tiles.Air)
                     {
                         Vector2 tile = new Vector2(x, y);
                         if (position.x < tile.x + 1 &&
@@ -76,7 +74,7 @@ namespace MyGame
                             position.y < tile.y + 1 &&
                             position.y + (size.y / 16) > tile.y)
                         {
-                            //Console.WriteLine("COLLISION");
+                            //Console.WriteLine("COLLISION" + count++);
 
                             //Determine collision depth with direction
                             //TODO: Is this really the fastest way? (Should still be very fast but needs to be as called several times per frame per entity)
@@ -110,28 +108,5 @@ namespace MyGame
 
         protected virtual void Frame() { }
         protected virtual void Update() { }
-
-        private static Dictionary<Entities, EntityInfoAttribute> entityInfos = new Dictionary<Entities, EntityInfoAttribute>();
-
-        private static EntityInfoAttribute GetEntityInfo(Entities type)
-        {
-            //TODO: cache this in advance rather than when the method is called
-            if(!entityInfos.ContainsKey(type))
-            {
-                EntityInfoAttribute attrib = typeof(Entities).GetMember(type.ToString())
-                                                             .Single()
-                                                             .GetCustomAttribute<EntityInfoAttribute>();
-                entityInfos.Add(type, attrib);
-            }
-            return entityInfos[type];
-        }
-    }
-
-    public enum Entities : ushort
-    {
-        [EntityInfo("Player", 100, 32, 64, typeof(AINone))]
-        Player,
-        [EntityInfo("Test", 100, 32, 64, typeof(AIBasic))]
-        Test
     }
 }

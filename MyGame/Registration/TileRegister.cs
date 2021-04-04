@@ -11,6 +11,7 @@ namespace MyGame.Registration
     {
         public static void RegisterTiles()
         {
+            Registry.Register(new TileAir());
             Registry.Register(new TileDirt());
             Registry.Register(new TileStone());
             Registry.Register(new TileGrass());

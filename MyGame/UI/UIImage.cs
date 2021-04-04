@@ -9,11 +9,11 @@ namespace MyGame.UI
     public class UIImage : UIElement
     {
         private Texture texture;
-        public UIImage(string texture)
+        public UIImage(IDString texture)
         {
-            this.texture = new Texture(@"UI\" + texture);
-            width = this.texture.width;
-            height = this.texture.height;
+            this.texture = new Texture(texture);
+            width = this.texture.Width;
+            height = this.texture.Height;
         }
 
         protected override void DrawSelf()

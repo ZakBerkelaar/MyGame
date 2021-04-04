@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace MyGame
 {
-    public abstract class Tile : ITextureable
+    public abstract class Tile : ITextureable, IRegistrable
     {
-        public IDString RegistryString { get; set; }
+        public IDString RegistryID { get; set; }
 
-        public string Texture => RegistryString.Name;
+        public string Texture => RegistryID.Name;
 
-        //TODO: Require registry string in ctor
-        public Tile()
+        protected Tile()
         {
-            
+            RegistryID = new IDString("Tile", GetType().Name);
         }
     }
 

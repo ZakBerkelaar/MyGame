@@ -30,22 +30,25 @@ namespace MyGame
         private readonly IControl slot8;
         private readonly IControl slot9;
 
-        public Player(): base(Entities.Player)
+        public Player()
         {
-            jumpControl = Input.CreateControl(new IDString("PlayerJump"), Key.W);
-            leftControl = Input.CreateControl(new IDString("PlayerLeft"), Key.A);
-            rightControl = Input.CreateControl(new IDString("PlayerRight"), Key.D);
+            size.x = 32;
+            size.y = 64;
 
-            slot0 = Input.CreateControl(new IDString("PlayerSlot0"), Key.Number1);
-            slot1 = Input.CreateControl(new IDString("PlayerSlot1"), Key.Number2);
-            slot2 = Input.CreateControl(new IDString("PlayerSlot2"), Key.Number3);
-            slot3 = Input.CreateControl(new IDString("PlayerSlot3"), Key.Number4);
-            slot4 = Input.CreateControl(new IDString("PlayerSlot4"), Key.Number5);
-            slot5 = Input.CreateControl(new IDString("PlayerSlot5"), Key.Number6);
-            slot6 = Input.CreateControl(new IDString("PlayerSlot6"), Key.Number7);
-            slot7 = Input.CreateControl(new IDString("PlayerSlot7"), Key.Number8);
-            slot8 = Input.CreateControl(new IDString("PlayerSlot8"), Key.Number9);
-            slot9 = Input.CreateControl(new IDString("PlayerSlot9"), Key.Number0);
+            jumpControl = Input.CreateControl(new IDString("Input", "PlayerJump"), Key.W);
+            leftControl = Input.CreateControl(new IDString("Input", "PlayerLeft"), Key.A);
+            rightControl = Input.CreateControl(new IDString("Input", "PlayerRight"), Key.D);
+
+            slot0 = Input.CreateControl(new IDString("Input", "PlayerSlot0"), Key.Number1);
+            slot1 = Input.CreateControl(new IDString("Input", "PlayerSlot1"), Key.Number2);
+            slot2 = Input.CreateControl(new IDString("Input", "PlayerSlot2"), Key.Number3);
+            slot3 = Input.CreateControl(new IDString("Input", "PlayerSlot3"), Key.Number4);
+            slot4 = Input.CreateControl(new IDString("Input", "PlayerSlot4"), Key.Number5);
+            slot5 = Input.CreateControl(new IDString("Input", "PlayerSlot5"), Key.Number6);
+            slot6 = Input.CreateControl(new IDString("Input", "PlayerSlot6"), Key.Number7);
+            slot7 = Input.CreateControl(new IDString("Input", "PlayerSlot7"), Key.Number8);
+            slot8 = Input.CreateControl(new IDString("Input", "PlayerSlot8"), Key.Number9);
+            slot9 = Input.CreateControl(new IDString("Input", "PlayerSlot9"), Key.Number0);
         }
 
         protected override void Update()
@@ -120,8 +123,8 @@ namespace MyGame
                 Vector2Int tilePos = new Vector2Int(Mathf.CeilToInt(((e.X - (Game.window.Width / 2f)) / 16f) + offset.x), Mathf.CeilToInt((((Game.window.Height - e.Y) - (Game.window.Height / 2f)) / 16f) + 1 + offset.y));
                 //tilePos += floored;
                 Console.WriteLine(tilePos);
-                Game.activeWorld.SetTile(tilePos, null);
-                Game.networkerClient.SendMessage(new Networking.Packets.SetTilePacket(tilePos, null));
+                Game.activeWorld.SetTile(tilePos, Registration.Tiles.Air);
+                Game.networkerClient.SendMessage(new Networking.Packets.SetTilePacket(tilePos, Registration.Tiles.Air));
             }
             else if (e.Button == MouseButton.Right)
             {

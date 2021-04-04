@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Content.Tiles
+namespace MyGame
 {
-    public class TileGrass : Tile
+    public interface IRegistrable
     {
+        IDString RegistryID { get; }
     }
 }

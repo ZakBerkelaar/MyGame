@@ -28,7 +28,7 @@ namespace MyGame.Rendering
 
             prevPos = entity.position;
 
-            entityTexture = new Texture(@"Entities\" + entity.type.ToString());
+            entityTexture = new Texture(entity.RegistryID);
         }
 
         ~EntityRenderer()
@@ -39,7 +39,8 @@ namespace MyGame.Rendering
         public void UpdateVBO()
         {
             float[] vertices = new float[6 * 5];
-            TextureUV uv = TextureAtlas.GetTexturePos(entity.type);
+            //TextureUV uv = TextureAtlas.GetTexturePos(entity.type);
+            TextureUV uv = TextureAtlas.GetAtlasLocationNew(entity.RegistryID).uv;
 
             //Bottom left
             Vector2 v1 = RenderHelper.ScreenToNormal(new Vector2(0, 0));

@@ -10,14 +10,16 @@ namespace MyGame
     {
         public string Namespace { get; set; }
         public string Name { get; set; }
+        public string Type { get; set; }
 
-        public IDString(string @namespace, string name)
+        public IDString(string @namespace, string type, string name)
         {
             Namespace = @namespace;
             Name = name;
+            Type = type;
         }
 
-        public IDString(string name)
+        public IDString(string type, string name)
         {
             if (name == null)
             {
@@ -36,12 +38,14 @@ namespace MyGame
                 Namespace = "MyGame";
                 Name = name;
             }
+            Type = type;
         }
 
-        public static implicit operator string(IDString iDString) => iDString.Namespace + ":" + iDString.Name;
+        public static implicit operator string(IDString iDString) => iDString.ToString();
 
         public override string ToString()
         {
+            return $"{Namespace}:{Type}/{Name}";
             return Namespace + ":" + Name;
         }
     }

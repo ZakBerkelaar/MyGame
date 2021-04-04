@@ -235,7 +235,7 @@ namespace MyGame
 
             //Create shader
             shader = new Shader("Shaders/tile.vert", "Shaders/tile.frag");
-            shader.SetInt("texture0", 4);
+            shader.SetInt("texture0", 3);
             //Player shader
             entityShader = new Shader("Shaders/entity.vert", "Shaders/entity.frag");
             entityShader.SetInt("texture0", 2);
@@ -264,7 +264,7 @@ namespace MyGame
             lightingBuffer = new Framebuffer(TextureUnit.Texture1);
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
-            Game.canvas.AddChild(new UIImage("Check"));
+            Game.canvas.AddChild(new UIImage(new IDString("UI", "Check")));
 
             //Load texture atlas
             //TextureAtlas.BindAtlas();

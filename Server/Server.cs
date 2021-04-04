@@ -44,6 +44,7 @@ namespace Server
             TileRegister.RegisterTiles();
             ItemRegister.RegisterItems();
             PacketRegister.RegisterPackets();
+            EntityRegister.RegisterEntities();
 
             world = new World(10, 3);
             world.Generate();
@@ -59,6 +60,15 @@ namespace Server
             double acc = 0.0;
 
             world.deltaTime = (float)td;
+
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    string input = Console.ReadLine();
+                    HandleCommand(input);
+                }
+            });
 
             Logger.LogInfo("Entering loop");
             int posCount = 0;
@@ -151,13 +161,13 @@ namespace Server
                 case "test":
                     Logger.LogInfo("Creating test entity");
 
-                    NPC npc = new NPC(Entities.Test);
-                    npc.position = world.spawn;
-                    npc.isRemote = false;
-                    npc.ID = IDCounter++;
-                    npc.world = world;
-                    world.entities.Add(npc);
-                    var packet = new NewEntityPacket(npc);
+                    Entity test = new MyGame.Content.Entities.TestEntity();
+                    test.position = world.spawn;
+                    test.isRemote = false;
+                    test.ID = IDCounter++;
+                    test.world = world;
+                    world.entities.Add(test);
+                    var packet = new NewEntityPacket(test);
                     networker.SendToAll(packet);
                     break;
                 default:

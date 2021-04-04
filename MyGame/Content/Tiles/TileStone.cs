@@ -8,9 +8,5 @@ namespace MyGame.Content.Tiles
 {
     class TileStone : Tile
     {
-        public TileStone()
-        {
-            RegistryString = new IDString("TileStone");
-        }
     }
 }

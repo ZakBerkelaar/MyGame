@@ -83,7 +83,7 @@ namespace MyGame
 
             static Control()
             {
-                controlConfig = new Config(new IDString("Controls"));
+                controlConfig = new Config(new IDString("Config", "Controls"));
             }
 
             public Control(IDString iDString, Key defaultKey)

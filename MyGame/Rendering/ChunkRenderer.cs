@@ -29,7 +29,7 @@ namespace MyGame.Rendering
         public void UpdateVBO()
         {
 
-            int nonNullTiles = chunk.NonNullTiles;
+            int nonNullTiles = chunk.NonAirTiles;
             float[] vertices = new float[nonNullTiles * 6 * 5];
             //vertices = new float[nonNullTiles * 6 * 5];
             triangles = nonNullTiles * 6;
@@ -44,9 +44,9 @@ namespace MyGame.Rendering
             {
                 for (int y = 0; y < 32; y++)
                 {
-                    if (chunk.GetTile(x, y) != null)
+                    if (chunk.GetTile(x, y) != Registration.Tiles.Air)
                     {
-                        TextureUV uv = TextureAtlas.GetTexturePos(chunk.GetTile(x, y));
+                        TextureUV uv = TextureAtlas.GetAtlasLocationNew(chunk.GetTile(x, y).RegistryID).uv;
                         //Bottom left
                         Vector2 v1 = RenderHelper.ScreenToNormal(new Vector2(x * TileSize, y * TileSize) + offset);
                         vertices[i + 0] = v1.x;

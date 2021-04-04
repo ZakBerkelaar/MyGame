@@ -17,8 +17,8 @@ namespace MyGame.UI
 
         static UIItemBar()
         {
-            boxTexture = new Texture(@"UI\Box");
-            selectedBoxTexture = new Texture(@"UI\BoxSelected");
+            boxTexture = new Texture(new IDString("UI", "Box"));
+            selectedBoxTexture = new Texture(new IDString("UI", "BoxSelected"));
         }
 
         public UIItemBar(Player player)
@@ -30,14 +30,14 @@ namespace MyGame.UI
         protected override void DrawSelf()
         {
             const int size = 3;
-            int total = boxTexture.width * player.items.Length * size;
+            int total = boxTexture.Width * player.items.Length * size;
             for (int i = 0; i < player.items.Length; i++)
             {
                 if (i == player.CurrentItem)
-                    selectedBoxTexture.Draw(i * boxTexture.width * size + ((Game.window.Width / 2) - total / 2), Game.window.Height - (boxTexture.height * size), size, size, 0);
+                    selectedBoxTexture.Draw(i * boxTexture.Width * size + ((Game.window.Width / 2) - total / 2), Game.window.Height - (boxTexture.Height * size), size, size, 0);
                 else
-                    boxTexture.Draw(i * boxTexture.width * size + ((Game.window.Width / 2) - total / 2), Game.window.Height - (boxTexture.height * size), size, size, 0);
-                renderers[i]?.Render(i * boxTexture.width * size + ((Game.window.Width / 2) - total / 2), Game.window.Height - (boxTexture.height * size));
+                    boxTexture.Draw(i * boxTexture.Width * size + ((Game.window.Width / 2) - total / 2), Game.window.Height - (boxTexture.Height * size), size, size, 0);
+                renderers[i]?.Render(i * boxTexture.Width * size + ((Game.window.Width / 2) - total / 2), Game.window.Height - (boxTexture.Height * size));
             }
         }
     }

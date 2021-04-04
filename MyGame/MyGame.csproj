@@ -62,6 +62,10 @@
     <Compile Include="AI\AINone.cs" />
     <Compile Include="Chunk.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Content\Entities\TestEntity.cs" />
+    <Compile Include="Content\Tiles\TileAir.cs" />
+    <Compile Include="IRegistrable.cs" />
+    <Compile Include="Networking\NetCommand.cs" />
     <Compile Include="Networking\NetworkerServer.cs" />
     <Compile Include="Networking\NetworkingExtensions.cs" />
     <Compile Include="Networking\NetworkPacket.cs" />
@@ -80,6 +84,7 @@
     <Compile Include="Networking\Packets\SetTilePacket.cs" />
     <Compile Include="Networking\Packets\UpdatePositionPacket.cs" />
     <Compile Include="Networking\Packets\WorldPacket.cs" />
+    <Compile Include="Registration\EntityRegister.cs" />
     <Compile Include="Registration\ItemRegister.cs" />
     <Compile Include="Registration\PacketRegister.cs" />
     <Compile Include="Registration\Registry.cs" />
@@ -94,8 +99,6 @@
     <Compile Include="Input.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Mathf.cs" />
-    <Compile Include="Networking\NetCommand.cs" />
-    <Compile Include="Networking\Networker.cs" />
     <Compile Include="Noise.cs" />
     <Compile Include="NPC.cs" />
     <Compile Include="Player.cs" />
@@ -126,7 +129,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Compile Include="Networking\Networker.Actions.cs" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Shaders\circle.frag" />
@@ -141,7 +143,6 @@
     <None Include="Shaders\tile.vert" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Content\Entities\" />
     <Folder Include="Content\Items\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

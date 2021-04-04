@@ -14,7 +14,9 @@ namespace MyGame
 
         public float deltaTime;
 
-        public Vector2 spawn;
+        public Vector2 spawn = new Vector2(0, 20);
+
+        public readonly int Gravity = 20;
 
         public int Width
         {

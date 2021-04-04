@@ -10,7 +10,7 @@ using MyGame.Networking.Packets;
 
 namespace MyGame
 {
-    static class Game
+    internal static class Game
     {
         //public static List<Entity> entities = new List<Entity>();
         //public static Dictionary<uint, Entity> entities = new Dictionary<uint, Entity>();
@@ -36,7 +36,23 @@ namespace MyGame
         static void Main(string[] args)
         {
             Logger.Init("Game.txt");
-            RunGame(args);
+            if(System.Diagnostics.Debugger.IsAttached)
+            {
+                RunGame(args);
+            }
+            else
+            {
+                try
+                {
+                    RunGame(args);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e.ToString());
+                    throw;
+                }
+            }
+            
             //try
             //{
             //    RunGame(args);
@@ -59,6 +75,7 @@ namespace MyGame
             TileRegister.RegisterTiles();
             ItemRegister.RegisterItems();
             PacketRegister.RegisterPackets();
+            EntityRegister.RegisterEntities();
 
             //TextureAtlas.GenerateAtlas();
             TextureAtlas.GenerateAtlai();
@@ -112,8 +129,8 @@ namespace MyGame
 
             networkerClient.RegisterPacketHandler<NewEntityPacket>(packet =>
             {
-                activeWorld.entities.Add(packet.entity);
-                renderedEntities.Add(new EntityRenderer(packet.entity));
+                activeWorld.entities.Add(packet.Entity);
+                renderedEntities.Add(new EntityRenderer(packet.Entity));
             });
 
             networkerClient.RegisterPacketHandler<SetTilePacket>(packet =>

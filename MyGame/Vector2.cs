@@ -11,6 +11,9 @@ namespace MyGame
         public float x;
         public float y;
 
+        public float Magnitude => Mathf.Sqrt((x * x) + (y * y));
+        public float SqrMagnitude => (x * x) + (y * y);
+
         public static Vector2 zero => new Vector2(0, 0);
         public static Vector2 one => new Vector2(1, 1);
         public static Vector2 up => new Vector2(0, 1);

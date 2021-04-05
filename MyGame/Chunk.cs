@@ -38,17 +38,18 @@ namespace MyGame
             TileSet();
         }
 
-        public void SetTile(Vector2Int pos, Tile tile, bool update)
+        public void SetTileNoUpdate(Vector2Int pos, Tile tile)
         {
             tiles[pos.x, pos.y] = tile;
-            if(update)
-                TileSet();
+        }
+
+        public void SetTileNoUpdate(int x, int y, Tile tile)
+        {
+            tiles[x, y] = tile;
         }
 
         public Tile GetTile(Vector2Int pos)
         {
-            if (pos.x < 0 || pos.x >= 32 || pos.y < 0 || pos.y >= 32)
-                return null;
             return tiles[pos.x, pos.y];
         }
 

@@ -74,7 +74,7 @@ namespace MyGame
                             position.y < tile.y + 1 &&
                             position.y + (size.y / 16) > tile.y)
                         {
-                            //Console.WriteLine("COLLISION" + count++);
+                            //Console.WriteLine("COLLISION");
 
                             //Determine collision depth with direction
                             //TODO: Is this really the fastest way? (Should still be very fast but needs to be as called several times per frame per entity)

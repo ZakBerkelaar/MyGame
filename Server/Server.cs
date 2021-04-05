@@ -114,7 +114,7 @@ namespace Server
 
             networker.RegisterPacketHandler<SetTilePacket>(packet =>
             {
-                world.SetTile(packet.tilePos, packet.tile);
+                world.SetTileLocal(packet.tilePos, packet.tile);
                 networker.SendToAll(packet, packet.sender);
             });
 

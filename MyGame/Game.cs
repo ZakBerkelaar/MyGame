@@ -135,7 +135,7 @@ namespace MyGame
 
             networkerClient.RegisterPacketHandler<SetTilePacket>(packet =>
             {
-                activeWorld.SetTile(packet.tilePos, packet.tile);
+                activeWorld.SetTileLocal(packet.tilePos, packet.tile);
             });
 
             networkerClient.RegisterPacketHandler<UpdatePositionPacket>(packet =>

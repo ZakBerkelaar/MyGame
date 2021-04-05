@@ -48,30 +48,51 @@ namespace MyGame
             }
         }
 
-        public void SetTile(Vector2Int pos, Tile tile)
+        public void SetTile(int x, int y, Tile tile)
         {
-            Vector2Int chunkPos = new Vector2Int(Mathf.FloorToInt(pos.x / 32), Mathf.FloorToInt(pos.y / 32));
-            Vector2Int tilePos = new Vector2Int(pos.x % 32, pos.y % 32);
-            chunks[chunkPos.x, chunkPos.y].SetTile(tilePos, tile);
+            GetChunk(x, y).SetTile(x & 31, y & 31, tile);
+            SendNetMessage(x, y, tile);
         }
 
-        public void SetTile(Vector2Int pos, Tile tile, bool update)
+        public void SetTile(Vector2Int pos, Tile tile)
         {
-            Vector2Int chunkPos = new Vector2Int(Mathf.FloorToInt(pos.x / 32), Mathf.FloorToInt(pos.y / 32));
-            Vector2Int tilePos = new Vector2Int(pos.x % 32, pos.y % 32);
-            chunks[chunkPos.x, chunkPos.y].SetTile(tilePos, tile, update);
+            GetChunk(pos.x, pos.y).SetTile(pos.x & 31, pos.y & 31, tile);
+            SendNetMessage(pos.x, pos.y, tile);
+        }
+
+        public void SetTileLocal(int x, int y, Tile tile)
+        {
+            GetChunk(x, y).SetTile(x & 31, y & 31, tile);
+        }
+
+        public void SetTileLocal(Vector2Int pos, Tile tile)
+        {
+            GetChunk(pos.x, pos.y).SetTile(pos.x & 31, pos.y & 31, tile);
         }
 
         public Tile GetTile(Vector2Int pos)
         {
-            Vector2Int chunkPos = new Vector2Int(Mathf.FloorToInt(pos.x / 32), Mathf.FloorToInt(pos.y / 32));
-            Vector2Int tilePos = new Vector2Int(pos.x % 32, pos.y % 32);
-            return chunks[chunkPos.x, chunkPos.y].GetTile(tilePos);
+            return GetChunk(pos.x, pos.y).GetTile(pos.x & 31, pos.y & 31);
+        }
+
+        public Tile GetTile(int x, int y)
+        {
+            return GetChunk(x, y).GetTile(x & 31, y & 31);
+        }
+
+        private Chunk GetChunk(int x, int y)
+        {
+            return chunks[x >> 5, y >> 5];
         }
 
         public void Generate()
         {
             WorldGen.GenerateTerrain(this);
+        }
+
+        private void SendNetMessage(int x, int y, Tile tile)
+        {
+            Game.networkerClient.SendMessage(new Networking.Packets.SetTilePacket(new Vector2Int(x, y), tile));
         }
     }
 }

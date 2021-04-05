@@ -64,6 +64,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="Content\Entities\TestEntity.cs" />
     <Compile Include="Content\Tiles\TileAir.cs" />
+    <Compile Include="FastNoiseLite.cs" />
     <Compile Include="IRegistrable.cs" />
     <Compile Include="Networking\NetCommand.cs" />
     <Compile Include="Networking\NetworkerServer.cs" />
@@ -99,7 +100,6 @@
     <Compile Include="Input.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Mathf.cs" />
-    <Compile Include="Noise.cs" />
     <Compile Include="NPC.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Game.cs" />

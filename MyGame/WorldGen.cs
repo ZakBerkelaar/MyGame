@@ -11,14 +11,17 @@ namespace MyGame
     {
         public static void GenerateTerrain(World world)
         {
+            FastNoiseLite noise = new FastNoiseLite();
+            noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+
             int worldWidth = world.chunks.GetLength(0) * 32;
             for (int i = 0; i < worldWidth; i++)
             {
                 float height =
-                    Noise.noise(i / 60f) * 10f +
-                    Noise.noise(i / 30f) * 5f +
-                    Noise.noise(i / 15f) * 2.5f +
-                    Noise.noise(i / 7.5f) * 1.25f;
+                    (noise.GetNoise(0, i / 5f) * 10f) +
+                    (noise.GetNoise(0, i / 2.5f) * 5f) +
+                    (noise.GetNoise(0, i / 1.25f) * 2.5f) +
+                    (noise.GetNoise(0, i / 0.625f) * 1.25f);
                 height += 15;
                 Vector2Int topPos = new Vector2Int(i, Mathf.FloorToInt(height));
 

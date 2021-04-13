@@ -51,6 +51,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigTests.cs" />
     <Compile Include="GradientTests.cs" />
     <Compile Include="IDStringTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

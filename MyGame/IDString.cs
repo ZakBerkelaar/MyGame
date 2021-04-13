@@ -21,24 +21,28 @@ namespace MyGame
 
         public IDString(string type, string name)
         {
-            if (name == null)
+            Namespace = "MyGame";
+            Name = name;
+            Type = type;
+        }
+
+        public IDString(string idString)
+        {
+            if (idString.Contains(':'))
             {
-                throw new ArgumentException("Name must not be null");
-            }
-            else if (name.Contains(':'))
-            {
-                var chars = name.Split(':');
-                if (chars.Length != 2)
-                    throw new ArgumentException("The namespace and name must be separated by a colon \':\' ");
-                Namespace = chars[0];
-                Name = chars[1];
+                var nameSplit = idString.Split(':');
+                Namespace = nameSplit[0];
+                var typeSplit = nameSplit[1].Split('/');
+                Type = typeSplit[0];
+                Name = typeSplit[1];
             }
             else
             {
                 Namespace = "MyGame";
-                Name = name;
+                var typeSplit = idString.Split('/');
+                Type = typeSplit[0];
+                Name = typeSplit[1];
             }
-            Type = type;
         }
 
         public static implicit operator string(IDString iDString) => iDString.ToString();
@@ -46,7 +50,6 @@ namespace MyGame
         public override string ToString()
         {
             return $"{Namespace}:{Type}/{Name}";
-            return Namespace + ":" + Name;
         }
     }
 }

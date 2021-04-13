@@ -36,5 +36,10 @@ namespace MyGame
         {
             return (float)Math.Pow(@base, exp);
         }
+
+        public static float Cos(float rad)
+        {
+            return (float)Math.Cos(rad);
+        }
     }
 }

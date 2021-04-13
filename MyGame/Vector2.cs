@@ -54,6 +54,11 @@ namespace MyGame
             return new Vector2(a.x * b, a.y * b);
         }
 
+        public static Vector2 operator *(float a, Vector2 b)
+        {
+            return new Vector2(b.x * a, b.y * a);
+        }
+
         public static Vector2 operator -(Vector2 a)
         {
             return new Vector2(-a.x, -a.y);

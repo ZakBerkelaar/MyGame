@@ -65,6 +65,11 @@
     <Compile Include="Content\Entities\TestEntity.cs" />
     <Compile Include="Content\Tiles\TileAir.cs" />
     <Compile Include="FastNoiseLite.cs" />
+    <Compile Include="Generation\IWorldGenerationData.cs" />
+    <Compile Include="Generation\IWorldGenerator.cs" />
+    <Compile Include="Generation\IWorldGenPass.cs" />
+    <Compile Include="Generation\Passes\TerrainPass.cs" />
+    <Compile Include="Generation\WorldGenerator.cs" />
     <Compile Include="Gradient.cs" />
     <Compile Include="IRegistrable.cs" />
     <Compile Include="Networking\NetCommand.cs" />

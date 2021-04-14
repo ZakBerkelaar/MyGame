@@ -158,6 +158,7 @@ namespace MyGame
 
 
             const double td = 1d / 50d;
+            const float td2 = (float)td;
             double currentTime = GetTime();
             double acc = 0.0;
 
@@ -185,10 +186,7 @@ namespace MyGame
                     }
 
                     OnUpdateFrame(null);
-                    foreach (Entity entity in Game.activeWorld.entities)
-                    {
-                        entity.UpdateInternal();
-                    }
+                    Game.activeWorld.Update(td2);
 
                     if (crap == 10)
                     {

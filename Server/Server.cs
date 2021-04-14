@@ -46,8 +46,7 @@ namespace Server
             PacketRegister.RegisterPackets();
             EntityRegister.RegisterEntities();
 
-            world = new World(10, 3);
-            world.Generate();
+            world = WorldGen.GetWorld();
 
             networker = new NetworkerServer(6666);
             RegisterCallbacks();
@@ -56,6 +55,7 @@ namespace Server
             QueryPerformanceFrequency(out freq);
 
             const double td = 1d / 50d;
+            const float td2 = (float)td;
             double currentTime = GetTime(); 
             double acc = 0.0;
 
@@ -81,11 +81,7 @@ namespace Server
                 acc += frameTime;
                 while (acc >= td)
                 {
-                    //Update
-                    foreach (Entity entity in world.entities)
-                    {
-                        entity.UpdateInternal();
-                    }
+                    world.Update(td2);
 
                     if(posCount == 10)
                     {

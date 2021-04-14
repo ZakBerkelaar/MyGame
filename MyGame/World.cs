@@ -9,30 +9,18 @@ namespace MyGame
     public class World
     {
         public Chunk[,] chunks;
-
         public EntityHolder entities;
 
-        public float deltaTime;
 
-        public Vector2 spawn = new Vector2(0, 20);
+        public Vector2 spawn = new Vector2(1, 30);
 
         public readonly int Gravity = 20;
 
-        public int Width
-        {
-            get
-            {
-                return chunks.GetLength(0);
-            }
-        }
+        public int Width => chunks.GetLength(0);
+        public int Height => chunks.GetLength(1);
 
-        public int Height
-        {
-            get
-            {
-                return chunks.GetLength(1);
-            }
-        }
+        public float deltaTime;
+        public uint counter { get; private set; }
 
         public World(int width, int height)
         {
@@ -46,6 +34,16 @@ namespace MyGame
                     chunks[x, y] = new Chunk(new Vector2Int(x, y));
                 }
             }
+        }
+
+        public void Update(float dt)
+        {
+            deltaTime = dt;
+            foreach (var entity in entities)
+            {
+                entity.UpdateInternal();
+            }
+            counter++;
         }
 
         public void SetTile(int x, int y, Tile tile)
@@ -83,11 +81,6 @@ namespace MyGame
         private Chunk GetChunk(int x, int y)
         {
             return chunks[x >> 5, y >> 5];
-        }
-
-        public void Generate()
-        {
-            WorldGen.GenerateTerrain(this);
         }
 
         private void SendNetMessage(int x, int y, Tile tile)

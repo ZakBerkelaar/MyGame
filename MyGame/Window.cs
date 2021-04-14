@@ -157,7 +157,7 @@ namespace MyGame
             QueryPerformanceFrequency(out freq);
 
 
-            const double td = 1d / 50d;
+            const double td = 1d / 30d;
             const float td2 = (float)td;
             double currentTime = GetTime();
             double acc = 0.0;
@@ -188,7 +188,7 @@ namespace MyGame
                     OnUpdateFrame(null);
                     Game.activeWorld.Update(td2);
 
-                    if (crap == 10)
+                    if (crap == 6)
                     {
                         var packet = new Networking.Packets.UpdatePositionPacket(new Networking.Packets.EntityPositionData() { id = Game.activePlayer.ID, position = Game.activePlayer.position });
                         Game.networkerClient.SendMessage(packet);

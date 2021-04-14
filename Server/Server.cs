@@ -54,7 +54,7 @@ namespace Server
 
             QueryPerformanceFrequency(out freq);
 
-            const double td = 1d / 50d;
+            const double td = 1d / 30d;
             const float td2 = (float)td;
             double currentTime = GetTime(); 
             double acc = 0.0;
@@ -83,7 +83,7 @@ namespace Server
                 {
                     world.Update(td2);
 
-                    if(posCount == 10)
+                    if(posCount == 6)
                     {
                         BroadcastPositions();
                         posCount = 0;

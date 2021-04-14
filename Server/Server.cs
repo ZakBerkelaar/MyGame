@@ -10,17 +10,21 @@ using MyGame;
 using System.Runtime.InteropServices;
 using System.Security;
 using Lidgren.Network;
+using System.Threading;
 
 namespace Server
 {
     public static class Server
     {
-        private static World world;
+        public static Dispatcher dispatcher = new Dispatcher();
+
+        //private static World world;
         private static Dictionary<NetConnection, Player> connectedPlayers = new Dictionary<NetConnection, Player>();
+        private static Dictionary<ushort, World> worlds = new Dictionary<ushort, World>();
 
         private static NetworkerServer networker;
 
-        private static uint IDCounter;
+        //private static uint IDCounter;
 
         [DllImport("kernel32.dll"), SuppressUnmanagedCodeSecurity]
         private static extern bool QueryPerformanceCounter(out long count);
@@ -46,20 +50,17 @@ namespace Server
             PacketRegister.RegisterPackets();
             EntityRegister.RegisterEntities();
 
-            world = WorldGen.GetWorld();
-
             networker = new NetworkerServer(6666);
             RegisterCallbacks();
             networker.Start();
 
+            CreateWorldThread();
+
             QueryPerformanceFrequency(out freq);
 
             const double td = 1d / 30d;
-            const float td2 = (float)td;
-            double currentTime = GetTime(); 
+            double currentTime = GetTime();
             double acc = 0.0;
-
-            world.deltaTime = (float)td;
 
             Task.Run(() =>
             {
@@ -71,6 +72,45 @@ namespace Server
             });
 
             Logger.LogInfo("Entering loop");
+            while (true)
+            {
+                double newTime = GetTime();
+                double frameTime = newTime - currentTime;
+                currentTime = newTime;
+
+                acc += frameTime;
+                while (acc >= td)
+                {
+                    dispatcher.InvokePending();
+
+                    acc -= td;
+                }
+
+                networker.ReadMessages();
+            }
+        }
+
+        private static void StartWorldThread(object worldObj)
+        {
+            World world2 = (World)worldObj;
+            QueryPerformanceFrequency(out freq);
+
+            const double td = 1d / 30d;
+            const float td2 = (float)td;
+            double currentTime = GetTime();
+            double acc = 0.0;
+
+            world2.deltaTime = (float)td;
+
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    string input = Console.ReadLine();
+                    HandleCommand(input);
+                }
+            });
+
             int posCount = 0;
             while (true)
             {
@@ -81,26 +121,32 @@ namespace Server
                 acc += frameTime;
                 while (acc >= td)
                 {
-                    world.Update(td2);
+                    world2.dispatcher.InvokePending();
+                    world2.Update(td2);
 
-                    if(posCount == 6)
+                    if (posCount == 6)
                     {
-                        BroadcastPositions();
+                        var packet = new UpdatePositionPacket(world2.entities.Select(e => new EntityPositionData() { worldID = world2.worldID, id = e.ID, position = e.position }).ToList());
+                        dispatcher.Invoke(() => networker.SendToAll(packet));
                         posCount = 0;
                     }
                     posCount++;
 
                     acc -= td;
                 }
-
-                networker.ReadMessages();
             }
         }
 
-        private static void BroadcastPositions()
+
+        private static ushort WorldCounter = 0;
+        private static void CreateWorldThread()
         {
-            var packet = new UpdatePositionPacket(world.entities.Select(e => new EntityPositionData() { id = e.ID, position = e.position }).ToList());
-            networker.SendToAll(packet);
+            World world = WorldGen.GetWorld();
+            world.worldID = WorldCounter++;
+
+            worlds.Add(world.worldID, world);
+            Thread thread = new Thread(new ParameterizedThreadStart(StartWorldThread));
+            thread.Start(world);
         }
 
         private static void RegisterCallbacks()
@@ -110,42 +156,54 @@ namespace Server
 
             networker.RegisterPacketHandler<SetTilePacket>(packet =>
             {
-                world.SetTileLocal(packet.tilePos, packet.tile);
+                World world = worlds[packet.WorldID];
+                world.dispatcher.Invoke(() => world.SetTileLocal(packet.TilePos, packet.Tile));
                 networker.SendToAll(packet, packet.sender);
             });
 
             networker.RegisterPacketHandler<UpdatePositionPacket>(packet =>
             {
-                EntityPositionData data = packet.positionData[0]; //TODO: Do it for each item
-                world.entities[data.id].position = data.position;
+                EntityPositionData data = packet.PositionData[0]; //TODO: Do it for each item
+                worlds[data.worldID].entities[data.id].position = data.position; //TOOD: Should possibly be invoked
             });
         }
 
         private static void Networker_playerDisconnected(NetConnection obj)
         {
-            uint ID = connectedPlayers[obj].ID;
-            world.entities.Remove(ID);
+            Player player = connectedPlayers[obj];
+
+            player.world.entities.Remove(player.ID);
             connectedPlayers.Remove(obj);
 
-            var packet = new DeleteEntityPacket(ID);
+            var packet = new DeleteEntityPacket(player.world.worldID, player.ID);
             networker.SendToAll(packet);
         }
 
         private static void Networker_playerConnected(NetConnection obj)
         {
-            Player player = new Player();
-            player.isRemote = true;
-            player.ID = IDCounter++;
-            player.world = world;
-            connectedPlayers.Add(obj, player);
+            World world2 = worlds.ElementAt(0).Value;
 
-            var joinPacket = new JoinPacket(player.ID);
-            networker.SendMessage(joinPacket, obj);
-            var worldPacket = new WorldPacket(world);
-            networker.SendMessage(worldPacket, obj);
-            var playerPacket = new NewEntityPacket(player);
-            networker.SendToAll(playerPacket, obj);
-            world.entities.Add(player);
+            world2.dispatcher.Invoke(() =>
+            {
+                Player player = new Player();
+                player.isRemote = true;
+                player.ID = world2.IDCounter++;
+                player.world = world2;
+
+                var joinPacket = new JoinPacket(world2.worldID, player.ID);
+                var worldPacket = new WorldPacket(world2);
+                var playerPacket = new NewEntityPacket(player);
+
+                dispatcher.Invoke(() =>
+                {
+                    connectedPlayers.Add(obj, player);
+                    networker.SendMessage(joinPacket, obj);
+                    networker.SendMessage(worldPacket, obj);
+                    networker.SendToAll(playerPacket, obj);
+                    world2.dispatcher.Invoke(() => world2.entities.Add(player));
+                });
+            });
+            
         }
 
         private static void HandleCommand(string command)
@@ -155,18 +213,21 @@ namespace Server
             switch (args[0])
             {
                 case "test":
-                    Logger.LogInfo("Creating test entity");
+                    World world2 = worlds.ElementAt(0).Value;
 
-                    Entity test = new MyGame.Content.Entities.TestEntity();
-                    test.position = world.spawn;
-                    test.isRemote = false;
-                    test.ID = IDCounter++;
-                    test.world = world;
-                    world.entities.Add(test);
-                    var packet = new NewEntityPacket(test);
-                    networker.SendToAll(packet);
-                    break;
-                default:
+                    Logger.LogInfo("Creating test entity");
+                    world2.dispatcher.Invoke(() =>
+                    {
+                        Entity test = new MyGame.Content.Entities.TestEntity();
+                        test.position = world2.spawn;
+                        test.isRemote = false;
+                        test.ID = world2.IDCounter++;
+                        test.world = world2;
+                        world2.entities.Add(test);
+                        var packet = new NewEntityPacket(test);
+                        dispatcher.Invoke(() => networker.SendToAll(packet));
+                    });
+                    
                     break;
             }
         }

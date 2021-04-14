@@ -13,7 +13,7 @@ namespace MyGame.Networking.Packets
 
         public override NetChannel NetChannel => NetChannel.Position;
 
-        public List<EntityPositionData> positionData;
+        public List<EntityPositionData> PositionData { get; private set; }
 
         public UpdatePositionPacket()
         {
@@ -22,30 +22,32 @@ namespace MyGame.Networking.Packets
 
         public UpdatePositionPacket(List<EntityPositionData> data)
         {
-            this.positionData = data;
+            PositionData = data;
         }
 
         public UpdatePositionPacket(EntityPositionData data)
         {
-            this.positionData = new List<EntityPositionData>() { data };
+            PositionData = new List<EntityPositionData>() { data };
         }
 
         protected override void Deserialize(NetIncomingMessage msg)
         {
             int size = msg.ReadInt32();
-            positionData = Enumerable.Range(0, size).Select(_ =>
-              {
-                  uint id = msg.ReadUInt32();
-                  Vector2 pos = msg.ReadVector2();
-                  return new EntityPositionData() { id = id, position = pos };
-              }).ToList();
+            PositionData = Enumerable.Range(0, size).Select(_ =>
+                {
+                    ushort worldID = msg.ReadUInt16();
+                    uint id = msg.ReadUInt32();
+                    Vector2 pos = msg.ReadVector2();
+                    return new EntityPositionData() { worldID = worldID, id = id, position = pos };
+                }).ToList();
         }
 
         protected override void Serialize(NetOutgoingMessage msg)
         {
-            msg.Write(positionData.Count);
-            foreach (var item in positionData)
+            msg.Write(PositionData.Count);
+            foreach (var item in PositionData)
             {
+                msg.Write(item.worldID);
                 msg.Write(item.id);
                 msg.Write(item.position);
             }
@@ -54,6 +56,7 @@ namespace MyGame.Networking.Packets
 
     public class EntityPositionData
     {
+        public ushort worldID;
         public uint id;
         public Vector2 position;
     }

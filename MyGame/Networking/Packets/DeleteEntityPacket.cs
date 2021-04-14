@@ -13,26 +13,30 @@ namespace MyGame.Networking.Packets
 
         public override NetChannel NetChannel => NetChannel.Position;
 
-        public uint entityID;
+        public uint EntityID { get; private set; }
+        public ushort WorldID { get; private set; }
 
         public DeleteEntityPacket()
         {
 
         }
 
-        public DeleteEntityPacket(uint id)
+        public DeleteEntityPacket(ushort worldID, uint id)
         {
-            this.entityID = id;
+            WorldID = worldID;
+            EntityID = id;
         }
 
         protected override void Deserialize(NetIncomingMessage msg)
         {
-            entityID = msg.ReadUInt32();
+            WorldID = msg.ReadUInt16();
+            EntityID = msg.ReadUInt32();
         }
 
         protected override void Serialize(NetOutgoingMessage msg)
         {
-            msg.Write(entityID);
+            msg.Write(WorldID);
+            msg.Write(EntityID);
         }
     }
 }

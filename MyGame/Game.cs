@@ -18,6 +18,7 @@ namespace MyGame
         public static Window window;
 
         public static World activeWorld;
+        public static Dictionary<ushort, World> worlds = new Dictionary<ushort, World>();
 
         public static Player activePlayer;
         public static EntityRenderer playerRenderer;
@@ -123,28 +124,31 @@ namespace MyGame
         {
             networkerClient.RegisterPacketHandler<DeleteEntityPacket>(packet =>
             {
-                activeWorld.entities.Remove(packet.entityID);
-                renderedEntities.Remove(packet.entityID);
+                World world = worlds[packet.WorldID];
+                if(world == activeWorld)
+                    renderedEntities.Remove(packet.EntityID);
+                world.entities.Remove(packet.EntityID);
             });
 
             networkerClient.RegisterPacketHandler<NewEntityPacket>(packet =>
             {
-                activeWorld.entities.Add(packet.Entity);
-                renderedEntities.Add(new EntityRenderer(packet.Entity));
+                packet.Entity.world.entities.Add(packet.Entity);
+                if(packet.Entity.world == activeWorld)
+                    renderedEntities.Add(new EntityRenderer(packet.Entity));
             });
 
             networkerClient.RegisterPacketHandler<SetTilePacket>(packet =>
             {
-                activeWorld.SetTileLocal(packet.tilePos, packet.tile);
+                worlds[packet.WorldID].SetTileLocal(packet.TilePos, packet.Tile);
             });
 
             networkerClient.RegisterPacketHandler<UpdatePositionPacket>(packet =>
             {
                 if(activeWorld != null)
                 {
-                    foreach (var item in packet.positionData)
+                    foreach (var item in packet.PositionData)
                     {
-                        Entity entity = activeWorld.entities[item.id];
+                        Entity entity = worlds[item.worldID].entities[item.id];
                         if (entity != null && entity.isRemote)
                             entity.position = item.position;
                     }
@@ -153,7 +157,8 @@ namespace MyGame
 
             networkerClient.RegisterPacketHandler<WorldPacket>(packet =>
             {
-                activeWorld = packet.world;
+                activeWorld = packet.World;
+                worlds.Add(packet.World.worldID, activeWorld);
                 foreach (var item in activeWorld.entities)
                 {
                     renderedEntities.Add(new EntityRenderer(item));

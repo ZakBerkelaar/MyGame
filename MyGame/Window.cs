@@ -168,7 +168,6 @@ namespace MyGame
 
             while (!IsExiting)
             {
-                Dispatcher.Instance.InvokePending();
                 ProcessEvents(); //Handle windows events
                 //ReadMessages();
                 Game.networkerClient.ReadMessages();
@@ -180,6 +179,7 @@ namespace MyGame
                 acc += frameTime;
                 while (acc >= td)
                 {
+                    Game.activeWorld.dispatcher.InvokePending();
                     foreach (EntityRenderer renderer in Game.renderedEntities)
                     {
                         renderer.PosUpdated();
@@ -212,7 +212,7 @@ namespace MyGame
                     entity.FrameInternal();
                 }
             }
-            Dispatcher.Instance.InvokePending();
+            Game.activeWorld.dispatcher.InvokePending();
             Config.WriteOpenConfigs();
         }
 

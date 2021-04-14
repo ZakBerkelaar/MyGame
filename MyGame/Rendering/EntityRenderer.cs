@@ -33,7 +33,7 @@ namespace MyGame.Rendering
 
         ~EntityRenderer()
         {
-            Dispatcher.Instance.Invoke(() => GL.DeleteBuffer(VBO));
+            Game.activeWorld.dispatcher.Invoke(() => GL.DeleteBuffer(VBO));
         }
 
         public void UpdateVBO()

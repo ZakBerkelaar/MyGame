@@ -51,7 +51,7 @@ namespace MyGame.Rendering
         
         ~Framebuffer()
         {
-            Dispatcher.Instance.Invoke(() =>
+            Game.activeWorld.dispatcher.Invoke(() =>
             {
                 GL.DeleteRenderbuffer(renderBuffer);
                 GL.DeleteFramebuffer(framebuffer);

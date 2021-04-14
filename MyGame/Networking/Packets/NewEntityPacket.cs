@@ -36,12 +36,14 @@ namespace MyGame.Networking.Packets
             //entity.isRemote = true;
             //entity.ID = id;
             uint id = msg.ReadUInt32();
+            ushort worldID = msg.ReadUInt16();
             Type type = Registration.Registry.GetRegistyEntity(msg.ReadUInt32());
             Vector2 position = msg.ReadVector2();
 
             Entity = (Entity)Activator.CreateInstance(type);
             Entity.isRemote = true;
             Entity.ID = id;
+            Entity.world = Game.worlds[worldID];
         }
 
         protected override void Serialize(NetOutgoingMessage msg)
@@ -50,6 +52,7 @@ namespace MyGame.Networking.Packets
             //msg.Write((ushort)entity.type);
             //msg.Write(entity.position);
             msg.Write(Entity.ID);
+            msg.Write(Entity.world.worldID);
             msg.Write(Registration.Registry.GetNetID(Entity));
             msg.Write(Entity.position);
         }

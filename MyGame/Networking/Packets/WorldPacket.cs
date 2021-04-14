@@ -13,11 +13,11 @@ namespace MyGame.Networking.Packets
 
         public override NetChannel NetChannel => NetChannel.Init;
 
-        public World world;
+        public World World { get; private set; }
 
         public WorldPacket(World world)
         {
-            this.world = world;
+            World = world;
         }
 
         public WorldPacket()
@@ -28,10 +28,13 @@ namespace MyGame.Networking.Packets
         protected override void Deserialize(NetIncomingMessage msg)
         {
             //General
+            ushort worldID = msg.ReadUInt16();
+
             int width = msg.ReadInt32();
             int height = msg.ReadInt32();
-            world = new World(width, height);
-            world.spawn = msg.ReadVector2();
+            World = new World(width, height);
+            World.worldID = worldID;
+            World.spawn = msg.ReadVector2();
             //Entities
             int entityCount = msg.ReadInt32();
             for (int i = 0; i < entityCount; i++)
@@ -42,7 +45,7 @@ namespace MyGame.Networking.Packets
                 Entity entity = (Entity)Activator.CreateInstance(type);
                 entity.isRemote = true;
                 entity.ID = id;
-                world.entities.Add(entity);
+                World.entities.Add(entity);
             }
             //Chunks
             for (int i = 0; i < width * height; i++)
@@ -57,25 +60,26 @@ namespace MyGame.Networking.Packets
                         chunk.SetTile(x, y, tile);
                     }
                 }
-                world.chunks[pos.x, pos.y] = chunk;
+                World.chunks[pos.x, pos.y] = chunk;
             }
         }
 
         protected override void Serialize(NetOutgoingMessage msg)
         {
             //General info
-            msg.Write(world.Width);
-            msg.Write(world.Height);
-            msg.Write(world.spawn);
+            msg.Write(World.worldID);
+            msg.Write(World.Width);
+            msg.Write(World.Height);
+            msg.Write(World.spawn);
             //Entities
-            msg.Write(world.entities.Count);
-            foreach (Entity entity in world.entities)
+            msg.Write(World.entities.Count);
+            foreach (Entity entity in World.entities)
             {
                 msg.Write(entity.ID);
                 msg.Write(Registration.Registry.GetNetID(entity));
             }
             //Chunks
-            foreach(Chunk chunk in world.chunks)
+            foreach(Chunk chunk in World.chunks)
             {
                 msg.Write(chunk.position);
                 for (int x = 0; x < 32; x++)

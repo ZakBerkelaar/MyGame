@@ -13,32 +13,34 @@ namespace MyGame.Networking.Packets
 
         public override NetChannel NetChannel => NetChannel.Tile;
 
-        public Vector2Int tilePos;
-        public Tile tile;
+        public ushort WorldID { get; set; }
+        public Vector2Int TilePos { get; private set; }
+        public Tile Tile { get; private set; }
 
         public SetTilePacket()
         {
 
         }
 
-        public SetTilePacket(Vector2Int tilePos, Tile tile)
+        public SetTilePacket(ushort worldID, Vector2Int tilePos, Tile tile)
         {
-            this.tilePos = tilePos;
-            this.tile = tile;
+            WorldID = worldID;
+            TilePos = tilePos;
+            Tile = tile;
         }
 
         protected override void Deserialize(NetIncomingMessage msg)
         {
-            tilePos = msg.ReadVector2Int();
-            //tile = Registration.Registry.GetRegistryTile(new IDString("Tile", msg.ReadString()));
-            tile = Registration.Registry.GetRegistryTile(msg.ReadUInt32());
+            WorldID = msg.ReadUInt16();
+            TilePos = msg.ReadVector2Int();
+            Tile = Registration.Registry.GetRegistryTile(msg.ReadUInt32());
         }
 
         protected override void Serialize(NetOutgoingMessage msg)
         {
-            msg.Write(tilePos);
-            //msg.Write(tile?.RegistryID ?? "");
-            msg.Write(Registration.Registry.GetNetID(tile));
+            msg.Write(WorldID);
+            msg.Write(TilePos);
+            msg.Write(Registration.Registry.GetNetID(Tile));
         }
     }
 }

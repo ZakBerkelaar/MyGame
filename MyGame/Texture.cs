@@ -58,7 +58,7 @@ namespace MyGame
 
         ~Texture()
         {
-            Dispatcher.Instance.Invoke(() => GL.DeleteBuffer(VBO));
+            Game.activeWorld.dispatcher.Invoke(() => GL.DeleteBuffer(VBO));
         }
 
         public void UpdateVBO(object sender, EventArgs e)

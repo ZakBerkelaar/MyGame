@@ -8,6 +8,11 @@ namespace MyGame
 {
     public class World
     {
+        public uint IDCounter = 0;
+        public ushort worldID;
+
+        public Dispatcher dispatcher = new Dispatcher();
+
         public Chunk[,] chunks;
         public EntityHolder entities;
 
@@ -85,7 +90,7 @@ namespace MyGame
 
         private void SendNetMessage(int x, int y, Tile tile)
         {
-            Game.networkerClient.SendMessage(new Networking.Packets.SetTilePacket(new Vector2Int(x, y), tile));
+            Game.networkerClient.SendMessage(new Networking.Packets.SetTilePacket(worldID, new Vector2Int(x, y), tile));
         }
     }
 }

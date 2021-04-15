@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace MyGame
 {
-    public abstract class Tile : ITextureable, IRegistrable
+    public abstract class Tile : IRegistrable
     {
         public IDString RegistryID { get; set; }
-
-        public string Texture => RegistryID.Name;
 
         protected Tile()
         {

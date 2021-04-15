@@ -188,37 +188,6 @@ namespace MyGame
             return atlas;
         }
 
-        public static Bitmap GenerateAtlas<T>(T[] types, string path, int textureWidth, int textureHeight, int atlasWidth, out Dictionary<T, TextureUV> textures) where T : ITextureable
-        {
-            textures = new Dictionary<T, TextureUV>();
-            int width = textureWidth * atlasWidth;
-            int height = Mathf.CeilToInt((float)types.Length / (float)atlasWidth) * textureHeight;
-            float normWidth = (float)textureWidth / (float)width;
-            float normHeight = (float)textureHeight / (float)height;
-            Bitmap atlas = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            using (Graphics g = Graphics.FromImage(atlas))
-            {
-                g.Clear(Color.Aqua);
-                for (int i = 0; i < types.Length; i++)
-                {
-                    using (Image texture = Image.FromFile(path + "/" + types[i].Texture + ".png"))
-                    {
-                        Vector2Int atlasPos = new Vector2Int(i % atlasWidth, Mathf.FloorToInt((float)i / (float)atlasWidth));
-                        g.DrawImage(texture, new Point((i * textureWidth) % width, Mathf.FloorToInt(i / width) * textureHeight));
-
-                        Vector2 TR = new Vector2(atlasPos.x * normWidth + normWidth, atlasPos.y * normHeight);
-                        Vector2 BR = new Vector2(atlasPos.x * normWidth + normWidth, atlasPos.y * normHeight + normHeight);
-                        Vector2 BL = new Vector2(atlasPos.x * normWidth, atlasPos.y * normHeight + normHeight);
-                        Vector2 TL = new Vector2(atlasPos.x * normWidth, atlasPos.y * normHeight);
-
-                        textures.Add(types[i], new TextureUV(TR, BR, BL, TL));
-                    }
-                }
-            }
-
-            return atlas;
-        }
-
         #region crap
         //private static TextureUV GenerateTexturePos(Entities entity)
         //{

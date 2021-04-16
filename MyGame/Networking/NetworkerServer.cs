@@ -61,7 +61,7 @@ namespace MyGame.Networking
             server.SendToAll(msg, except, packet.NetDeliveryMethod, (int)packet.NetChannel);
         }
 
-        public void RegisterPacketHandler<T>(Action<T> callback) where T : NetworkPacket
+        public void RegisterPacketHandler<T>(Action<T> callback) where T : NetworkPacket, new()
         {
             callbacks.Add(Registry.GetRegistryPacketID(typeof(T)), callback);
         }

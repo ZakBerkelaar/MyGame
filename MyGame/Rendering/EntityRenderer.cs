@@ -100,12 +100,12 @@ namespace MyGame.Rendering
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
         }
 
-        public void PosUpdated()
+        public virtual void PosUpdated()
         {
             prevPos = entity.position;
         }
 
-        public void CalculateRenderPos(float alpha)
+        public virtual void CalculateRenderPos(float alpha)
         {
             renderPos = entity.position * alpha + prevPos * (1f - alpha);
         }

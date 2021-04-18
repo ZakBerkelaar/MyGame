@@ -133,7 +133,7 @@ namespace MyGame
             {
                 packet.Entity.world.entities.Add(packet.Entity);
                 if(packet.Entity.world == activeWorld)
-                    renderedEntities.Add(new EntityRenderer(packet.Entity));
+                    renderedEntities.Add(new NetworkEntityRenderer(packet.Entity));
             });
 
             networkerClient.RegisterPacketHandler<SetTilePacket>(packet =>
@@ -149,7 +149,10 @@ namespace MyGame
                     {
                         Entity entity = worlds[item.worldID].entities[item.id];
                         if (entity != null && entity.isRemote)
+                        {
                             entity.position = item.position;
+                            ((NetworkEntityRenderer)renderedEntities[item.id]).SetNewPosition(item.position);
+                        }
                     }
                 }
             });
@@ -160,7 +163,7 @@ namespace MyGame
                 worlds.Add(packet.World.worldID, activeWorld);
                 foreach (var item in activeWorld.entities)
                 {
-                    renderedEntities.Add(new EntityRenderer(item));
+                    renderedEntities.Add(new NetworkEntityRenderer(item));
                 }
             });
 

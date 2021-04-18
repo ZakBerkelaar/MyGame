@@ -114,6 +114,7 @@
     <Compile Include="RenderHelper.cs" />
     <Compile Include="Rendering\ItemStackRenderer.cs" />
     <Compile Include="Rendering\Framebuffer.cs" />
+    <Compile Include="Rendering\NetworkEntityRenderer.cs" />
     <Compile Include="Rendering\RenderSystem.cs" />
     <Compile Include="Rendering\WorldRenderer.cs" />
     <Compile Include="Shader.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="UI\UIElement.cs" />
     <Compile Include="UI\UIImage.cs" />
     <Compile Include="UI\UIItemBar.cs" />
+    <Compile Include="UpdateInterpolator.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="Vector2Int.cs" />
     <Compile Include="Window.cs" />

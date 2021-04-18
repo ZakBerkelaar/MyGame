@@ -25,6 +25,7 @@ namespace MyGame
         public enum Interpolation
         {
             Linear,
+            LinearExtrapolate,
             Cosine
         }
 
@@ -161,6 +162,9 @@ namespace MyGame
                 case Interpolation.Linear:
                     interpolate = LinearInterpolate;
                     break;
+                case Interpolation.LinearExtrapolate:
+                    interpolate = LinearExtrapolate;
+                    break;
                 case Interpolation.Cosine:
                     interpolate = CosineInterpolate;
                     break;
@@ -256,9 +260,49 @@ namespace MyGame
                 {
                     left = stops.Values[i];
                     right = stops.Values[i + 1];
-                    break;
+                    goto exit;
                 }
             }
+            if (stops.Keys[stops.Count - 1] < position)
+            {
+                return stops.Values[stops.Count - 1].Stop;
+            }
+            else
+            {
+                return stops.Values[0].Stop;
+            }
+            exit:
+            float dt = right.Position - left.Position;
+            //float perRight = (position - left.Position) / dt;
+            float perLeft = (right.Position - position) / dt;
+
+            //return add(multiply(perLeft, left.Stop), multiply(perRight, right.Stop));
+            return add(multiply(perLeft, left.Stop), multiply(1 - perLeft, right.Stop));
+        }
+
+        private T LinearExtrapolate(float position)
+        {
+            GradientStop left = null, right = null;
+            for (int i = 0; i < stops.Count - 1; i++)
+            {
+                if (stops.Values[i].Position < position && stops.Values[i + 1].Position > position)
+                {
+                    left = stops.Values[i];
+                    right = stops.Values[i + 1];
+                    goto exit;
+                }
+            }
+            if(stops.Keys[stops.Count - 1] < position)
+            {
+                left = stops.Values[stops.Count - 2];
+                right = stops.Values[stops.Count - 1];
+            }
+            else
+            {
+                left = stops.Values[0];
+                right = stops.Values[1];
+            }
+            exit:
             float dt = right.Position - left.Position;
             //float perRight = (position - left.Position) / dt;
             float perLeft = (right.Position - position) / dt;

@@ -141,13 +141,27 @@ namespace MyGameTests
         }
 
         [TestMethod]
-        public void TestExtrapolation()
+        public void TestOutOfBounds()
         {
             Gradient<float> gradient = new Gradient<float>();
             gradient.Add(0.0f, 0.0f);
             gradient.Add(0.5f, 1.0f);
             float result = gradient.GetAtPosition(1.0f);
-            Assert.AreEqual(2.0f, result);
+            float result2 = gradient.GetAtPosition(-0.5f);
+            Assert.AreEqual(1.0f, result);
+            Assert.AreEqual(0.0f, result2);
+        }
+
+        [TestMethod]
+        public void TestExtrapolation()
+        {
+            Gradient<float> gradient = new Gradient<float>(Gradient<float>.Interpolation.LinearExtrapolate);
+            gradient.Add(0.25f, 0.0f);
+            gradient.Add(0.5f, 1.0f);
+            float result = gradient.GetAtPosition(1.0f);
+            float result2 = gradient.GetAtPosition(0.0f);
+            Assert.AreEqual(3.0f, result);
+            Assert.AreEqual(-1.0f, result2);
         }
 
         [TestMethod]

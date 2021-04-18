@@ -77,6 +77,26 @@ namespace MyGame
             }
         }
 
+        public void Remove(float position)
+        {
+            stops.Remove(position);
+        }
+
+        public void Remove(GradientStop stop)
+        {
+            stops.Remove(stop.Position);
+        }
+
+        public void ReplaceStop(float position, T newStop)
+        {
+            stops[position].Stop = newStop;
+        }
+
+        public void ReplaceStop(GradientStop oldStop, T newStop)
+        {
+            stops[oldStop.Position].Stop = newStop;
+        }
+
         public T GetAtPosition(float position)
         {
             return interpolate(position);
@@ -269,6 +289,8 @@ namespace MyGame
             }
             else
             {
+                if (stops.TryGetValue(position, out var val))
+                    return val.Stop;
                 return stops.Values[0].Stop;
             }
             exit:
@@ -320,9 +342,12 @@ namespace MyGame
                 {
                     left = stops.Values[i];
                     right = stops.Values[i + 1];
-                    break;
+                    goto exit;
                 }
             }
+            if (stops.TryGetValue(position, out var val))
+                return val.Stop;
+            exit:
             float dt = right.Position - left.Position;
             float perRight = (position - left.Position) / dt;
             //float perLeft = (right.Position - position) / dt;

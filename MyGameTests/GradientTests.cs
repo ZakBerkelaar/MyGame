@@ -202,5 +202,61 @@ namespace MyGameTests
             Assert.AreEqual(1.0f, gradient.ElementAt(1).Position);
             Assert.AreEqual(1.0f, gradient.ElementAt(1).Stop);
         }
+
+        [TestMethod]
+        public void TestRemove()
+        {
+            Gradient<float> gradient = new Gradient<float>();
+            gradient.Add(0.0f, 0.0f);
+            gradient.Add(0.5f, 16.0f);
+            gradient.Add(1.0f, 1.0f);
+            gradient.Remove(0.5f);
+            float result = gradient.GetAtPosition(0.5f);
+            Assert.AreEqual(0.5f, result, 0.00001f);
+        }
+
+        [TestMethod]
+        public void TestReplace()
+        {
+            Gradient<float> gradient = new Gradient<float>();
+            gradient.Add(0.0f, 0.0f);
+            gradient.Add(1.0f, 12.0f);
+            gradient.ReplaceStop(1.0f, 1.0f);
+            float result = gradient.GetAtPosition(0.5f);
+            Assert.AreEqual(0.5f, result, 0.00001f);
+        }
+
+        [TestMethod]
+        public void TestGetAtStop()
+        {
+            Gradient<float> gradient = new Gradient<float>();
+            gradient.Add(0.0f, 0.0f);
+            gradient.Add(0.5f, 1.0f);
+            gradient.Add(1.0f, 0.0f);
+            float result = gradient.GetAtPosition(0.5f);
+            Assert.AreEqual(1.0f, result, 0.00001f);
+        }
+
+        [TestMethod]
+        public void TestExtrapolateGetAtStop()
+        {
+            Gradient<float> gradient = new Gradient<float>(Gradient<float>.Interpolation.LinearExtrapolate);
+            gradient.Add(0.0f, 0.0f);
+            gradient.Add(0.5f, 1.0f);
+            gradient.Add(1.0f, 0.0f);
+            float result = gradient.GetAtPosition(0.5f);
+            Assert.AreEqual(1.0f, result, 0.00001f);
+        }
+
+        [TestMethod]
+        public void TestCosineGetAtStop()
+        {
+            Gradient<float> gradient = new Gradient<float>(Gradient<float>.Interpolation.Cosine);
+            gradient.Add(0.0f, 0.0f);
+            gradient.Add(0.5f, 1.0f);
+            gradient.Add(1.0f, 0.0f);
+            float result = gradient.GetAtPosition(0.5f);
+            Assert.AreEqual(1.0f, result, 0.00001f);
+        }
     }
 }

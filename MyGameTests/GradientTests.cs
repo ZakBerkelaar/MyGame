@@ -160,8 +160,10 @@ namespace MyGameTests
             gradient.Add(0.5f, 1.0f);
             float result = gradient.GetAtPosition(1.0f);
             float result2 = gradient.GetAtPosition(0.0f);
+            float result3 = gradient.GetAtPosition(0.375f);
             Assert.AreEqual(3.0f, result);
             Assert.AreEqual(-1.0f, result2);
+            Assert.AreEqual(0.5f, result3);
         }
 
         [TestMethod]

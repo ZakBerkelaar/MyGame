@@ -7,7 +7,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace MyGame.Rendering
 {
-    class EntityRenderer : IIDable
+    public class EntityRenderer : IIDable
     {
         public uint ID { get; private set; }
 

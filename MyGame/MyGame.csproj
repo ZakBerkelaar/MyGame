@@ -83,12 +83,12 @@
     <Compile Include="IIDable.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="ItemStack.cs" />
-    <Compile Include="ITextureable.cs" />
     <Compile Include="Networking\Packets\DeleteEntityPacket.cs" />
     <Compile Include="Networking\Packets\JoinPacket.cs" />
     <Compile Include="Networking\Packets\NewEntityPacket.cs" />
     <Compile Include="Networking\NetworkerClient.cs" />
     <Compile Include="Networking\Packets\SetTilePacket.cs" />
+    <Compile Include="Networking\Packets\SystemUpdatePacket.cs" />
     <Compile Include="Networking\Packets\UpdatePositionPacket.cs" />
     <Compile Include="Networking\Packets\WorldPacket.cs" />
     <Compile Include="Registration\EntityRegister.cs" />
@@ -102,6 +102,7 @@
     <Compile Include="Dispatcher.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="IDHolder.cs" />
+    <Compile Include="Rendering\DayCycleRenderer.cs" />
     <Compile Include="Rendering\EntityRenderer.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Logger.cs" />
@@ -113,7 +114,13 @@
     <Compile Include="RenderHelper.cs" />
     <Compile Include="Rendering\ItemStackRenderer.cs" />
     <Compile Include="Rendering\Framebuffer.cs" />
+    <Compile Include="Rendering\RenderSystem.cs" />
+    <Compile Include="Rendering\WorldRenderer.cs" />
     <Compile Include="Shader.cs" />
+    <Compile Include="Systems\DayCycleSystem.cs" />
+    <Compile Include="Systems\NetworkedWorldSystem.cs" />
+    <Compile Include="Systems\SystemReferenceAttribute.cs" />
+    <Compile Include="Systems\WorldSystem.cs" />
     <Compile Include="TestWindow.cs" />
     <Compile Include="GLTexture.cs" />
     <Compile Include="Texture.cs" />

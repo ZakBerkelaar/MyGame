@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MyGame.Systems;
+using System.Reflection;
 
 namespace MyGame
 {
-    public class World
+    public sealed class World
     {
+        public bool isRemote;
         public uint IDCounter = 0;
         public ushort worldID;
 
@@ -16,6 +19,7 @@ namespace MyGame
         public Chunk[,] chunks;
         public EntityHolder entities;
 
+        private Dictionary<Type, WorldSystem> systems = new Dictionary<Type, WorldSystem>();
 
         public Vector2 spawn = new Vector2(1, 30);
 
@@ -25,7 +29,6 @@ namespace MyGame
         public int Height => chunks.GetLength(1);
 
         public float deltaTime;
-        public uint counter { get; private set; }
 
         public World(int width, int height)
         {
@@ -41,6 +44,32 @@ namespace MyGame
             }
         }
 
+        public void AddSystem(WorldSystem system)
+        {
+            //Reference dependent systems
+            foreach (FieldInfo field in system.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public).Where(f => f.GetCustomAttribute<SystemReferenceAttribute>() != null))
+            {
+                field.SetValue(system, systems[field.FieldType]);
+            }
+            system.world = this;
+            systems.Add(system.GetType(), system);
+        }
+
+        public T GetSystem<T>() where T : WorldSystem
+        {
+            return (T)systems[typeof(T)];
+        }
+
+        public WorldSystem GetSystem(Type type)
+        {
+            return systems[type];
+        }
+
+        public WorldSystem[] GetSystems()
+        {
+            return systems.Values.ToArray();
+        }
+
         public void Update(float dt)
         {
             deltaTime = dt;
@@ -48,7 +77,11 @@ namespace MyGame
             {
                 entity.UpdateInternal();
             }
-            counter++;
+            if(!isRemote)
+            {
+                foreach (var system in systems)
+                    system.Value.Update();
+            }
         }
 
         public void SetTile(int x, int y, Tile tile)
@@ -90,7 +123,7 @@ namespace MyGame
 
         private void SendNetMessage(int x, int y, Tile tile)
         {
-            Game.networkerClient.SendMessage(new Networking.Packets.SetTilePacket(worldID, new Vector2Int(x, y), tile));
+            Game.SendMessage(new Networking.Packets.SetTilePacket(worldID, new Vector2Int(x, y), tile));
         }
     }
 }

@@ -13,7 +13,7 @@ using MyGame.UI;
 
 namespace MyGame
 {
-    class Window : GameWindow
+    public class Window : GameWindow
     {
         private float[] vertices;
 
@@ -191,7 +191,7 @@ namespace MyGame
                     if (crap == 6)
                     {
                         var packet = new Networking.Packets.UpdatePositionPacket(new Networking.Packets.EntityPositionData() { id = Game.activePlayer.ID, position = Game.activePlayer.position });
-                        Game.networkerClient.SendMessage(packet);
+                        Game.SendMessage(packet);
                         crap = 0;
                     }
                     crap++;
@@ -226,10 +226,7 @@ namespace MyGame
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);
 
-            foreach (ChunkRenderer renderer in Game.activeChunks)
-            {
-                renderer.UpdateVBO();
-            }
+            Game.worldRenderer.UpdateVBOs();
 
             //Create shader
             shader = new Shader("Shaders/tile.vert", "Shaders/tile.frag");
@@ -278,13 +275,15 @@ namespace MyGame
         private void OnRenderFrame()
         {
             lightingBuffer.Bind();
-            GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, quadVBO);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-            circleShader.Use();
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            //GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            //GL.Clear(ClearBufferMask.ColorBufferBit);
+            //GL.BindBuffer(BufferTarget.ArrayBuffer, quadVBO);
+            //GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+            //GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+            //circleShader.Use();
+            //GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            Game.worldRenderer.RenderLighting();
+
             renderBuffer.Bind();
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -293,10 +292,7 @@ namespace MyGame
             shader.Use();
             Vector2 offset = RenderHelper.ScreenToNormal(new Vector2(Width - 16, Height - 32) + -Game.playerRenderer.renderPos * 16);
             shader.SetVector2("offset", offset);
-            foreach (ChunkRenderer active in Game.activeChunks)
-            {
-                active.Render();
-            }
+            Game.worldRenderer.Render();
 
             //Draw entities
             entityShader.Use();
@@ -331,10 +327,7 @@ namespace MyGame
         {
             if(test)
             {
-                foreach (ChunkRenderer renderer in Game.activeChunks)
-                {
-                    renderer.UpdateVBO();
-                }
+                Game.worldRenderer.UpdateVBOs();
                 foreach (EntityRenderer renderer in Game.renderedEntities)
                 {
                     renderer.UpdateVBO();

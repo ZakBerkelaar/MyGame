@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MyGame.Systems;
 
 namespace MyGame.Networking.Packets
 {
@@ -35,6 +36,16 @@ namespace MyGame.Networking.Packets
             World = new World(width, height);
             World.worldID = worldID;
             World.spawn = msg.ReadVector2();
+            //Systems
+            int systemCount = msg.ReadInt32();
+            for (int i = 0; i < systemCount; i++)
+            {
+                //The system
+                WorldSystem system = (WorldSystem)Activator.CreateInstance(Registration.Registry.GetRegistrySystem(msg.ReadUInt16()));
+                //Initial information
+                system.InitialDataDeserialize(msg);
+                World.AddSystem(system);
+            }
             //Entities
             int entityCount = msg.ReadInt32();
             for (int i = 0; i < entityCount; i++)
@@ -62,6 +73,7 @@ namespace MyGame.Networking.Packets
                 }
                 World.chunks[pos.x, pos.y] = chunk;
             }
+            World.isRemote = true;
         }
 
         protected override void Serialize(NetOutgoingMessage msg)
@@ -71,6 +83,16 @@ namespace MyGame.Networking.Packets
             msg.Write(World.Width);
             msg.Write(World.Height);
             msg.Write(World.spawn);
+            //Systems
+            WorldSystem[] systems = World.GetSystems();
+            msg.Write(systems.Length);
+            foreach (WorldSystem system in systems)
+            {
+                //The system
+                msg.Write(Registration.Registry.GetRegistrySystemID(system.GetType()));
+                //Initial information
+                system.InitialDataSerialize(msg);
+            }
             //Entities
             msg.Write(World.entities.Count);
             foreach (Entity entity in World.entities)

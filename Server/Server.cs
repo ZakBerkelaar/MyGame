@@ -49,8 +49,16 @@ namespace Server
             ItemRegister.RegisterItems();
             PacketRegister.RegisterPackets();
             EntityRegister.RegisterEntities();
+            Registry.AutoRegister();
 
             networker = new NetworkerServer(6666);
+            Game.SendMessage = (packet) =>
+            {
+                dispatcher.Invoke(() =>
+                {
+                    networker.SendToAll(packet);
+                });
+            };
             RegisterCallbacks();
             networker.Start();
 
@@ -143,6 +151,7 @@ namespace Server
         {
             World world = WorldGen.GetWorld();
             world.worldID = WorldCounter++;
+            world.AddSystem(new MyGame.Systems.DayCycleSystem());
 
             worlds.Add(world.worldID, world);
             Thread thread = new Thread(new ParameterizedThreadStart(StartWorldThread));

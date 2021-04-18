@@ -11,12 +11,13 @@ namespace MyGame.Registration
     {
         public static void RegisterPackets()
         {
-            Registry.Register(typeof(DeleteEntityPacket));
-            Registry.Register(typeof(NewEntityPacket));
-            Registry.Register(typeof(SetTilePacket));
-            Registry.Register(typeof(UpdatePositionPacket));
-            Registry.Register(typeof(WorldPacket));
-            Registry.Register(typeof(JoinPacket));
+            Registry.RegisterPacket(typeof(DeleteEntityPacket));
+            Registry.RegisterPacket(typeof(NewEntityPacket));
+            Registry.RegisterPacket(typeof(SetTilePacket));
+            Registry.RegisterPacket(typeof(UpdatePositionPacket));
+            Registry.RegisterPacket(typeof(WorldPacket));
+            Registry.RegisterPacket(typeof(JoinPacket));
+            Registry.RegisterPacket(typeof(SystemUpdatePacket));
         }
     }
 }

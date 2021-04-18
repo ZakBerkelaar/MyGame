@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MyGame.Networking;
 using System.Reflection;
+using MyGame.Systems;
 
 namespace MyGame.Registration
 {
@@ -25,11 +26,28 @@ namespace MyGame.Registration
         private static readonly Dictionary<IDString, uint> entitiesNetID2 = new Dictionary<IDString, uint>();
         private static uint entityCounter = 0;
 
+        private static readonly Dictionary<Type, ushort> systems = new Dictionary<Type, ushort>();
+        private static readonly Dictionary<ushort, Type> systems2 = new Dictionary<ushort, Type>();
+        private static ushort systemCounter = 0;
+
         private static Dictionary<Type, byte> packets = new Dictionary<Type, byte>();
         private static Dictionary<byte, Type> packets2 = new Dictionary<byte, Type>();
-        private static byte counter = 0;
+        private static byte packetCounter = 0;
 
-        public static void Register(Tile tile)
+        public static void AutoRegister()
+        {
+            //Find systems
+            var systemTypes = Assembly.GetAssembly(typeof(WorldSystem))
+                .GetTypes()
+                .Where(t => t.IsSubclassOf(typeof(WorldSystem)) && !t.IsAbstract);
+            foreach (Type systemType in systemTypes)
+            {
+                systems.Add(systemType, systemCounter);
+                systems2.Add(systemCounter++, systemType);
+            }
+        }
+
+        public static void RegisterTile(Tile tile)
         {
             //Register tile
             tiles.Add(tile.RegistryID, tile);
@@ -37,24 +55,30 @@ namespace MyGame.Registration
             tilesNetID2.Add(tile.RegistryID, tileCounter++);
             //Register ItemTile
             var item = new ItemTile(tile);
-            Register(item);
+            RegisterItem(item);
         }
 
-        public static void Register(Item item)
+        public static void RegisterItem(Item item)
         {
             items.Add(item.RegistryString, item);
             itemsNetID.Add(itemCounter, item);
             itemsNetID2.Add(item.RegistryString, itemCounter++);
         }
 
-        public static void Register(Type packet)
+        public static void RegisterPacket(Type packet)
         {
             if (packet.BaseType != typeof(NetworkPacket))
                 throw new ArgumentException("Packet type must be subclass of NetworkPacket");
 
-            var count = counter++;
+            var count = packetCounter++;
             packets.Add(packet, count);
             packets2.Add(count, packet);
+        }
+
+        public static void RegisterWorldSystem(Type system)
+        {
+            systems.Add(system, systemCounter);
+            systems2.Add(systemCounter++, system);
         }
 
         public static void RegisterEntity(Type entity)
@@ -113,6 +137,16 @@ namespace MyGame.Registration
         public static byte GetRegistryPacketID(Type type)
         {
             return packets[type];
+        }
+
+        public static Type GetRegistrySystem(ushort id)
+        {
+            return systems2[id];
+        }
+
+        public static ushort GetRegistrySystemID(Type type)
+        {
+            return systems[type];
         }
 
         public static uint GetNetID(IRegistrable registrable) => GetNetID(registrable.RegistryID);

@@ -23,6 +23,7 @@ namespace MyGame.Networking
     {
         Position,
         Tile,
-        Init
+        Init,
+        System
     }
 }

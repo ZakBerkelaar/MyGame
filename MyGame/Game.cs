@@ -10,7 +10,7 @@ using MyGame.Networking.Packets;
 
 namespace MyGame
 {
-    internal static class Game
+    public static class Game
     {
         //public static List<Entity> entities = new List<Entity>();
         //public static Dictionary<uint, Entity> entities = new Dictionary<uint, Entity>();
@@ -23,12 +23,13 @@ namespace MyGame
         public static Player activePlayer;
         public static EntityRenderer playerRenderer;
 
-        public static List<ChunkRenderer> activeChunks = new List<ChunkRenderer>();
+        public static WorldRenderer worldRenderer;
         //public static List<EntityRenderer> activeEntities = new List<EntityRenderer>();
         public static IDHolder<EntityRenderer> renderedEntities = new IDHolder<EntityRenderer>();
 
         //public static Networker networker;
         public static NetworkerClient networkerClient;
+        public static Action<NetworkPacket> SendMessage;
 
         public static UICanvas canvas;
 
@@ -77,6 +78,7 @@ namespace MyGame
             ItemRegister.RegisterItems();
             PacketRegister.RegisterPackets();
             EntityRegister.RegisterEntities();
+            Registry.AutoRegister();
 
             //TextureAtlas.GenerateAtlas();
             TextureAtlas.GenerateAtlai();
@@ -85,6 +87,7 @@ namespace MyGame
             //networker.Connect();
             //activeWorld = networker.GetWorld();
             networkerClient = new NetworkerClient("127.0.0.1", 6666);
+            SendMessage = networkerClient.SendMessage;
             RegisterCallbacks();
             networkerClient.Connect();
             while (activeWorld == null || !joined)
@@ -107,12 +110,8 @@ namespace MyGame
             canvas = new UICanvas();
             canvas.AddChild(new UIItemBar(activePlayer));
 
-            foreach (Chunk chunk in activeWorld.chunks)
-            {
-                ChunkRenderer renderer = new ChunkRenderer(chunk);
-                activeChunks.Add(renderer);
-                renderer.UpdateVBO();
-            }
+            worldRenderer = new WorldRenderer(activeWorld);
+            worldRenderer.AddRenderSystem(new DayCycleRenderer());
 
             window.VSync = OpenTK.VSyncMode.Off;
             window.Vibe();
@@ -171,6 +170,11 @@ namespace MyGame
                 activePlayer = new Player();
                 activePlayer.position = new Vector2(0, 20); //TODO: Set player to position that server provides
                 activePlayer.ID = packet.ID;
+            });
+
+            networkerClient.RegisterPacketHandler<SystemUpdatePacket>(packet =>
+            {
+                ((Systems.NetworkedWorldSystem)worlds[packet.WorldID].GetSystem(packet.NetworkedSystemType)).Deserialize(packet.RemainingMessage);
             });
         }
     }

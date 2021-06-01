@@ -6,19 +6,6 @@ using System.Threading.Tasks;
 
 namespace MyGame.Networking
 {
-    public enum NetCommand : byte
-    {
-        //PlayerConnected,
-        UpdatePosition,
-        EntityList,
-        SetTile,
-        Chunk,
-        InitialData,
-        NewEntity,
-        Finished,
-        DeleteEntity
-    }
-
     public enum NetChannel : uint
     {
         Position,

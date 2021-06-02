@@ -68,7 +68,7 @@ namespace MyGame.Networking.Packets
                     for (int y = 0; y < 32; y++)
                     {
                         Tile tile = Registration.Registry.GetRegistryTile(msg.ReadUInt32());
-                        chunk.SetTile(x, y, tile);
+                        chunk.SetTileNoUpdate(x, y, tile);
                     }
                 }
                 World.chunks[pos.x, pos.y] = chunk;

@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace MyGame
 {
@@ -99,7 +100,7 @@ namespace MyGame
             GL.Uniform2(uniformLocations[name], data.x, data.y);
         }
 
-        public void SetVector4(string name, Vector4 data)
+        public void SetVector4(string name, OpenTK.Mathematics.Vector4 data)
         {
             GL.UseProgram(Handle);
             GL.Uniform4(uniformLocations[name], data);

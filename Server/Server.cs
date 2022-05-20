@@ -44,6 +44,7 @@ namespace Server
         {
             Logger.Init("server.txt");
             Logger.LogInfo("Starting server");
+            Logger.LogInfo($"CLR Version: {Environment.Version}");
 
             TileRegister.RegisterTiles();
             ItemRegister.RegisterItems();

@@ -1,4 +1,5 @@
 ﻿using OpenTK.Input;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
 
@@ -21,7 +22,7 @@ namespace MyGame
         {
             //Game.window.UpdateFrame += UpdateKeyboard;
 
-            keys = Enum.GetNames(typeof(Key)).Length;
+            keys = Enum.GetNames(typeof(Keys)).Length;
 
             lastFrame = new bool[keys];
             curFrame = new bool[keys];
@@ -30,26 +31,26 @@ namespace MyGame
         }
 
         [Obsolete("Use create control instead")]
-        public static bool GetKeyDown(Key key)
+        public static bool GetKeyDown(Keys key)
         {
             return !lastFrame[(int)key] && curFrame[(int)key];
         }
 
         [Obsolete("Use create control instead")]
-        public static bool GetKey(Key key)
+        public static bool GetKey(Keys key)
         {
             return curFrame[(int)key];
         }
 
         [Obsolete("Use create control instead")]
-        public static bool GetKeyUp(Key key)
+        public static bool GetKeyUp(Keys key)
         {
             return lastFrame[(int)key] && !curFrame[(int)key];
         }
 
-        public static void UpdateKeyboard(object sender, OpenTK.FrameEventArgs e)
+        public static void UpdateKeyboard(KeyboardState newState)
         {
-            state = Keyboard.GetState();
+            state = newState;
             if(!firstFrame)
             {
                 //lastFrame = curFrame;
@@ -62,11 +63,11 @@ namespace MyGame
             
             for (int i = 0; i < keys; i++)
             {
-                curFrame[i] = state.IsKeyDown((Key)i);
+                curFrame[i] = state.IsKeyDown((Keys)i);
             }
         }
 
-        public static IControl CreateControl(IDString id, Key key)
+        public static IControl CreateControl(IDString id, Keys key)
         {
             return new Control(id, key);
         }
@@ -75,7 +76,7 @@ namespace MyGame
         {
             private static Config controlConfig;
 
-            private Key key;
+            private Keys key;
             public IDString IDString { get; }
             public bool IsDownFrame => !lastFrame[(int)key] && curFrame[(int)key];
             public bool IsDown => curFrame[(int)key];
@@ -86,12 +87,12 @@ namespace MyGame
                 controlConfig = new Config(new IDString("Config", "Controls"));
             }
 
-            public Control(IDString iDString, Key defaultKey)
+            public Control(IDString iDString, Keys defaultKey)
             {
                 IDString = iDString;
                 if (controlConfig.TryGetValue(iDString, out string keyStr))
                 {
-                    key = (Key)Enum.Parse(typeof(Key), keyStr, true);
+                    key = (Keys)Enum.Parse(typeof(Keys), keyStr, true);
                 }
                 else
                 {

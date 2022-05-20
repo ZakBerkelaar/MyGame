@@ -23,6 +23,12 @@ namespace MyGame
             Console.WriteLine(message);
         }
 
+        public static void LogDebug(string message)
+        {
+            File.AppendAllText(path, "DBG -> " + message + Environment.NewLine);
+            Console.WriteLine("DBG -> " + message);
+        }
+
         public static void LogInfo(string message)
         {
             File.AppendAllText(path, "INF -> " + message + Environment.NewLine);

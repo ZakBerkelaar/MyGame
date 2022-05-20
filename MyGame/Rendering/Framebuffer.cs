@@ -59,7 +59,7 @@ namespace MyGame.Rendering
             });
         }
 
-        private void Window_Resize(object sender, EventArgs e)
+        private void Window_Resize(OpenTK.Windowing.Common.ResizeEventArgs e)
         {
             GL.DeleteRenderbuffer(renderBuffer);
             GL.DeleteFramebuffer(framebuffer);

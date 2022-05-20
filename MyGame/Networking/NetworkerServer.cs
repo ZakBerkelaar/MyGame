@@ -86,6 +86,11 @@ namespace MyGame.Networking
                     case NetIncomingMessageType.Data:
                         ReadData(msg);
                         break;
+#if DEBUG
+                    case NetIncomingMessageType.DebugMessage:
+                        Logger.LogDebug("Net debug message" + msg.ReadString());
+                        break;
+#endif
                     default:
                         Logger.LogError("Unhandeled message with type: " + msg.MessageType);
                         break;

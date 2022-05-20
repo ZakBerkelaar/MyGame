@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Input;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace MyGame
 {
@@ -35,20 +37,20 @@ namespace MyGame
             size.x = 32;
             size.y = 64;
 
-            jumpControl = Input.CreateControl(new IDString("Input", "PlayerJump"), Key.W);
-            leftControl = Input.CreateControl(new IDString("Input", "PlayerLeft"), Key.A);
-            rightControl = Input.CreateControl(new IDString("Input", "PlayerRight"), Key.D);
+            jumpControl = Input.CreateControl(new IDString("Input", "PlayerJump"), Keys.W);
+            leftControl = Input.CreateControl(new IDString("Input", "PlayerLeft"), Keys.A);
+            rightControl = Input.CreateControl(new IDString("Input", "PlayerRight"), Keys.D);
 
-            slot0 = Input.CreateControl(new IDString("Input", "PlayerSlot0"), Key.Number1);
-            slot1 = Input.CreateControl(new IDString("Input", "PlayerSlot1"), Key.Number2);
-            slot2 = Input.CreateControl(new IDString("Input", "PlayerSlot2"), Key.Number3);
-            slot3 = Input.CreateControl(new IDString("Input", "PlayerSlot3"), Key.Number4);
-            slot4 = Input.CreateControl(new IDString("Input", "PlayerSlot4"), Key.Number5);
-            slot5 = Input.CreateControl(new IDString("Input", "PlayerSlot5"), Key.Number6);
-            slot6 = Input.CreateControl(new IDString("Input", "PlayerSlot6"), Key.Number7);
-            slot7 = Input.CreateControl(new IDString("Input", "PlayerSlot7"), Key.Number8);
-            slot8 = Input.CreateControl(new IDString("Input", "PlayerSlot8"), Key.Number9);
-            slot9 = Input.CreateControl(new IDString("Input", "PlayerSlot9"), Key.Number0);
+            slot0 = Input.CreateControl(new IDString("Input", "PlayerSlot0"), Keys.D1);
+            slot1 = Input.CreateControl(new IDString("Input", "PlayerSlot1"), Keys.D2);
+            slot2 = Input.CreateControl(new IDString("Input", "PlayerSlot2"), Keys.D3);
+            slot3 = Input.CreateControl(new IDString("Input", "PlayerSlot3"), Keys.D4);
+            slot4 = Input.CreateControl(new IDString("Input", "PlayerSlot4"), Keys.D5);
+            slot5 = Input.CreateControl(new IDString("Input", "PlayerSlot5"), Keys.D6);
+            slot6 = Input.CreateControl(new IDString("Input", "PlayerSlot6"), Keys.D7);
+            slot7 = Input.CreateControl(new IDString("Input", "PlayerSlot7"), Keys.D8);
+            slot8 = Input.CreateControl(new IDString("Input", "PlayerSlot8"), Keys.D9);
+            slot9 = Input.CreateControl(new IDString("Input", "PlayerSlot9"), Keys.D0);
         }
 
         protected override void Update()
@@ -120,14 +122,14 @@ namespace MyGame
             {
                 Vector2 offset = Game.activePlayer.position;
                 //Vector2Int tilePos = new Vector2Int(Mathf.CeilToInt((e.X - (Width / 2f)) / 16f), Mathf.CeilToInt(((Height - e.Y) - (Height / 2f)) / 16f) + 1);
-                Vector2Int tilePos = new Vector2Int(Mathf.CeilToInt(((e.X - (Game.window.Width / 2f)) / 16f) + offset.x), Mathf.CeilToInt((((Game.window.Height - e.Y) - (Game.window.Height / 2f)) / 16f) + 1 + offset.y));
+                Vector2Int tilePos = new Vector2Int(Mathf.CeilToInt(((Game.window.MousePosition.X - (Game.window.Width / 2f)) / 16f) + offset.x), Mathf.CeilToInt((((Game.window.Height - Game.window.MousePosition.Y) - (Game.window.Height / 2f)) / 16f) + 1 + offset.y));
                 //tilePos += floored;
                 Console.WriteLine(tilePos);
                 Game.activeWorld.SetTile(tilePos, Registration.Tiles.Air);
             }
             else if (e.Button == MouseButton.Right)
             {
-                items[CurrentItem]?.item.UseItem(this, RenderHelper.ScreenToWorld(new Vector2(e.X, e.Y)), items[CurrentItem]);
+                items[CurrentItem]?.item.UseItem(this, RenderHelper.ScreenToWorld(new Vector2(Game.window.MousePosition.X, Game.window.MousePosition.Y)), items[CurrentItem]);
             }
         }
     }

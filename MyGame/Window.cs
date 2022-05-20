@@ -10,6 +10,8 @@ using System.Linq;
 using Lidgren.Network;
 using MyGame.Rendering;
 using MyGame.UI;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.Common;
 
 namespace MyGame
 {
@@ -33,6 +35,9 @@ namespace MyGame
         public new event Action RenderFrame;
         public new event Action UpdateFrame;
 
+        public int Width => Size.X;
+        public int Height => Size.Y;
+
         private float[] quadVertices =
         {
             -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, //Top left
@@ -44,7 +49,16 @@ namespace MyGame
         };
         private int quadVBO;
 
-        public Window(int width, int height, string title) : base(width, height, OpenTK.Graphics.GraphicsMode.Default, title)
+        public Window(int width, int height, string title) : base(new GameWindowSettings()
+        {
+            
+        },
+            new NativeWindowSettings()
+            {
+                Size = new OpenTK.Mathematics.Vector2i(width, height),
+                Title = title,
+                
+            })
         {
 
         }
@@ -150,9 +164,10 @@ namespace MyGame
 
         public void Vibe()
         {
-            Visible = true; //Make sure window is visible
-            OnLoad(EventArgs.Empty);
-            OnResize(EventArgs.Empty);
+            Context?.MakeCurrent();
+            //Visible = true; //Make sure window is visible
+            OnLoad();
+            OnResize(new ResizeEventArgs(Size.X, Size.Y));
 
             QueryPerformanceFrequency(out freq);
 
@@ -168,7 +183,7 @@ namespace MyGame
 
             while (!IsExiting)
             {
-                ProcessEvents(); //Handle windows events
+                ProcessWindowEvents(IsEventDriven); //Handle windows events
                 //ReadMessages();
                 Game.networkerClient.ReadMessages();
 
@@ -185,7 +200,7 @@ namespace MyGame
                         renderer.PosUpdated();
                     }
 
-                    OnUpdateFrame(null);
+                    OnUpdateFrame(default);
                     Game.activeWorld.Update(td2);
 
                     if (crap == 6)
@@ -216,7 +231,7 @@ namespace MyGame
             Config.WriteOpenConfigs();
         }
 
-        protected override void OnLoad(EventArgs e)
+        protected override void OnLoad()
         {
             //Set the gl clear color to a dark green
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -243,7 +258,7 @@ namespace MyGame
             screenShader.SetInt("lightTexture", 1);
             //Create circle shader
             circleShader = new Shader("Shaders/circle.vert", "Shaders/circle.frag");
-            circleShader.SetVector4("color", new Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+            circleShader.SetVector4("color", new OpenTK.Mathematics.Vector4(0.0f, 0.0f, 0.0f, 0.0f));
             circleShader.SetFloat("radius", 0.25f);
             circleShader.SetVector2("position", new Vector2(0.5f, 0.5f));
 
@@ -269,7 +284,7 @@ namespace MyGame
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
-            base.OnLoad(e);
+            base.OnLoad();
         }
 
         private void OnRenderFrame()
@@ -290,7 +305,7 @@ namespace MyGame
 
             //Draw chunks
             shader.Use();
-            Vector2 offset = RenderHelper.ScreenToNormal(new Vector2(Width - 16, Height - 32) + -Game.playerRenderer.renderPos * 16);
+            Vector2 offset = RenderHelper.ScreenToNormal(new Vector2(Size.X - 16, Size.Y - 32) + -Game.playerRenderer.renderPos * 16);
             shader.SetVector2("offset", offset);
             Game.worldRenderer.Render();
 
@@ -318,12 +333,12 @@ namespace MyGame
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            Input.UpdateKeyboard(null, null);
+            Input.UpdateKeyboard(KeyboardState);
             UpdateFrame?.Invoke();
         }
 
         private bool test = false;
-        protected override void OnResize(EventArgs e)
+        protected override void OnResize(ResizeEventArgs e)
         {
             if(test)
             {
@@ -332,7 +347,7 @@ namespace MyGame
                 {
                     renderer.UpdateVBO();
                 }
-                GL.Viewport(0, 0, Width, Height);
+                GL.Viewport(0, 0, e.Width, e.Height);
                 Logger.LogInfo("Size");
                 base.OnResize(e);
             }
@@ -347,17 +362,17 @@ namespace MyGame
             Vector2 pos2 = new Vector2(e.Position.X, e.Position.Y);
             pos2 += new Vector2(-offInPx.x, offInPx.y);
             Game.activeWorld.SetTile(new Vector2Int(Mathf.FloorToInt(pos2.x / 16), Mathf.FloorToInt((Height - pos2.y) / 16)), null, true);*/
-
+            
             List<UIElement> clickedElements = new List<UIElement>();
             List<UIElement> elements = new List<UIElement>();
             GetAllChildren(Game.canvas, elements);
             foreach (UIElement element in elements)
             {
                 //Check if clicked
-                if (e.X >= element.left &&
-                    (element.left + element.width) >= e.X &&
-                    e.Y >= element.top &&
-                    (element.top + element.height) >= e.Y)
+                if (MousePosition.X >= element.left &&
+                    (element.left + element.width) >= MousePosition.X &&
+                    MousePosition.Y >= element.top &&
+                    (element.top + element.height) >= MousePosition.Y)
                 {
                     clickedElements.Add(element);
                 }
@@ -374,13 +389,13 @@ namespace MyGame
             base.OnMouseDown(e);
         }
 
-        protected override void OnUnload(EventArgs e)
+        protected override void OnUnload()
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
             GL.UseProgram(0);
 
-            base.OnUnload(e);
+            base.OnUnload();
         }
 
         private void GetAllChildren(UIElement element, List<UIElement> output)

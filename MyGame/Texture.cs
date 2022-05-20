@@ -7,7 +7,8 @@ using System.Drawing;
 using MyGame.Rendering;
 using OpenTK.Graphics.OpenGL4;
 
-using Matrix4 = OpenTK.Matrix4;
+using Matrix4 = OpenTK.Mathematics.Matrix4;
+using OpenTK.Windowing.Common;
 
 namespace MyGame
 {
@@ -53,7 +54,7 @@ namespace MyGame
             Game.window.Resize += UpdateVBO;
 
             VBO = GL.GenBuffer();
-            UpdateVBO(null, null);
+            UpdateVBO(default);
         }
 
         ~Texture()
@@ -61,7 +62,7 @@ namespace MyGame
             Game.activeWorld.dispatcher.Invoke(() => GL.DeleteBuffer(VBO));
         }
 
-        public void UpdateVBO(object sender, EventArgs e)
+        public void UpdateVBO(ResizeEventArgs e)
         {
             float[] vertices = new float[6 * 5];
 

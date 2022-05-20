@@ -113,7 +113,7 @@ namespace MyGame
             worldRenderer = new WorldRenderer(activeWorld);
             worldRenderer.AddRenderSystem(new DayCycleRenderer());
 
-            window.VSync = OpenTK.VSyncMode.Off;
+            //window.VSync = OpenTK.VSyncMode.Off;
             window.Vibe();
 
             Logger.LogInfo("Exiting");

@@ -238,6 +238,9 @@ namespace MyGame
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
+            VAO = GL.GenVertexArray();
+            GL.BindVertexArray(VAO);
+
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);
 

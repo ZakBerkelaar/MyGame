@@ -69,6 +69,7 @@ namespace MyGame
         static void RunGame(string[] args)
         {
             Logger.LogInfo("Staring game");
+            Logger.LogInfo($"CLR Version: {Environment.Version}");
 
             window = new Window(800, 800, "My Game");
 

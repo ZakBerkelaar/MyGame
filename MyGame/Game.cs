@@ -81,9 +81,6 @@ namespace MyGame
             EntityRegister.RegisterEntities();
             Registry.AutoRegister();
 
-            //TextureAtlas.GenerateAtlas();
-            TextureAtlas.GenerateAtlai();
-
             //networker = new Networker("127.0.0.1", 6666);
             //networker.Connect();
             //activeWorld = networker.GetWorld();

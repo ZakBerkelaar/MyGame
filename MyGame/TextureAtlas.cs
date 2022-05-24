@@ -11,7 +11,7 @@ namespace MyGame
 {
     public static class TextureAtlas
     {
-        private static Bitmap multiAtlas;
+        public static Bitmap multiAtlas;
         private static GLTexture multiTexture;
 
         private static Dictionary<string, AtlasLocation> multiAtlasPos;
@@ -80,7 +80,7 @@ namespace MyGame
                     Vector2 BR = new Vector2((image.Item1.Right / (float)width), (image.Item1.Bottom / (float)height));
                     Vector2 BL = new Vector2((image.Item1.Left / (float)width), (image.Item1.Bottom / (float)height));
                     Vector2 TL = new Vector2((image.Item1.Left / (float)width), (image.Item1.Top / (float)height));
-                    textures.Add(image.Item3, new AtlasLocation() { uv = new TextureUV(TR, BR, BL, TL), Height = image.Item2.Height, Width = image.Item2.Width });
+                    textures.Add(image.Item3, new AtlasLocation() { uv = new TextureUV(TR, BR, BL, TL), x = image.Item1.X, y = image.Item1.Y, Height = image.Item2.Height, Width = image.Item2.Width });
 
                     g.DrawImage(image.Item2, image.Item1);
                 }

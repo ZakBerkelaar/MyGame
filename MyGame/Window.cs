@@ -278,6 +278,10 @@ namespace MyGame
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
             Game.canvas.AddChild(new UIImage(new IDString("UI", "Check")));
+            UIText testText = new UIText("Hello this is MyGame!");
+            testText.top = 50;
+            testText.left = 50;
+            Game.canvas.AddChild(testText);
 
             //Load texture atlas
             //TextureAtlas.BindAtlas();

@@ -9,6 +9,8 @@ namespace MyGame.Rendering
     public class AtlasLocation
     {
         public TextureUV uv;
+        public int x;
+        public int y;
         public int Width;
         public int Height;
     }

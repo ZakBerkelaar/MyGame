@@ -282,6 +282,11 @@ namespace MyGame
             testText.top = 50;
             testText.left = 50;
             Game.canvas.AddChild(testText);
+            Game.canvas.AddChild(new UICheckbox()
+            {
+                top = 50,
+                left = 50,
+            });
 
             //Load texture atlas
             //TextureAtlas.BindAtlas();

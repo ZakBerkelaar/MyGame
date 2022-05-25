@@ -373,6 +373,7 @@ namespace MyGame
             test = !test;
         }
 
+        private List<UIElement> clicking = new List<UIElement>();
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             //Vector2 offInPx = RenderHelper.NormalToScreen(pos);
@@ -400,12 +401,20 @@ namespace MyGame
             {
                 foreach (UIElement element in clickedElements)
                 {
+                    clicking.Add(element);
                     element.MouseDown();
                 }
                 return;
             }
             Game.activePlayer.MouseClick(e);
             base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            foreach(var element in clicking)
+                element.MouseUp();
+            base.OnMouseUp(e);
         }
 
         protected override void OnUnload()

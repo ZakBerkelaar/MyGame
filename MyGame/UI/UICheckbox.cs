@@ -35,9 +35,9 @@ namespace MyGame.UI
         protected override void DrawSelf()
         {
             if (Checked)
-                boxChecked.Draw(left, top);
+                boxChecked.Draw(globalLeft, globalTop);
             else
-                box.Draw(left, top);
+                box.Draw(globalLeft, globalTop);
         }
 
         public override void MouseDown()

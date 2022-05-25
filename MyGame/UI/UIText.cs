@@ -166,7 +166,7 @@ namespace MyGame.UI
         {
             Texture.textureShader.Use();
 
-            Texture.textureShader.SetVector2("trans", new Vector2((float)(left * 2) / Game.window.Width, (float)((Game.window.Height - top) * 2) / Game.window.Height));
+            Texture.textureShader.SetVector2("trans", new Vector2((float)(globalLeft * 2) / Game.window.Width, (float)((Game.window.Height - globalTop) * 2) / Game.window.Height));
             Texture.textureShader.SetVector2("scale", new Vector2(1, 1));
             Texture.textureShader.SetFloat("rotation", 0);
 

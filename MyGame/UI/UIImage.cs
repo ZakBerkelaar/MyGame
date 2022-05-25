@@ -18,7 +18,7 @@ namespace MyGame.UI
 
         protected override void DrawSelf()
         {
-            texture.Draw(top, left);
+            texture.Draw(globalTop, globalLeft);
         }
 
         public override void MouseDown()

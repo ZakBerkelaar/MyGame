@@ -287,13 +287,19 @@ namespace MyGame
                 top = 50,
                 left = 50,
             });
-            Game.canvas.AddChild(new UIDraggablePanel()
+            UIDraggablePanel debugPanel = new UIDraggablePanel()
             {
                 top = 50,
                 left = 100,
                 width = 50,
                 height = 50,
+            };
+            debugPanel.AddChild(new UICheckbox()
+            {
+                top = 5,
+                left = 5
             });
+            Game.canvas.AddChild(debugPanel);
 
             //Load texture atlas
             //TextureAtlas.BindAtlas();
@@ -389,10 +395,10 @@ namespace MyGame
             foreach (UIElement element in elements)
             {
                 //Check if clicked
-                if (MousePosition.X >= element.left &&
-                    (element.left + element.width) >= MousePosition.X &&
-                    MousePosition.Y >= element.top &&
-                    (element.top + element.height) >= MousePosition.Y)
+                if (MousePosition.X >= element.globalLeft &&
+                    (element.globalLeft + element.width) >= MousePosition.X &&
+                    MousePosition.Y >= element.globalTop &&
+                    (element.globalTop + element.height) >= MousePosition.Y)
                 {
                     clickedElements.Add(element);
                 }

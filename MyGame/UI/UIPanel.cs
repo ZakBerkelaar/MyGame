@@ -22,7 +22,7 @@ namespace MyGame.UI
 
         protected override void DrawSelf()
         {
-            panelBackgroud.Draw(left, top, width / panelBackgroud.Width, height / panelBackgroud.Height);
+            panelBackgroud.Draw(globalLeft, globalTop, width / panelBackgroud.Width, height / panelBackgroud.Height);
             base.DrawSelf();
         }
     }

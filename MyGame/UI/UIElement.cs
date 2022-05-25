@@ -21,6 +21,9 @@ namespace MyGame.UI
         public int width;
         public int height;
 
+        public int globalTop => top + (Parent?.globalTop ?? 0);
+        public int globalLeft => left + (Parent?.globalLeft ?? 0);
+
         public event MouseEvent OnMouseDown;
         public event MouseEvent OnMouseUp;
         public event MouseEvent OnMouseOver;

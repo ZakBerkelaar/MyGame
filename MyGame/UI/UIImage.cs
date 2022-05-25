@@ -25,11 +25,5 @@ namespace MyGame.UI
         {
             texture.Draw(globalLeft, globalTop);
         }
-
-        public override void MouseDown()
-        {
-            Console.WriteLine("Clicked me");
-            base.MouseDown();
-        }
     }
 }

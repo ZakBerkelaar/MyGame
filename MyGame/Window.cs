@@ -294,10 +294,18 @@ namespace MyGame
                 width = 50,
                 height = 50,
             };
-            debugPanel.AddChild(new UICheckbox()
+            Texture buttonTexture = new Texture(new IDString("UI", "Box"));
+            var btnReloadChunks = new UIImage(buttonTexture)
             {
                 top = 5,
-                left = 5
+                left = 5,
+            };
+            btnReloadChunks.OnMouseDown += _ => Game.worldRenderer.UpdateVBOs();
+            debugPanel.AddChild(btnReloadChunks);
+            debugPanel.AddChild(new UIText("Reload chunk VBOs")
+            {
+                top = 5,
+                left = 5 + buttonTexture.Width + 5
             });
             Game.canvas.AddChild(debugPanel);
 

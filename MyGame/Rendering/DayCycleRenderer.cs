@@ -17,7 +17,6 @@ namespace MyGame.Rendering
         {
             float test = (float)daySystem.UpdateInterval / daySystem.world.deltaTime;
 
-            Console.WriteLine(daySystem.time);
             float intensity = daySystem.time / 10000f;
             GL.ClearColor(intensity, intensity, intensity, 1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit);

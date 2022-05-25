@@ -287,7 +287,7 @@ namespace MyGame
                 top = 50,
                 left = 50,
             });
-            Game.canvas.AddChild(new UIPanel()
+            Game.canvas.AddChild(new UIDraggablePanel()
             {
                 top = 50,
                 left = 100,

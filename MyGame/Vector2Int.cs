@@ -26,5 +26,25 @@ namespace MyGame
         {
             return new Vector2Int(a.x + b.x, a.y + b.y);
         }
+
+        public static Vector2Int operator *(Vector2Int a, int b)
+        {
+            return new Vector2Int(a.x * b, a.y * b);
+        }
+
+        public static Vector2Int operator *(int a, Vector2Int b)
+        {
+            return new Vector2Int(b.x * a, b.y * a);
+        }
+
+        public static Vector2Int operator -(Vector2Int a)
+        {
+            return new Vector2Int(-a.x, -a.y);
+        }
+
+        public static Vector2Int operator -(Vector2Int a, Vector2Int b)
+        {
+            return new Vector2Int(a.x - b.x, a.y - b.y);
+        }
     }
 }

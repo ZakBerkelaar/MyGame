@@ -18,6 +18,8 @@ namespace MyGame.Registration
             Registry.RegisterPacket(typeof(WorldPacket));
             Registry.RegisterPacket(typeof(JoinPacket));
             Registry.RegisterPacket(typeof(SystemUpdatePacket));
+            Registry.RegisterPacket(typeof(ChunkPacket));
+            Registry.RegisterPacket(typeof(RequestChunkPacket));
         }
     }
 }

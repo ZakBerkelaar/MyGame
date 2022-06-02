@@ -16,7 +16,7 @@ namespace MyGame.Rendering
         public WorldRenderer(World world)
         {
             this.world = world;
-            foreach (Chunk chunk in world.chunks)
+            foreach (ChunkHolder chunk in world.chunks)
             {
                 ChunkRenderer renderer = new ChunkRenderer(chunk);
                 renderer.UpdateVBO();

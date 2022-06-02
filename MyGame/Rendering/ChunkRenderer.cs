@@ -9,16 +9,26 @@ namespace MyGame.Rendering
 {
     public class ChunkRenderer
     {
-        private Chunk chunk;
+        private ChunkHolder chunk;
         private int VBO;
 
         private int triangles;
 
-        public ChunkRenderer(Chunk chunk)
+        public ChunkRenderer(ChunkHolder chunk)
         {
             this.chunk = chunk;
-            this.chunk.TileSet += UpdateVBO;
+            this.chunk.ChunkLoaded += () =>
+            {
+                UpdateVBO();
+                this.chunk.Chunk.TileSet += UpdateVBO;
+            };
+            this.chunk.ChunkUnloaded += () => UpdateVBO();
             VBO = GL.GenBuffer();
+            if(chunk.IsChunkLoaded)
+            {
+                chunk.Chunk.TileSet += UpdateVBO;
+            }
+            UpdateVBO();
         }
 
         ~ChunkRenderer()
@@ -28,8 +38,16 @@ namespace MyGame.Rendering
 
         public void UpdateVBO()
         {
+            if (!chunk.IsChunkLoaded)
+            {
+                triangles = 0;
 
-            int nonNullTiles = chunk.NonAirTiles;
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+                GL.BufferData(BufferTarget.ArrayBuffer, 0, IntPtr.Zero, BufferUsageHint.StaticDraw);
+                return;
+            }
+
+            int nonNullTiles = chunk.Chunk.NonAirTiles;
             float[] vertices = new float[nonNullTiles * 6 * 5];
             //vertices = new float[nonNullTiles * 6 * 5];
             triangles = nonNullTiles * 6;
@@ -37,16 +55,16 @@ namespace MyGame.Rendering
             const int TileSize = 16;
             const int ChunkSize = 32;
 
-            Vector2 offset = new Vector2(chunk.position.x * ChunkSize * TileSize, chunk.position.y * ChunkSize * TileSize);
+            Vector2 offset = new Vector2(chunk.Chunk.position.x * ChunkSize * TileSize, chunk.Chunk.position.y * ChunkSize * TileSize);
 
             int i = 0;
             for (int x = 0; x < 32; x++)
             {
                 for (int y = 0; y < 32; y++)
                 {
-                    if (chunk.GetTile(x, y) != Registration.Tiles.Air)
+                    if (chunk.Chunk.GetTile(x, y) != Registration.Tiles.Air)
                     {
-                        TextureUV uv = TextureAtlas.GetAtlasLocationNew(chunk.GetTile(x, y).RegistryID).uv;
+                        TextureUV uv = TextureAtlas.GetAtlasLocationNew(chunk.Chunk.GetTile(x, y).RegistryID).uv;
                         //Bottom left
                         Vector2 v1 = RenderHelper.ScreenToNormal(new Vector2(x * TileSize, y * TileSize) + offset);
                         vertices[i + 0] = v1.x;

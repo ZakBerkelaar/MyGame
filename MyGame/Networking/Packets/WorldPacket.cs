@@ -71,7 +71,7 @@ namespace MyGame.Networking.Packets
                         chunk.SetTileNoUpdate(x, y, tile);
                     }
                 }
-                World.chunks[pos.x, pos.y] = chunk;
+                World.chunks[pos.x, pos.y] = new ChunkHolder(chunk);
             }
             World.isRemote = true;
         }
@@ -101,7 +101,7 @@ namespace MyGame.Networking.Packets
                 msg.Write(Registration.Registry.GetNetID(entity));
             }
             //Chunks
-            foreach(Chunk chunk in World.chunks)
+            foreach(Chunk chunk in World.chunks.Cast<ChunkHolder>().Select(ch => ch.GetChunk()))
             {
                 msg.Write(chunk.position);
                 for (int x = 0; x < 32; x++)

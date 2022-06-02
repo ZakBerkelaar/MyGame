@@ -16,7 +16,7 @@ namespace MyGame
 
         public Dispatcher dispatcher = new Dispatcher();
 
-        public Chunk[,] chunks;
+        public ChunkHolder[,] chunks;
         public EntityHolder entities;
 
         private Dictionary<Type, WorldSystem> systems = new Dictionary<Type, WorldSystem>();
@@ -32,14 +32,14 @@ namespace MyGame
 
         public World(int width, int height)
         {
-            chunks = new Chunk[width, height];
+            chunks = new ChunkHolder[width, height];
             entities = new EntityHolder();
 
             for (int x = 0; x < chunks.GetLength(0); x++)
             {
                 for (int y = 0; y < chunks.GetLength(1); y++)
                 {
-                    chunks[x, y] = new Chunk(new Vector2Int(x, y));
+                    chunks[x, y] = new ChunkHolder(new Chunk(new Vector2Int(x, y)));
                 }
             }
         }
@@ -118,7 +118,7 @@ namespace MyGame
 
         private Chunk GetChunk(int x, int y)
         {
-            return chunks[x >> 5, y >> 5];
+            return chunks[x >> 5, y >> 5].GetChunk();
         }
 
         private void SendNetMessage(int x, int y, Tile tile)

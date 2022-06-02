@@ -39,7 +39,7 @@ namespace MyGame
             {
                 for (int y = 0; y < chunks.GetLength(1); y++)
                 {
-                    chunks[x, y] = new ChunkHolder(new Chunk(new Vector2Int(x, y)));
+                    chunks[x, y] = new ChunkHolder(new Chunk(new Vector2Int(x, y), worldID));
                 }
             }
         }

@@ -7,6 +7,7 @@ namespace MyGame
     public class Chunk
     {
         public Vector2Int position;
+        public ushort worldId;
 
         private Tile[,] tiles = new Tile[32, 32];
 
@@ -58,9 +59,10 @@ namespace MyGame
             return tiles[x, y];
         }
 
-        public Chunk(Vector2Int position)
+        public Chunk(Vector2Int position, ushort worldId)
         {
             this.position = position;
+            this.worldId = worldId;
             for (int x = 0; x < 32; x++)
             {
                 for (int y = 0; y < 32; y++)

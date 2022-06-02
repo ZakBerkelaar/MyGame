@@ -62,7 +62,7 @@ namespace MyGame.Networking.Packets
             for (int i = 0; i < width * height; i++)
             {
                 Vector2Int pos = msg.ReadVector2Int();
-                Chunk chunk = new Chunk(pos);
+                Chunk chunk = new Chunk(pos, worldID);
                 for (int x = 0; x < 32; x++)
                 {
                     for (int y = 0; y < 32; y++)

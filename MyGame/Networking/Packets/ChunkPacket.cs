@@ -28,7 +28,8 @@ namespace MyGame.Networking.Packets
         protected override void Deserialize(NetIncomingMessage msg)
         {
             Vector2Int pos = msg.ReadVector2Int();
-            Chunk = new Chunk(pos);
+            ushort worldId = msg.ReadUInt16();
+            Chunk = new Chunk(pos, worldId);
             for (int x = 0; x < 32; x++)
             {
                 for (int y = 0; y < 32; y++)
@@ -42,6 +43,7 @@ namespace MyGame.Networking.Packets
         protected override void Serialize(NetOutgoingMessage msg)
         {
             msg.Write(Chunk.position);
+            msg.Write(Chunk.worldId);
             for (int x = 0; x < 32; x++)
             {
                 for (int y = 0; y < 32; y++)

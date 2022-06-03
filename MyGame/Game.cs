@@ -177,6 +177,11 @@ namespace MyGame
             {
                 ((Systems.NetworkedWorldSystem)worlds[packet.WorldID].GetSystem(packet.NetworkedSystemType)).Deserialize(packet.RemainingMessage);
             });
+
+            networkerClient.RegisterPacketHandler<ChunkPacket>(packet =>
+            {
+                worlds[packet.Chunk.worldId].chunks[packet.Chunk.position.x, packet.Chunk.position.y].LoadChunk(packet.Chunk);
+            });
         }
     }
 }

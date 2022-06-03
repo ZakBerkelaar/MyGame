@@ -38,12 +38,79 @@ namespace MyGame.Rendering
 
         public void UpdateVBO()
         {
+            const int TileSize = 16;
+            const int ChunkSize = 32;
+
             if (!chunk.IsChunkLoaded)
             {
-                triangles = 0;
+#if DEBUG
+                float[] vertices2 = new float[6 * 5];
+                triangles = 6;
+
+                Vector2 offset2 = new Vector2(chunk.Position.x * ChunkSize * TileSize, chunk.Position.y * ChunkSize * TileSize); ;
+
+                TextureUV uv = TextureAtlas.GetAtlasLocationNew(new IDString("UI", "Unloaded")).uv;
+                //Bottom left
+                Vector2 v1 = RenderHelper.ScreenToNormal(new Vector2(0, 0) + offset2);
+                vertices2[0] = v1.x;
+                vertices2[1] = v1.y;
+                vertices2[2] = 0;
+                //Texture coords
+                vertices2[3] = uv.BL.x;
+                vertices2[4] = uv.BL.y;
+
+                //Top left
+                Vector2 v2 = RenderHelper.ScreenToNormal(new Vector2(0, TileSize * ChunkSize) + offset2);
+                vertices2[5] = v2.x;
+                vertices2[6] = v2.y;
+                vertices2[7] = 0;
+                //Texture coords
+                vertices2[8] = uv.TL.x;
+                vertices2[9] = uv.TL.y;
+
+                //Bottom right
+                Vector2 v3 = RenderHelper.ScreenToNormal(new Vector2(TileSize * ChunkSize, 0) + offset2);
+                vertices2[10] = v3.x;
+                vertices2[11] = v3.y;
+                vertices2[12] = 0;
+                //Texture coords
+                vertices2[13] = uv.BR.x;
+                vertices2[14] = uv.BR.y;
+
+                //Top right
+                Vector2 v4 = RenderHelper.ScreenToNormal(new Vector2(TileSize * ChunkSize, TileSize * ChunkSize) + offset2);
+                vertices2[15] = v4.x;
+                vertices2[16] = v4.y;
+                vertices2[17] = 0;
+                //Texture coords
+                vertices2[18] = uv.TR.x;
+                vertices2[19] = uv.TR.y;
+
+                //Top left
+                Vector2 v5 = RenderHelper.ScreenToNormal(new Vector2(0, TileSize * ChunkSize) + offset2);
+                vertices2[20] = v5.x;
+                vertices2[21] = v5.y;
+                vertices2[22] = 0;
+                //Texture coords
+                vertices2[23] = uv.TL.x;
+                vertices2[24] = uv.TL.y;
+
+                //Bottom right
+                Vector2 v6 = RenderHelper.ScreenToNormal(new Vector2(TileSize * ChunkSize, 0) + offset2);
+                vertices2[25] = v6.x;
+                vertices2[26] = v6.y;
+                vertices2[27] = 0;
+                //Texture coords
+                vertices2[28] = uv.BR.x;
+                vertices2[29] = uv.BR.y;
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+                GL.BufferData(BufferTarget.ArrayBuffer, vertices2.Length * sizeof(float), vertices2, BufferUsageHint.StaticDraw);
+#else
+                triangles = 0;
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
                 GL.BufferData(BufferTarget.ArrayBuffer, 0, IntPtr.Zero, BufferUsageHint.StaticDraw);
+#endif
                 return;
             }
 
@@ -51,9 +118,6 @@ namespace MyGame.Rendering
             float[] vertices = new float[nonNullTiles * 6 * 5];
             //vertices = new float[nonNullTiles * 6 * 5];
             triangles = nonNullTiles * 6;
-
-            const int TileSize = 16;
-            const int ChunkSize = 32;
 
             Vector2 offset = new Vector2(chunk.Chunk.position.x * ChunkSize * TileSize, chunk.Chunk.position.y * ChunkSize * TileSize);
 

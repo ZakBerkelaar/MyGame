@@ -176,6 +176,19 @@ namespace Server
                 EntityPositionData data = packet.PositionData[0]; //TODO: Do it for each item
                 worlds[data.worldID].entities[data.id].position = data.position; //TOOD: Should possibly be invoked
             });
+
+            networker.RegisterPacketHandler<RequestChunkPacket>(packet =>
+            {
+                World world = worlds[packet.WorldId];
+                world.dispatcher.Invoke(() =>
+                {
+                    ChunkPacket packet2 = new ChunkPacket(world.chunks[packet.Position.x, packet.Position.y].Chunk);
+                    dispatcher.Invoke(() =>
+                    {
+                        networker.SendMessage(packet2, packet.sender);
+                    });
+                });
+            });
         }
 
         private static void Networker_playerDisconnected(NetConnection obj)

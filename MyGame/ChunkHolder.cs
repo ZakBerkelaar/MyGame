@@ -14,16 +14,20 @@ namespace MyGame
         public event Action ChunkLoaded = delegate { };
         public event Action ChunkUnloaded = delegate { };
 
-        public ChunkHolder()
+        public Vector2Int Position { get; }
+
+        public ChunkHolder(Vector2Int position)
         {
             Chunk = null;
             IsChunkLoaded = false;
+            Position = position;
         }
 
         public ChunkHolder(Chunk chunk)
         {
             Chunk = chunk;
             IsChunkLoaded = true;
+            Position = chunk.position;
         }
 
         public Chunk GetChunk()

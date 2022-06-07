@@ -7,6 +7,7 @@ using MyGame.Registration;
 using System.Linq;
 using MyGame.UI;
 using MyGame.Networking.Packets;
+using MyGame.Utils;
 
 namespace MyGame
 {
@@ -16,6 +17,8 @@ namespace MyGame
         //public static Dictionary<uint, Entity> entities = new Dictionary<uint, Entity>();
 
         public static Window window;
+
+        public static JobPerformer JobPerformer;
 
         public static World activeWorld;
         public static Dictionary<ushort, World> worlds = new Dictionary<ushort, World>();
@@ -80,6 +83,8 @@ namespace MyGame
             PacketRegister.RegisterPackets();
             EntityRegister.RegisterEntities();
             Registry.AutoRegister();
+
+            JobPerformer = new JobPerformer();
 
             //networker = new Networker("127.0.0.1", 6666);
             //networker.Connect();

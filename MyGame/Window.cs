@@ -195,6 +195,7 @@ namespace MyGame
                 while (acc >= td)
                 {
                     Game.activeWorld.dispatcher.InvokePending();
+                    Game.JobPerformer.Update(td2);
                     foreach (EntityRenderer renderer in Game.renderedEntities)
                     {
                         renderer.PosUpdated();
@@ -233,6 +234,17 @@ namespace MyGame
 
         protected override void OnLoad()
         {
+            // Create the chunk loading job
+            Game.JobPerformer.Add(new Utils.Job(1.0f, () =>
+            {
+                var chunks = Networking.NetworkingHelpers.NearbyChunks(Game.activePlayer.position, new Vector2Int(Game.activeWorld.Width, Game.activeWorld.Height), 2);
+                foreach (var pos in chunks)
+                {
+                    if (Game.activeWorld.chunks[pos.x, pos.y].IsChunkLoaded == false)
+                        Game.networkerClient.SendMessage(new Networking.Packets.RequestChunkPacket(Game.activeWorld.worldID, pos));
+                }
+            }));
+
             //Set the gl clear color to a dark green
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.Enable(EnableCap.Blend);

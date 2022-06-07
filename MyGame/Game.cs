@@ -175,7 +175,8 @@ namespace MyGame
 
             networkerClient.RegisterPacketHandler<SystemUpdatePacket>(packet =>
             {
-                ((Systems.NetworkedWorldSystem)worlds[packet.WorldID].GetSystem(packet.NetworkedSystemType)).Deserialize(packet.RemainingMessage);
+                if(worlds.ContainsKey(packet.WorldID))
+                    ((Systems.NetworkedWorldSystem)worlds[packet.WorldID].GetSystem(packet.NetworkedSystemType)).Deserialize(packet.RemainingMessage);
             });
 
             networkerClient.RegisterPacketHandler<ChunkPacket>(packet =>

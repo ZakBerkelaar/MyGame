@@ -59,7 +59,15 @@ namespace MyGame.Networking.Packets
                 World.entities.Add(entity);
             }
             //Chunks
-            for (int i = 0; i < width * height; i++)
+            for (int x = 0; x < World.Width; x++)
+            {
+                for (int y = 0; y < World.Height; y++)
+                {
+                    World.chunks[x, y] = new ChunkHolder(new Vector2Int(x, y));
+                }
+            }
+            int numChunksSent = msg.ReadInt32();
+            for (int i = 0; i < numChunksSent; i++)
             {
                 Vector2Int pos = msg.ReadVector2Int();
                 Chunk chunk = new Chunk(pos, worldID);
@@ -71,8 +79,22 @@ namespace MyGame.Networking.Packets
                         chunk.SetTileNoUpdate(x, y, tile);
                     }
                 }
-                World.chunks[pos.x, pos.y] = new ChunkHolder(chunk);
+                World.chunks[pos.x, pos.y].LoadChunk(chunk);
             }
+            //for (int i = 0; i < width * height; i++)
+            //{
+            //    Vector2Int pos = msg.ReadVector2Int();
+            //    Chunk chunk = new Chunk(pos, worldID);
+            //    for (int x = 0; x < 32; x++)
+            //    {
+            //        for (int y = 0; y < 32; y++)
+            //        {
+            //            Tile tile = Registration.Registry.GetRegistryTile(msg.ReadUInt32());
+            //            chunk.SetTileNoUpdate(x, y, tile);
+            //        }
+            //    }
+            //    World.chunks[pos.x, pos.y] = new ChunkHolder(chunk);
+            //}
             World.isRemote = true;
         }
 
@@ -101,7 +123,9 @@ namespace MyGame.Networking.Packets
                 msg.Write(Registration.Registry.GetNetID(entity));
             }
             //Chunks
-            foreach(Chunk chunk in World.chunks.Cast<ChunkHolder>().Select(ch => ch.GetChunk()))
+            var chunks = NetworkingHelpers.NearbyChunks(World.spawn, new Vector2Int(World.Width, World.Height), 2);
+            msg.Write(chunks.Count());
+            foreach (var chunk in chunks.Select(p => World.chunks[p.x, p.y]).Select(ch => ch.GetChunk()))
             {
                 msg.Write(chunk.position);
                 for (int x = 0; x < 32; x++)
@@ -113,6 +137,18 @@ namespace MyGame.Networking.Packets
                     }
                 }
             }
+            //foreach(Chunk chunk in World.chunks.Cast<ChunkHolder>().Select(ch => ch.GetChunk()))
+            //{
+            //    msg.Write(chunk.position);
+            //    for (int x = 0; x < 32; x++)
+            //    {
+            //        for (int y = 0; y < 32; y++)
+            //        {
+            //            Tile tile = chunk.GetTile(x, y);
+            //            msg.Write(Registration.Registry.GetNetID(tile));
+            //        }
+            //    }
+            //}
         }
     }
 }

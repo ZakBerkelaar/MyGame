@@ -43,7 +43,7 @@ namespace MyGame.Generation
         public World GenWorld()
         {
             Random r = new Random(seed);
-            World world = new World(10, 3); //TOOD: Create generator for this
+            World world = new World(30, 3); //TOOD: Create generator for this
 
             var enumerator = passes.GetEnumerator();
             while (enumerator.MoveNext())

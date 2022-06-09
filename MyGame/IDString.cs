@@ -47,9 +47,23 @@ namespace MyGame
 
         public static implicit operator string(IDString iDString) => iDString.ToString();
 
+        
         public override string ToString()
         {
             return $"{Namespace}:{Type}/{Name}";
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is IDString @string &&
+                   Namespace == @string.Namespace &&
+                   Name == @string.Name &&
+                   Type == @string.Type;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Namespace, Name, Type);
         }
     }
 }

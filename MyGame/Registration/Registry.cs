@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MyGame.Networking;
 using System.Reflection;
 using MyGame.Systems;
+using MyGame.Commands;
 
 namespace MyGame.Registration
 {
@@ -30,12 +31,21 @@ namespace MyGame.Registration
         private static readonly Dictionary<ushort, Type> systems2 = new Dictionary<ushort, Type>();
         private static ushort systemCounter = 0;
 
+        private static readonly Dictionary<IDString, Command> commands = new Dictionary<IDString, Command>();
+        private static readonly Dictionary<ushort, Command> commandsNetId = new Dictionary<ushort, Command>();
+        private static readonly Dictionary<IDString, ushort> commandsNetId2 = new Dictionary<IDString, ushort>();
+        private static ushort commandCounter = 0;
+
         private static Dictionary<Type, byte> packets = new Dictionary<Type, byte>();
         private static Dictionary<byte, Type> packets2 = new Dictionary<byte, Type>();
         private static byte packetCounter = 0;
 
         public static void AutoRegister()
         {
+            IEnumerable<Type> GetSubtypes<T>() => Assembly.GetAssembly(typeof(T))
+                                                    .GetTypes()
+                                                    .Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract);
+
             //Find systems
             var systemTypes = Assembly.GetAssembly(typeof(WorldSystem))
                 .GetTypes()
@@ -45,8 +55,14 @@ namespace MyGame.Registration
                 systems.Add(systemType, systemCounter);
                 systems2.Add(systemCounter++, systemType);
             }
+            //Find commands
+            foreach (Type commandType in GetSubtypes<Command>())
+            {
+                Command command = (Command)Activator.CreateInstance(commandType);
+                RegisterCommand(command);
+            }
         }
-
+        
         public static void RegisterTile(Tile tile)
         {
             //Register tile
@@ -79,6 +95,13 @@ namespace MyGame.Registration
         {
             systems.Add(system, systemCounter);
             systems2.Add(systemCounter++, system);
+        }
+
+        public static void RegisterCommand(Command command)
+        {
+            commands.Add(command.RegistryID, command);
+            commandsNetId.Add(commandCounter, command);
+            commandsNetId2.Add(command.RegistryID, commandCounter++);
         }
 
         public static void RegisterEntity(Type entity)
@@ -169,6 +192,6 @@ namespace MyGame.Registration
         public static Tile[] GetRegisteredTiles() => tiles.Values.ToArray();
         public static Item[] GetRegisteredItems() => items.Values.ToArray();
         public static Type[] GetRegisteredEntities() => entities.Values.ToArray();
-
+        public static Command[] GetRegisteredCommands() => commands.Values.ToArray();
     }
 }

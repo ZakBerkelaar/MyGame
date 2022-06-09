@@ -8,6 +8,7 @@ using System.Linq;
 using MyGame.UI;
 using MyGame.Networking.Packets;
 using MyGame.Utils;
+using MyGame.Commands;
 
 namespace MyGame
 {
@@ -35,6 +36,8 @@ namespace MyGame
         public static Action<NetworkPacket> SendMessage;
 
         public static UICanvas canvas;
+
+        public static CommandManager commandManager;
 
         private static bool joined;
 
@@ -115,6 +118,8 @@ namespace MyGame
 
             worldRenderer = new WorldRenderer(activeWorld);
             worldRenderer.AddRenderSystem(new DayCycleRenderer());
+
+            commandManager = new CommandManager(Registry.GetRegisteredCommands());
 
             //window.VSync = OpenTK.VSyncMode.Off;
             window.Vibe();

@@ -329,6 +329,20 @@ namespace MyGame
 
             //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                while (true)
+                {
+                    string str = Console.ReadLine();
+                    Game.activeWorld.dispatcher.Invoke(() =>
+                    {
+                        var res = Game.commandManager.ExecuteCommand(str);
+                        if (res.Succeeded == false)
+                            throw new Exception();
+                    });
+                }
+            });
+
             base.OnLoad();
         }
 

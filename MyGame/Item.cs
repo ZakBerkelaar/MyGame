@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace MyGame
 {
-    public abstract class Item
+    public abstract class Item : RegistryObject
     {
-        public IDString RegistryString { get; private set; }
-
-        public Item(IDString regStr)
+        public Item()
         {
-            RegistryString = regStr;
+            
         }
 
         public virtual void UseItem(Entity user, Vector2 position, ItemStack stack) { }

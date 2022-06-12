@@ -9,6 +9,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace MyGame
 {
+    [Registration.Registrable("MyGame", "Entity", "Player")]
     public class Player : Entity
     {
         public ItemStack[] items = new ItemStack[10];

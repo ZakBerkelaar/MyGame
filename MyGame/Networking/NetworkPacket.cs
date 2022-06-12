@@ -7,7 +7,7 @@ using Lidgren.Network;
 
 namespace MyGame.Networking
 {
-    public abstract class NetworkPacket
+    public abstract class NetworkPacket : RegistryObject
     {
         public byte packetType;
         public NetConnection sender;
@@ -17,7 +17,7 @@ namespace MyGame.Networking
 
         public NetworkPacket()
         {
-            packetType = Registration.Registry.GetRegistryPacketID(GetType());
+            packetType = Registration.Registry2.GetRegistryPacketNetID(GetType().GetRegistryID());
         }
 
         public void SerializePacket(NetOutgoingMessage msg)
@@ -28,7 +28,7 @@ namespace MyGame.Networking
 
         public static NetworkPacket DeserializePacket(NetIncomingMessage msg)
         {
-            Type type = Registration.Registry.GetRegistryPacket(msg.ReadByte());
+            Type type = Registration.Registry2.GetRegistryPacket(msg.ReadByte());
             var packet = (NetworkPacket)Activator.CreateInstance(type);
             packet.Deserialize(msg);
             packet.sender = msg.SenderConnection;

@@ -85,7 +85,8 @@ namespace MyGame
             ItemRegister.RegisterItems();
             PacketRegister.RegisterPackets();
             EntityRegister.RegisterEntities();
-            Registry.AutoRegister();
+            SystemRegister.RegisterSystems();
+            CommandRegister.RegisterCommands();
 
             JobPerformer = new JobPerformer();
 
@@ -107,7 +108,7 @@ namespace MyGame
             renderedEntities.Add(playerRenderer);
             //Game.activeEntities.Add(playerRenderer);
 
-            var items = Registry.GetRegisteredItems();
+            var items = Registry2.GetRegisteredItems().ToArray();
             for (int i = 0; i < items.Length; i++)
             {
                 activePlayer.items[i] = new ItemStack(items[i], 1);
@@ -119,7 +120,7 @@ namespace MyGame
             worldRenderer = new WorldRenderer(activeWorld);
             worldRenderer.AddRenderSystem(new DayCycleRenderer());
 
-            commandManager = new CommandManager(Registry.GetRegisteredCommands());
+            commandManager = new CommandManager(Registry2.GetRegisteredCommands());
 
             //window.VSync = OpenTK.VSyncMode.Off;
             window.Vibe();

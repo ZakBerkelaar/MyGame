@@ -8,6 +8,7 @@ using MyGame.Systems;
 
 namespace MyGame.Networking.Packets
 {
+    [Registration.Registrable("MyGame", "Packet", "PacketWorld")]
     public class WorldPacket : NetworkPacket
     {
         public override NetDeliveryMethod NetDeliveryMethod => NetDeliveryMethod.ReliableOrdered;
@@ -41,7 +42,7 @@ namespace MyGame.Networking.Packets
             for (int i = 0; i < systemCount; i++)
             {
                 //The system
-                WorldSystem system = (WorldSystem)Activator.CreateInstance(Registration.Registry.GetRegistrySystem(msg.ReadUInt16()));
+                WorldSystem system = (WorldSystem)Activator.CreateInstance(Registration.Registry2.GetRegistrySystem(msg.ReadUInt16()));
                 //Initial information
                 system.InitialDataDeserialize(msg);
                 World.AddSystem(system);
@@ -51,7 +52,7 @@ namespace MyGame.Networking.Packets
             for (int i = 0; i < entityCount; i++)
             {
                 uint id = msg.ReadUInt32();
-                Type type = Registration.Registry.GetRegistyEntity(msg.ReadUInt32());
+                Type type = Registration.Registry2.GetRegistryEntity(msg.ReadUInt32());
 
                 Entity entity = (Entity)Activator.CreateInstance(type);
                 entity.isRemote = true;
@@ -75,7 +76,7 @@ namespace MyGame.Networking.Packets
                 {
                     for (int y = 0; y < 32; y++)
                     {
-                        Tile tile = Registration.Registry.GetRegistryTile(msg.ReadUInt32());
+                        Tile tile = Registration.Registry2.GetRegistryTile(msg.ReadUInt32());
                         chunk.SetTileNoUpdate(x, y, tile);
                     }
                 }
@@ -111,7 +112,7 @@ namespace MyGame.Networking.Packets
             foreach (WorldSystem system in systems)
             {
                 //The system
-                msg.Write(Registration.Registry.GetRegistrySystemID(system.GetType()));
+                msg.Write(Registration.Registry2.GetRegistrySystemNetID(system.RegistryID));
                 //Initial information
                 system.InitialDataSerialize(msg);
             }
@@ -120,7 +121,7 @@ namespace MyGame.Networking.Packets
             foreach (Entity entity in World.entities)
             {
                 msg.Write(entity.ID);
-                msg.Write(Registration.Registry.GetNetID(entity));
+                msg.Write(Registration.Registry2.GetRegistryEntityNetID(entity.RegistryID));
             }
             //Chunks
             var chunks = NetworkingHelpers.NearbyChunks(World.spawn, new Vector2Int(World.Width, World.Height), 2);
@@ -133,7 +134,7 @@ namespace MyGame.Networking.Packets
                     for (int y = 0; y < 32; y++)
                     {
                         Tile tile = chunk.GetTile(x, y);
-                        msg.Write(Registration.Registry.GetNetID(tile));
+                        msg.Write(Registration.Registry2.GetRegistryTileNetID(tile.RegistryID));
                     }
                 }
             }

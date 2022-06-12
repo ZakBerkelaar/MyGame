@@ -8,7 +8,7 @@ using Lidgren.Network;
 
 namespace MyGame.Systems
 {
-    public abstract class WorldSystem
+    public abstract class WorldSystem : RegistryObject
     {
         public World world;
 

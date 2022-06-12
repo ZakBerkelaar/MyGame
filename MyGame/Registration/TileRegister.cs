@@ -11,10 +11,10 @@ namespace MyGame.Registration
     {
         public static void RegisterTiles()
         {
-            Registry.RegisterTile(new TileAir());
-            Registry.RegisterTile(new TileDirt());
-            Registry.RegisterTile(new TileStone());
-            Registry.RegisterTile(new TileGrass());
+            Registry2.RegisterTile(new TileAir());
+            Registry2.RegisterTile(new TileDirt());
+            Registry2.RegisterTile(new TileStone());
+            Registry2.RegisterTile(new TileGrass());
         }
     }
 }

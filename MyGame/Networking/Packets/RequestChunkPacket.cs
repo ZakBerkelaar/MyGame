@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Networking.Packets
 {
+    [Registration.Registrable("MyGame", "Packet", "PacketRequestChunk")]
     public class RequestChunkPacket : NetworkPacket
     {
         public ushort WorldId { get; private set; }

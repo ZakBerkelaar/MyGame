@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Networking.Packets
 {
+    [Registration.Registrable("MyGame", "Packet", "PacketSetTile")]
     public class SetTilePacket : NetworkPacket
     {
         public override NetDeliveryMethod NetDeliveryMethod => NetDeliveryMethod.ReliableOrdered;
@@ -33,14 +34,14 @@ namespace MyGame.Networking.Packets
         {
             WorldID = msg.ReadUInt16();
             TilePos = msg.ReadVector2Int();
-            Tile = Registration.Registry.GetRegistryTile(msg.ReadUInt32());
+            Tile = Registration.Registry2.GetRegistryTile(msg.ReadUInt32());
         }
 
         protected override void Serialize(NetOutgoingMessage msg)
         {
             msg.Write(WorldID);
             msg.Write(TilePos);
-            msg.Write(Registration.Registry.GetNetID(Tile));
+            msg.Write(Registration.Registry2.GetRegistryTileNetID(Tile.RegistryID));
         }
     }
 }

@@ -11,8 +11,8 @@ namespace MyGame.Registration
     {
         public static void RegisterEntities()
         {
-            Registry.RegisterEntity(typeof(Player));
-            Registry.RegisterEntity(typeof(TestEntity));
+            Registry2.RegisterEntity(typeof(Player));
+            Registry2.RegisterEntity(typeof(TestEntity));
         }
     }
 }

@@ -7,7 +7,8 @@ using MyGame.Networking;
 
 namespace MyGame.Commands
 {
-    public abstract class Command : IRegistrable
+    [Registration.Registrable("MyGame", "Packet", "PacketCommand")]
+    public abstract class Command : RegistryObject
     {
         private class ArgManager
         {
@@ -32,7 +33,6 @@ namespace MyGame.Commands
         private ArgManager argManager;
 
         public string Name { get; }
-        public IDString RegistryID { get; set; }
         public abstract Side Side { get; }
         protected abstract CommandResult Execute(params CommandArgParseResult[] args);
 

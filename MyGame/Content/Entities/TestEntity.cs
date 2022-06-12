@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Content.Entities
 {
+    [Registration.Registrable("MyGame", "Entity", "TestEntity")]
     public class TestEntity : Entity
     {
         public TestEntity()

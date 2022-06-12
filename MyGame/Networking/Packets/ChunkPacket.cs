@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Networking.Packets
 {
+    [Registration.Registrable("MyGame", "Packet", "PacketChunk")]
     public class ChunkPacket : NetworkPacket
     {
         public override NetDeliveryMethod NetDeliveryMethod => NetDeliveryMethod.ReliableOrdered;
@@ -34,7 +35,7 @@ namespace MyGame.Networking.Packets
             {
                 for (int y = 0; y < 32; y++)
                 {
-                    Tile tile = Registration.Registry.GetRegistryTile(msg.ReadUInt32());
+                    Tile tile = Registration.Registry2.GetRegistryTile(msg.ReadUInt32());
                     Chunk.SetTileNoUpdate(x, y, tile);
                 }
             }
@@ -49,7 +50,7 @@ namespace MyGame.Networking.Packets
                 for (int y = 0; y < 32; y++)
                 {
                     Tile tile = Chunk.GetTile(x, y);
-                    msg.Write(Registration.Registry.GetNetID(tile));
+                    msg.Write(Registration.Registry2.GetRegistryTileNetID(tile.RegistryID));
                 }
             }
         }

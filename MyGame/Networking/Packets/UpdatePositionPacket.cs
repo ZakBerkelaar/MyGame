@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Networking.Packets
 {
+    [Registration.Registrable("MyGame", "Packet", "PacketUpdatePosition")]
     public class UpdatePositionPacket : NetworkPacket
     {
         public override NetDeliveryMethod NetDeliveryMethod => NetDeliveryMethod.UnreliableSequenced;

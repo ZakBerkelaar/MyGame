@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Commands
 {
+    [Registration.Registrable("MyGame", "Command", "CommandTest")]
     internal class TestComand : Command
     {
         public override Side Side => Side.Client;

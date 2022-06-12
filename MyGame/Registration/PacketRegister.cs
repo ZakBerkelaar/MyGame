@@ -11,15 +11,15 @@ namespace MyGame.Registration
     {
         public static void RegisterPackets()
         {
-            Registry.RegisterPacket(typeof(DeleteEntityPacket));
-            Registry.RegisterPacket(typeof(NewEntityPacket));
-            Registry.RegisterPacket(typeof(SetTilePacket));
-            Registry.RegisterPacket(typeof(UpdatePositionPacket));
-            Registry.RegisterPacket(typeof(WorldPacket));
-            Registry.RegisterPacket(typeof(JoinPacket));
-            Registry.RegisterPacket(typeof(SystemUpdatePacket));
-            Registry.RegisterPacket(typeof(ChunkPacket));
-            Registry.RegisterPacket(typeof(RequestChunkPacket));
+            Registry2.RegisterPacket(typeof(DeleteEntityPacket));
+            Registry2.RegisterPacket(typeof(NewEntityPacket));
+            Registry2.RegisterPacket(typeof(SetTilePacket));
+            Registry2.RegisterPacket(typeof(UpdatePositionPacket));
+            Registry2.RegisterPacket(typeof(WorldPacket));
+            Registry2.RegisterPacket(typeof(JoinPacket));
+            Registry2.RegisterPacket(typeof(SystemUpdatePacket));
+            Registry2.RegisterPacket(typeof(ChunkPacket));
+            Registry2.RegisterPacket(typeof(RequestChunkPacket));
         }
     }
 }

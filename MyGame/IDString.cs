@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace MyGame
 {
-    public struct IDString
+    public readonly struct IDString
     {
-        public string Namespace { get; set; }
-        public string Name { get; set; }
-        public string Type { get; set; }
+        public readonly string Namespace;
+        public readonly string Name;
+        public readonly string Type;
 
         public IDString(string @namespace, string type, string name)
         {
@@ -64,6 +64,16 @@ namespace MyGame
         public override int GetHashCode()
         {
             return HashCode.Combine(Namespace, Name, Type);
+        }
+
+        public static bool operator ==(IDString left, IDString right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(IDString left, IDString right)
+        {
+            return !(left == right);
         }
     }
 }

@@ -8,6 +8,7 @@ using MyGame.Systems;
 
 namespace MyGame.Networking.Packets
 {
+    [Registration.Registrable("MyGame", "Packet", "PacketSystemUpdate")]
     public class SystemUpdatePacket : NetworkPacket
     {
         public override NetDeliveryMethod NetDeliveryMethod => NetDeliveryMethod.ReliableOrdered; //TODO: Check if this is the right method
@@ -33,14 +34,14 @@ namespace MyGame.Networking.Packets
         protected override void Deserialize(NetIncomingMessage msg)
         {
             WorldID = msg.ReadUInt16();
-            NetworkedSystemType = Registration.Registry.GetRegistrySystem(msg.ReadUInt16());
+            NetworkedSystemType = Registration.Registry2.GetRegistrySystem(msg.ReadUInt16());
             RemainingMessage = msg;
         }
 
         protected override void Serialize(NetOutgoingMessage msg)
         {
             msg.Write(WorldID);
-            msg.Write(Registration.Registry.GetRegistrySystemID(system.GetType()));
+            msg.Write(Registration.Registry2.GetRegistrySystemNetID(system.RegistryID));
             system.Serialize(msg);
         }
     }

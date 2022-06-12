@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Content.Tiles
 {
+    [Registration.Registrable("MyGame", "Tile", "TileStone")]
     class TileStone : Tile
     {
     }

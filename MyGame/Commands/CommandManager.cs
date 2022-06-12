@@ -10,7 +10,7 @@ namespace MyGame.Commands
     {
         private Dictionary<string, Command> commands;
 
-        public CommandManager(Command[] commands)
+        public CommandManager(IEnumerable<Command> commands)
         {
             this.commands = commands.ToDictionary(c => c.Name, c => c);
         }

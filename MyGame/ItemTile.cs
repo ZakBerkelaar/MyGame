@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace MyGame
 {
-    public class ItemTile : Item
+    [Registration.Registrable("MyGame", "Item", "ItemTile")]
+    public sealed class ItemTile : Item
     {
-        private Tile tile;
+        private readonly Tile tile;
 
-        public ItemTile(Tile tile) : base(new IDString("Item", "Item" + tile.RegistryID.Name)) 
+        public ItemTile(Tile tile)
         {
             this.tile = tile;
         }

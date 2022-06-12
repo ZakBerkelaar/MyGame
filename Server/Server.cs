@@ -50,7 +50,8 @@ namespace Server
             ItemRegister.RegisterItems();
             PacketRegister.RegisterPackets();
             EntityRegister.RegisterEntities();
-            Registry.AutoRegister();
+            SystemRegister.RegisterSystems();
+            CommandRegister.RegisterCommands();
 
             networker = new NetworkerServer(6666);
             Game.SendMessage = (packet) =>

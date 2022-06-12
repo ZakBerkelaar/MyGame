@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Networking.Packets
 {
+    [Registration.Registrable("MyGame", "Packet", "PacketNewEntity")]
     public class NewEntityPacket : NetworkPacket
     {
         public override NetDeliveryMethod NetDeliveryMethod => NetDeliveryMethod.ReliableOrdered;
@@ -37,7 +38,7 @@ namespace MyGame.Networking.Packets
             //entity.ID = id;
             uint id = msg.ReadUInt32();
             ushort worldID = msg.ReadUInt16();
-            Type type = Registration.Registry.GetRegistyEntity(msg.ReadUInt32());
+            Type type = Registration.Registry2.GetRegistryEntity(msg.ReadUInt32());
             Vector2 position = msg.ReadVector2();
 
             Entity = (Entity)Activator.CreateInstance(type);
@@ -53,7 +54,7 @@ namespace MyGame.Networking.Packets
             //msg.Write(entity.position);
             msg.Write(Entity.ID);
             msg.Write(Entity.world.worldID);
-            msg.Write(Registration.Registry.GetNetID(Entity));
+            msg.Write(Registration.Registry2.GetRegistryEntityNetID(Entity.RegistryID));
             msg.Write(Entity.position);
         }
     }

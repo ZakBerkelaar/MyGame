@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Systems
 {
+    [Registration.Registrable("MyGame", "System", "SystemDayCycle")]
     public class DayCycleSystem : NetworkedWorldSystem
     {
         public override int UpdateInterval => 30;

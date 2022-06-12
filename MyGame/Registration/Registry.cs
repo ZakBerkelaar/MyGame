@@ -10,7 +10,7 @@ using MyGame.Commands;
 
 namespace MyGame.Registration
 {
-    public static class Registry
+    public static class Registryf
     {
         private static readonly Dictionary<IDString, Tile> tiles = new Dictionary<IDString, Tile>();
         private static readonly Dictionary<uint, Tile> tilesNetID = new Dictionary<uint, Tile>();
@@ -76,9 +76,9 @@ namespace MyGame.Registration
 
         public static void RegisterItem(Item item)
         {
-            items.Add(item.RegistryString, item);
+            items.Add(item.RegistryID, item);
             itemsNetID.Add(itemCounter, item);
-            itemsNetID2.Add(item.RegistryString, itemCounter++);
+            itemsNetID2.Add(item.RegistryID, itemCounter++);
         }
 
         public static void RegisterPacket(Type packet)
@@ -172,7 +172,7 @@ namespace MyGame.Registration
             return systems[type];
         }
 
-        public static uint GetNetID(IRegistrable registrable) => GetNetID(registrable.RegistryID);
+        public static uint GetNetID(RegistryObject registrable) => GetNetID(registrable.RegistryID);
 
         public static uint GetNetID(IDString id)
         {

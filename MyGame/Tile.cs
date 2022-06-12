@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace MyGame
 {
-    public abstract class Tile : IRegistrable
+    public abstract class Tile : RegistryObject
     {
-        public IDString RegistryID { get; set; }
-
         protected Tile()
         {
-            RegistryID = new IDString("Tile", GetType().Name);
+            
         }
     }
 

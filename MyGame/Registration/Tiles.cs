@@ -15,12 +15,12 @@ namespace MyGame.Registration
 
         static Tiles()
         {
-            Tile GetTile(string name) => Registry.GetRegistryTile(new IDString("Tile", name));
+            static Tile GetTile(string name) => Registry2.GetRegistryTile(new IDString("Tile", name));
 
             Air = GetTile("TileAir");
-            Dirt = Registry.GetRegistryTile(new IDString("Tile", "TileDirt"));
-            Grass = Registry.GetRegistryTile(new IDString("Tile", "TileGrass"));
-            Stone = Registry.GetRegistryTile(new IDString("Tile", "TileStone"));
+            Dirt = GetTile("TileDirt");
+            Grass = GetTile("TileGrass");
+            Stone = GetTile("TileStone");
         }
     }
 }

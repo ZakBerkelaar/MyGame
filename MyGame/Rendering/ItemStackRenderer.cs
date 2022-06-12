@@ -14,7 +14,7 @@ namespace MyGame.Rendering
         public ItemStackRenderer(ItemStack stack)
         {
             this.item = stack;
-            this.itemTexture = new Texture(stack.item.RegistryString);
+            this.itemTexture = new Texture(stack.item.RegistryID);
         }
 
         public void Render(int x, int y)

@@ -10,11 +10,10 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace MyGame
 {
-    public abstract class Entity : IIDable, IRegistrable
+    public abstract class Entity : RegistryObject, IIDable 
     {
         public bool isRemote;
         public uint ID { get; set; }
-        public IDString RegistryID { get; private set; }
 
         public World world;
 
@@ -27,7 +26,6 @@ namespace MyGame
 
         public Entity()
         {
-            RegistryID = new IDString("Entity", GetType().Name);
             //this.size = new Vector2(info.sizeX, info.sizeY);
             //this.ai = AIBase.CreateAI(info.aiType, this, info.aiParams);
         }

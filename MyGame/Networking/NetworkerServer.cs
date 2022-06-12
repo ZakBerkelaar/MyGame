@@ -63,7 +63,7 @@ namespace MyGame.Networking
 
         public void RegisterPacketHandler<T>(Action<T> callback) where T : NetworkPacket, new()
         {
-            callbacks.Add(Registry.GetRegistryPacketID(typeof(T)), callback);
+            callbacks.Add(Registry2.GetRegistryPacketNetID(RegistryObjectExtensions.GetRegistryID<T>()), callback);
         }
 
         public void ReadMessages()

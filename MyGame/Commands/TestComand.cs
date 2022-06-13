@@ -23,4 +23,21 @@ namespace MyGame.Commands
             return CommandResult.Success();
         }
     }
+
+    [Registration.Registrable("MyGame", "Command", "CommandTest2")]
+    internal class TestComand2 : Command
+    {
+        public override Side Side => Side.Server;
+
+        public TestComand2() : base("test2", new CommardArgumentTypes.StringArgType())
+        {
+
+        }
+
+        protected override CommandResult Execute(params CommandArgParseResult[] args)
+        {
+            Logger.LogDebug((string)args[0].Result);
+            return CommandResult.Success();
+        }
+    }
 }

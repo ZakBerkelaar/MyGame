@@ -20,6 +20,7 @@ namespace MyGame.Registration
             Registry2.RegisterPacket(typeof(SystemUpdatePacket));
             Registry2.RegisterPacket(typeof(ChunkPacket));
             Registry2.RegisterPacket(typeof(RequestChunkPacket));
+            Registry2.RegisterPacket(typeof(CommandPacket));
         }
     }
 }

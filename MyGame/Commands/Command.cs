@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyGame.Networking;
+using MyGame.Networking.Packets;
 
 namespace MyGame.Commands
 {
-    [Registration.Registrable("MyGame", "Packet", "PacketCommand")]
     public abstract class Command : RegistryObject
     {
         private class ArgManager
@@ -38,12 +38,39 @@ namespace MyGame.Commands
 
         public CommandResult Run(string[] args)
         {
-            CommandArgParseResult[] argResults = argManager.Parse(args);
-            CommandArgParseResult[] fails = argResults.Where(r => r.Succeeded == false).ToArray();
-            if (fails.Length != 0)
-                return CommandResult.Failure(String.Join("\n", fails.Select(f => f.Message)));
+            if(Game.Side == Side.Client)
+            {
+                if(Side == Side.Client)
+                {
+                    CommandArgParseResult[] argResults = argManager.Parse(args);
+                    CommandArgParseResult[] fails = argResults.Where(r => r.Succeeded == false).ToArray();
+                    if (fails.Length != 0)
+                        return CommandResult.Failure(String.Join("\n", fails.Select(f => f.Message)));
+                    else
+                        return Execute(argResults);
+                }
+                else
+                {
+                    Game.networkerClient.SendMessage(new CommandPacket(this, args));
+                    return CommandResult.Success();
+                }
+            }
             else
-                return Execute(argResults);
+            {
+                if(Side == Side.Server)
+                {
+                    CommandArgParseResult[] argResults = argManager.Parse(args);
+                    CommandArgParseResult[] fails = argResults.Where(r => r.Succeeded == false).ToArray();
+                    if (fails.Length != 0)
+                        return CommandResult.Failure(String.Join("\n", fails.Select(f => f.Message)));
+                    else
+                        return Execute(argResults);
+                }
+                else
+                {
+                    throw new Exception("Cannot run a client side command from the server");
+                }
+            }
         }
 
         public Command(string name, params ICommandArgumentType[] argumentTypes)

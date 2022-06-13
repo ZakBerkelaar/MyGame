@@ -11,6 +11,7 @@ namespace MyGame.Networking
         Position,
         Tile,
         Init,
-        System
+        System,
+        Command
     }
 }

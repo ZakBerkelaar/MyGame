@@ -46,6 +46,8 @@ namespace Server
             Logger.LogInfo("Starting server");
             Logger.LogInfo($"CLR Version: {Environment.Version}");
 
+            Game.Side = Side.Server;
+
             TileRegister.RegisterTiles();
             ItemRegister.RegisterItems();
             PacketRegister.RegisterPackets();
@@ -189,6 +191,11 @@ namespace Server
                         networker.SendMessage(packet2, packet.sender);
                     });
                 });
+            });
+
+            networker.RegisterPacketHandler<CommandPacket>(packet =>
+            {
+                packet.Command.Run(packet.CommandArgs);
             });
         }
 

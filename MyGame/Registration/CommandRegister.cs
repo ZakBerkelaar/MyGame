@@ -11,6 +11,7 @@ namespace MyGame.Registration
         public static void RegisterCommands()
         {
             Registry2.RegisterCommand(new Commands.TestComand());
+            Registry2.RegisterCommand(new Commands.TestComand2());
         }
     }
 }

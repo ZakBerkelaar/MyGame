@@ -34,6 +34,7 @@ namespace MyGame
         //public static Networker networker;
         public static NetworkerClient networkerClient;
         public static Action<NetworkPacket> SendMessage;
+        public static Side Side;
 
         public static UICanvas canvas;
 
@@ -76,6 +77,8 @@ namespace MyGame
         {
             Logger.LogInfo("Staring game");
             Logger.LogInfo($"CLR Version: {Environment.Version}");
+
+            Side = Side.Client;
 
             window = new Window(800, 800, "My Game");
 

@@ -8,6 +8,8 @@ namespace MyGame
 {
     public abstract class Item : RegistryObject
     {
+        public IDString? TextureOverride;
+
         public Item()
         {
             

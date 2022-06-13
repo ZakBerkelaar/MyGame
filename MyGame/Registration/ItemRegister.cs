@@ -10,7 +10,7 @@ namespace MyGame.Registration
     {
         public static void RegisterItems()
         {
-
+            Registry2.RegisterItem(typeof(ItemTile));
         }
     }
 }

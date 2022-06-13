@@ -21,8 +21,8 @@ namespace MyGame.Registration
         private static readonly Dictionary<IDString, TileNetID> tilesNetID2 = new Dictionary<IDString, TileNetID>();
         private static uint tileCounter = 0;
 
-        private static readonly Dictionary<IDString, Item> items = new Dictionary<IDString, Item>();
-        private static readonly Dictionary<ItemNetID, Item> itemsNetID = new Dictionary<ItemNetID, Item>();
+        private static readonly Dictionary<IDString, Type> items = new Dictionary<IDString, Type>();
+        private static readonly Dictionary<ItemNetID, Type> itemsNetID = new Dictionary<ItemNetID, Type>();
         private static readonly Dictionary<IDString, ItemNetID> itemsNetID2 = new Dictionary<IDString, ItemNetID>();
         private static uint itemCounter = 0;
 
@@ -64,10 +64,10 @@ namespace MyGame.Registration
             tileCounter++;
         }
 
-        public static void RegisterItem(Item item)
+        public static void RegisterItem(Type item)
         {
             // Check if an ID override is in place
-            Type itemType = item.GetType();
+            Type itemType = item;
             RegistrableAttribute attr = (RegistrableAttribute)Attribute.GetCustomAttribute(itemType, typeof(RegistrableAttribute), false);
             IDString itemID;
             if (attr != null)
@@ -152,7 +152,7 @@ namespace MyGame.Registration
 
         #region Get
         public static Tile GetRegistryTile(IDString iDString) => tiles[iDString];
-        public static Item GetRegistryItem(IDString iDString) => items[iDString];
+        public static Type GetRegistryItem(IDString iDString) => items[iDString];
         public static Type GetRegistryEntity(IDString iDString) => entities[iDString];
         public static Type GetRegistrySystem(IDString iDString) => systems[iDString];
         public static Command GetRegistryCommand(IDString iDString) => commands[iDString];
@@ -166,14 +166,14 @@ namespace MyGame.Registration
         public static PacketNetID GetRegistryPacketNetID(IDString iDString) => packetsNetID2[iDString];
 
         public static Tile GetRegistryTile(TileNetID netID) => tilesNetID[netID];
-        public static Item GetRegistryItem(ItemNetID netID) => itemsNetID[netID];
+        public static Type GetRegistryItem(ItemNetID netID) => itemsNetID[netID];
         public static Type GetRegistryEntity(EntityNetID netID) => entitiesNetID[netID];
         public static Type GetRegistrySystem(SystemNetID netID) => systemsNetID[netID];
         public static Command GetRegistryCommand(CommandNetID netID) => commandsNetID[netID];
         public static Type GetRegistryPacket(PacketNetID netID) => packetsNetID[netID];
 
         public static IEnumerable<Tile> GetRegisteredTiles() => tiles.Values;
-        public static IEnumerable<Item> GetRegisteredItems() => items.Values;
+        public static IEnumerable<Type> GetRegisteredItems() => items.Values;
         public static IEnumerable<Type> GetRegisteredEntities() => entities.Values;
         public static IEnumerable<Type> GetRegisteredSystems() => systems.Values;
         public static IEnumerable<Command> GetRegisteredCommands() => commands.Values;

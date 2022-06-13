@@ -111,7 +111,7 @@ namespace MyGame
             renderedEntities.Add(playerRenderer);
             //Game.activeEntities.Add(playerRenderer);
 
-            var items = Registry2.GetRegisteredItems().ToArray();
+            var items = Registry2.GetRegisteredTiles().Select(t => new ItemTile(t)).ToArray();
             for (int i = 0; i < items.Length; i++)
             {
                 activePlayer.items[i] = new ItemStack(items[i], 1);

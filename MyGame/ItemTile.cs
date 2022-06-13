@@ -14,6 +14,7 @@ namespace MyGame
         public ItemTile(Tile tile)
         {
             this.tile = tile;
+            TextureOverride = new IDString("MyGame", "Item", "Item" + tile.RegistryID.Name);
         }
 
         public override void UseItem(Entity user, Vector2 position, ItemStack stack)

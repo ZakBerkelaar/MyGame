@@ -148,16 +148,17 @@ namespace MyGame
 
         //TODO: Platform specific code
         [DllImport("kernel32.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern bool QueryPerformanceCounter(out long count);
+        private static unsafe extern bool QueryPerformanceCounter(long* count);
         [DllImport("kernel32.dll"), SuppressUnmanagedCodeSecurity]
         private static extern bool QueryPerformanceFrequency(out long frequency);
 
         private long freq;
 
-        private double GetTime()
+        private unsafe double GetTime()
         {
-            QueryPerformanceCounter(out long time);
-            return (double)time / freq;
+            long tmp;
+            QueryPerformanceCounter(&tmp);
+            return (double)tmp / freq;
         }
 
         public Vector2 playerBlend;
@@ -170,7 +171,6 @@ namespace MyGame
             OnResize(new ResizeEventArgs(Size.X, Size.Y));
 
             QueryPerformanceFrequency(out freq);
-
 
             const double td = 1d / 30d;
             const float td2 = (float)td;

@@ -5,7 +5,7 @@ namespace MyGameBenchmarks
     {
         public static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<DivisionMultiplicationBenchmarks>();
+            var summary = BenchmarkRunner.Run<QueryPerfBenchmark>();
         }
     }
 }

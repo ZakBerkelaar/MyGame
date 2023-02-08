@@ -108,6 +108,7 @@ namespace MyGame
 
         private void WriteToDisk()
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
             File.WriteAllLines(path, values.Select(kv => kv.Key + '\0' + Convert.ToString(kv.Value)).ToArray());
         }
 

@@ -59,7 +59,7 @@ namespace MyGame.UI
         {
             arialLocation = TextureAtlas.GetAtlasLocationNew(new IDString("Font", "Arial"));
 
-            arialData = JsonSerializer.Deserialize<FontData>(System.IO.File.ReadAllText(@"C:\Users\zakbe\source\repos\MyGame\MyGame\bin\Debug\net6.0\Assets\MyGame\Textures\Font\Arial.json"), new JsonSerializerOptions()
+            arialData = JsonSerializer.Deserialize<FontData>(System.IO.File.ReadAllText(@"Assets\MyGame\Textures\Font\Arial.json"), new JsonSerializerOptions()
             {
                 PropertyNameCaseInsensitive = true,
             });
